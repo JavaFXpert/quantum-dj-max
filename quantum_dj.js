@@ -62,6 +62,7 @@ function computeNumWires() {
 		rowIdx--;
 	}
 
+	post('numWires: ' + numWires);
 	return numWires;
 }
 
@@ -121,12 +122,10 @@ function setCircGridGate(notePitchVelocity) {
       var gridRow = Math.floor((highMidiPitch - pitch) / NUM_GRID_COLS);
 
       circGrid[gridRow][gridCol] = curCircNodeType;
+			printCircGrid();
 			createQuantumCircuitFromGrid();
 
 		}
-
-    printCircGrid();
-
 	}
 	else {
 		post('Unexpected notePitchVelocity.length: ' + notePitchVelocity.length);
@@ -168,6 +167,10 @@ function setCurCircNodeType(controllerNumValue) {
 				curCircNodeType = CircuitNodeTypes.TDG;
 			}
 			else if (contNum == 36) {
+				if (curCircNodeType == CircuitNodeTypes.EMPTY){
+					// User pressed EMPTY key twice, so clear grid
+					resetCircGrid();
+				}
 				curCircNodeType = CircuitNodeTypes.EMPTY;
 			}
 			
@@ -181,6 +184,18 @@ function setCurCircNodeType(controllerNumValue) {
 	}
 }
 
+
+/**
+ * Set all elements to EMPTY
+ */
+function resetCircGrid() {
+	for (rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
+		for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+			circGrid[rowIdx][colIdx] = CircuitNodeTypes.EMPTY;
+		}
+	}
+	printCircGrid();
+}
 
 
 function printCircGrid() {
@@ -328,247 +343,54 @@ onresize.local = 1; //private
  */
 function createQuantumCircuitFromGrid() {
 	var numCircuitWires = computeNumWires();
+	post('numCircuitWires: ' + numCircuitWires);
 	var qc = new QuantumCircuit(numCircuitWires, numCircuitWires);
 
-	post('numCircuitWires: ' + numCircuitWires);
+	for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+		for (var rowIdx = 0; rowIdx < numCircuitWires; rowIdx++) {
+			addGateFromGrid(qc, rowIdx, colIdx);
+		}
+	}
 
 	var statevector = simulate(qc, 0, 'statevector');
+	post('\n');
 	post('statevector: ' + statevector);
-	post('qc: ' + qc);
 }
 
 
-/*
-function q_command:create_qasm_for_node(circuit_node_pos, wire_num,
-                                        include_measurement_blocks, c_if_table, tomo_meas_basis, exclude_reset_blocks)
-    local qasm_str = ""
-    local circuit_node_block = circuit_blocks:get_circuit_block(circuit_node_pos)
-    local q_block = q_command:get_q_command_block(circuit_node_pos)
-
-    if circuit_node_block then
-        local node_type = circuit_node_block.get_node_type()
-
-        if node_type == CircuitNodeTypes.EMPTY or
-                node_type == CircuitNodeTypes.TRACE or
-                node_type == CircuitNodeTypes.CTRL then
-            -- Throw away a c_if if present
-            c_if_table[wire_num] = ""
-            -- Return immediately with zero length qasm_str
-            return qasm_str
-        else
-            if c_if_table[wire_num] and c_if_table[wire_num] ~= "" then
-                qasm_str = qasm_str .. c_if_table[wire_num] .. " "
-                c_if_table[wire_num] = ""
-            end
-        end
-
-        local ctrl_a = circuit_node_block.get_ctrl_a()
-        local ctrl_b = circuit_node_block.get_ctrl_b()
-        local swap = circuit_node_block.get_swap()
-
-        local radians = circuit_node_block.get_radians()
-
-        local wire_num_idx = tostring(wire_num - 1)
-        local ctrl_a_idx = tostring(ctrl_a - 1)
-        local ctrl_b_idx = tostring(ctrl_b - 1)
-        local swap_idx = tostring(swap - 1)
-
-
-        if node_type == CircuitNodeTypes.IDEN then
-            -- Identity gate
-            qasm_str = qasm_str .. 'id q[' .. wire_num_idx .. '];'
-
-        elseif node_type == CircuitNodeTypes.X then
-            local threshold = 0.0001
-            if math.abs(radians - math.pi) <= threshold then
-                if ctrl_a ~= -1 then
-                    if ctrl_b ~= -1 then
-                        -- Toffoli gate
-                        qasm_str = qasm_str .. 'ccx q[' .. ctrl_a_idx .. '],'
-                        qasm_str = qasm_str .. 'q[' .. ctrl_b_idx .. '],'
-                        qasm_str = qasm_str .. 'q[' .. wire_num_idx .. '];'
-                    else
-                        -- Controlled X gate
-                        qasm_str = qasm_str .. 'cx q[' .. ctrl_a_idx .. '],'
-                        qasm_str = qasm_str .. 'q[' .. wire_num_idx .. '];'
-                    end
-                else
-                    -- Pauli-X gate
-                    qasm_str = qasm_str .. 'x q[' .. wire_num_idx .. '];'
-                end
-            else
-                -- Rotation around X axis
-                qasm_str = qasm_str .. 'rx(' .. tostring(radians) .. ') '
-                qasm_str = qasm_str .. 'q[' .. wire_num_idx .. '];'
-            end
-
-        elseif node_type == CircuitNodeTypes.Y then
-            local threshold = 0.0001
-            if math.abs(radians - math.pi) <= threshold then
-                if ctrl_a ~= -1 then
-                    -- Controlled Y gate
-                    qasm_str = qasm_str .. 'cy q[' .. ctrl_a_idx .. '],'
-                    qasm_str = qasm_str .. 'q[' .. wire_num_idx .. '];'
-                else
-                    -- Pauli-Y gate
-                    qasm_str = qasm_str .. 'y q[' .. wire_num_idx .. '];'
-                end
-            else
-                -- Rotation around Y axis
-                qasm_str = qasm_str .. 'ry(' .. tostring(radians) .. ') '
-                qasm_str = qasm_str .. 'q[' .. wire_num_idx .. '];'
-            end
-        elseif node_type == CircuitNodeTypes.Z then
-            local threshold = 0.0001
-            if math.abs(radians - math.pi) <= threshold then
-                if ctrl_a ~= -1 then
-                    -- Controlled Z gate
-                    qasm_str = qasm_str .. 'cz q[' .. ctrl_a_idx .. '],'
-                    qasm_str = qasm_str .. 'q[' .. wire_num_idx .. '];'
-                else
-                    -- Pauli-Z gate
-                    qasm_str = qasm_str .. 'z q[' .. wire_num_idx .. '];'
-                end
-            else
-                if circuit_node_block.get_ctrl_a() ~= -1 then
-                    -- Controlled rotation around the Z axis
-                    qasm_str = qasm_str .. 'crz(' .. tostring(radians) .. ') '
-                    qasm_str = qasm_str .. 'q[' .. ctrl_a_idx .. '],'
-                    qasm_str = qasm_str .. 'q[' .. wire_num_idx .. '];'
-                else
-                    -- Rotation around Z axis
-                    qasm_str = qasm_str .. 'rz(' .. tostring(radians) .. ') '
-                    qasm_str = qasm_str .. 'q[' .. wire_num_idx .. '];'
-                end
-            end
-
-        elseif node_type == CircuitNodeTypes.S then
-            -- S gate
-            qasm_str = qasm_str .. 's q[' .. wire_num_idx .. '];'
-        elseif node_type == CircuitNodeTypes.SDG then
-            -- S dagger gate
-            qasm_str = qasm_str .. 'sdg q[' .. wire_num_idx .. '];'
-        elseif node_type == CircuitNodeTypes.T then
-            -- T gate
-            qasm_str = qasm_str .. 't q[' .. wire_num_idx .. '];'
-        elseif node_type == CircuitNodeTypes.TDG then
-            -- T dagger gate
-            qasm_str = qasm_str .. 'tdg q[' .. wire_num_idx .. '];'
-        elseif node_type == CircuitNodeTypes.H then
-            if ctrl_a ~= -1 then
-                -- Controlled Hadamard
-                qasm_str = qasm_str .. 'ch q[' .. ctrl_a_idx .. '],'
-                qasm_str = qasm_str .. 'q[' .. wire_num_idx .. '];'
-            else
-                -- Hadamard gate
-                qasm_str = qasm_str .. 'h q[' .. wire_num_idx .. '];'
-            end
-        elseif node_type == CircuitNodeTypes.BARRIER then
-            -- barrier
-            qasm_str = qasm_str .. 'barrier q[' .. wire_num_idx .. '];'
-        elseif node_type == CircuitNodeTypes.MEASURE_Z then
-            if include_measurement_blocks then
-                -- Measurement block
-                --qasm_str = qasm_str .. 'measure q[' .. wire_num_idx .. '] -> c[' .. wire_num_idx .. '];'
-                qasm_str = qasm_str .. 'measure q[' .. wire_num_idx .. '] -> c' .. wire_num_idx .. '[0];'
-            end
-        elseif node_type == CircuitNodeTypes.QUBIT_BASIS then
-            if not exclude_reset_blocks then
-                qasm_str = qasm_str .. 'reset q[' .. wire_num_idx .. '];'
-                if circuit_node_block.get_node_name():sub(-2) == "_1" then
-                    qasm_str = qasm_str .. 'x q[' .. wire_num_idx .. '];'
-                end
-            end
-        elseif node_type == CircuitNodeTypes.CONNECTOR_M then
-            -- Connector to wire extension, so traverse
-            local wire_extension_block_pos = circuit_node_block.get_wire_extension_block_pos()
-
-            if wire_extension_block_pos.x ~= 0 then
-                local wire_extension_block = circuit_blocks:get_circuit_block(wire_extension_block_pos)
-                local wire_extension_dir_str = wire_extension_block.get_circuit_dir_str()
-                local wire_extension_circuit_pos = wire_extension_block.get_circuit_pos()
-
-                if wire_extension_circuit_pos.x ~= 0 then
-                    local wire_extension_circuit = circuit_blocks:get_circuit_block(wire_extension_circuit_pos)
-                    local extension_wire_num = wire_extension_circuit.get_circuit_specs_wire_num_offset() + 1
-                    local extension_num_columns = wire_extension_circuit.get_circuit_num_columns()
-                    for column_num = 1, extension_num_columns do
-
-                        -- Assume dir_str is "+Z"
-                        local circ_node_pos = {x = wire_extension_circuit_pos.x + column_num - 1,
-                                               y = wire_extension_circuit_pos.y,
-                                               z = wire_extension_circuit_pos.z}
-
-                        if wire_extension_dir_str == "+X" then
-                            circ_node_pos = {x = wire_extension_circuit_pos.x,
-                                             y = wire_extension_circuit_pos.y,
-                                             z = wire_extension_circuit_pos.z - column_num + 1}
-                        elseif wire_extension_dir_str == "-X" then
-                            circ_node_pos = {x = wire_extension_circuit_pos.x,
-                                             y = wire_extension_circuit_pos.y,
-                                             z = wire_extension_circuit_pos.z + column_num - 1}
-                        elseif wire_extension_dir_str == "-Z" then
-                            circ_node_pos = {x = wire_extension_circuit_pos.x - column_num + 1,
-                                             y = wire_extension_circuit_pos.y,
-                                             z = wire_extension_circuit_pos.z}
-                        end
-
-                        qasm_str = qasm_str ..
-                                q_command:create_qasm_for_node(circ_node_pos,
-                                        extension_wire_num, include_measurement_blocks,
-                                        c_if_table, tomo_meas_basis, exclude_reset_blocks)
-                    end
-                end
-            end
-
-        elseif node_type == CircuitNodeTypes.SWAP and swap ~= -1 then
-            if ctrl_a ~= -1 then
-                -- Controlled Swap
-                qasm_str = qasm_str .. 'cswap q[' .. ctrl_a_idx .. '],'
-                qasm_str = qasm_str .. 'q[' .. wire_num_idx .. '],'
-                qasm_str = qasm_str .. 'q[' .. swap_idx .. '];'
-            else
-                -- Swap gate
-                qasm_str = qasm_str .. 'swap q[' .. wire_num_idx .. '],'
-                qasm_str = qasm_str .. 'q[' .. swap_idx .. '];'
-            end
-
-        elseif node_type == CircuitNodeTypes.C_IF then
-            local node_name = circuit_node_block.get_node_name()
-            local register_idx_str = node_name:sub(35, 35)
-            local eq_val_str = node_name:sub(39, 39)
-            c_if_table[wire_num] = "if(c" .. register_idx_str .. "==" ..
-                    eq_val_str .. ")"
-
-        elseif node_type == CircuitNodeTypes.BLOCH_SPHERE or
-                node_type == CircuitNodeTypes.COLOR_QUBIT then
-            if include_measurement_blocks then
-                if tomo_meas_basis == 1 then
-                    -- Measure in the X basis (by first rotating -pi/2 radians on Y axis)
-                    qasm_str = qasm_str .. 'ry(' .. tostring(-math.pi / 2) .. ') '
-                    qasm_str = qasm_str .. 'q[' .. wire_num_idx .. '];'
-                elseif tomo_meas_basis == 2 then
-                    -- Measure in the Y basis (by first rotating pi/2 radians on X axis)
-                    qasm_str = qasm_str .. 'rx(' .. tostring(math.pi / 2) .. ') '
-                    qasm_str = qasm_str .. 'q[' .. wire_num_idx .. '];'
-                elseif tomo_meas_basis == 3 then
-                    -- Measure in the Z basis (no rotation necessary)
-                end
-                qasm_str = qasm_str .. 'measure q[' .. wire_num_idx .. '] -> c' .. wire_num_idx .. '[0];'
-            end
-        end
-
-    else
-        print("Unknown gate!")
-    end
-
-    if LOG_DEBUG then
-        minetest.debug("End of create_qasm_for_node(), qasm_str:\n" .. qasm_str)
-    end
-    return qasm_str
-end
-
+/**
+ * Creates a quantum gate from an element in the circuit grid
+ * and adds it to the supplied QuantumCircuit instance
+ * // TODO: Support CNOT gates
  */
+function addGateFromGrid(quantumCircuit, gridRow, gridCol) {
+	var circNodeType = circGrid[gridRow][gridCol];
+
+	if (circNodeType == CircuitNodeTypes.H) {
+		quantumCircuit.h(gridRow);
+	}
+	else if (circNodeType == CircuitNodeTypes.X) {
+		quantumCircuit.x(gridRow);
+	}
+	else if (circNodeType == CircuitNodeTypes.Z) {
+		quantumCircuit.z(gridRow);
+	}
+	else if (circNodeType == CircuitNodeTypes.S) {
+		quantumCircuit.s(gridRow);
+	}
+	else if (circNodeType == CircuitNodeTypes.SDG) {
+		quantumCircuit.sdg(gridRow);
+	}
+	else if (circNodeType == CircuitNodeTypes.T) {
+		quantumCircuit.t(gridRow);
+	}
+	else if (circNodeType == CircuitNodeTypes.TDG) {
+		quantumCircuit.tdg(gridRow);
+	}
+
+	return quantumCircuit;
+}
+
 
 // This is a JavaScript version of Qiskit. For the full version, see qiskit.org.
 // It has many more features, and access to real quantum computers.
@@ -607,6 +429,22 @@ function QuantumCircuit(n, m) {
 };
 (QuantumCircuit.prototype).z = function(q) {
 	this.rz(Math.PI, q);
+	return this;
+};
+(QuantumCircuit.prototype).s = function(q) {
+	this.rz(Math.PI / 2, q);
+	return this;
+};
+(QuantumCircuit.prototype).sdg = function(q) {
+	this.rz(-Math.PI / 2, q);
+	return this;
+};
+(QuantumCircuit.prototype).t = function(q) {
+	this.rz(Math.PI / 4, q);
+	return this;
+};
+(QuantumCircuit.prototype).tdg = function(q) {
+	this.rz(-Math.PI / 4, q);
 	return this;
 };
 (QuantumCircuit.prototype).y = function(q) {
