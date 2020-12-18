@@ -26,7 +26,7 @@ var CircuitNodeTypes = {
     MEASURE_Z: 13
 }
 
-var curNodeType = CircuitNodeTypes.EMPTY;
+var curCircNodeType = CircuitNodeTypes.EMPTY;
 
 var NUM_GRID_ROWS = 8;
 var NUM_GRID_COLS = 5;
@@ -92,11 +92,11 @@ function list(lst)
 	//post('arguments[0]: ' + arguments[0] + ', arguments[1]: ' + arguments[1]);
 	
 	if (inlet == 0) { 
-    	setCircGridGate(arguments);
-    }
-	else if (inlet == 1) { 
-        setCurNodeType(arguments);
-    }
+		setCircGridGate(arguments);
+	}
+	else if (inlet == 1) {
+		setCurCircNodeType(arguments);
+	}
 }
 
 
@@ -127,12 +127,11 @@ function setCircGridGate(notePitchVelocity) {
             //post('gridRow: ' + gridRow);
 
             //circGrid[gridRow][gridCol] = circNodeType;
-            circGrid[gridRow][gridCol] = curNodeType;
+            circGrid[gridRow][gridCol] = curCircNodeType;
 
 		}
-		
-			
-        printCircGrid();
+
+    // printCircGrid();
 
 	}
 	else {
@@ -146,7 +145,7 @@ Given an array with controller number and value,
 sets the current circuit node type for when
 a node is placed on the circuit
 */
-function setCurNodeType(controllerNumValue) {
+function setCurCircNodeType(controllerNumValue) {
 	//post('controllerNumValue: ' + controllerNumValue[0]);
 	if (controllerNumValue.length >= 2) {
 	    var contNum = controllerNumValue[0];
@@ -154,31 +153,31 @@ function setCurNodeType(controllerNumValue) {
 	
 	    if (contVal > 0) {
 		    if (contNum == 43) {
-			    curNodeType = CircuitNodeTypes.H;
+			    curCircNodeType = CircuitNodeTypes.H;
 			}
 			else if (contNum == 42) {
-				curNodeType = CircuitNodeTypes.X;
+				curCircNodeType = CircuitNodeTypes.X;
 			}
 			else if (contNum == 41) {
-				curNodeType = CircuitNodeTypes.Z;
+				curCircNodeType = CircuitNodeTypes.Z;
 			}
 			else if (contNum == 40) {
-				curNodeType = CircuitNodeTypes.S;
+				curCircNodeType = CircuitNodeTypes.S;
 			}
 			else if (contNum == 39) {
-				curNodeType = CircuitNodeTypes.SDG;
+				curCircNodeType = CircuitNodeTypes.SDG;
 			}
 			else if (contNum == 38) {
-				curNodeType = CircuitNodeTypes.T;
+				curCircNodeType = CircuitNodeTypes.T;
 			}
 			else if (contNum == 37) {
-				curNodeType = CircuitNodeTypes.TDG;
+				curCircNodeType = CircuitNodeTypes.TDG;
 			}
 			else if (contNum == 36) {
-				curNodeType = CircuitNodeTypes.EMPTY;
+				curCircNodeType = CircuitNodeTypes.EMPTY;
 			}
 			
-            post('curNodeType is now ' + curNodeType); 
+      post('curCircNodeType is now ' + curCircNodeType);
 		}
 	
 
