@@ -218,15 +218,20 @@ function draw()
 		shapeslice(180,1);
 		// erase background
 		glclearcolor(vbrgb[0],vbrgb[1],vbrgb[2],vbrgb[3]);
-		glclear();			
+		glclear();
+
+
 		moveto(0,0);
 		// fill bgcircle
 		glcolor(vrgb2);
-		circle(0.8);
+		circle(0.5);
+
 		// draw arc outline
-		glcolor(0,0,0,1);
-		circle(0.8,-90-val*360,-90);						
-		// fill arc			
+		// glcolor(0,0,0,1);
+		// circle(0.8,-90-val*360,-90);
+
+		/*
+		// fill arc
 		glcolor(vfrgb);
 		circle(0.7,-90-val*360,-90);						
 		// draw rest of outline
@@ -240,6 +245,8 @@ function draw()
 		moveto(0,0);
 		theta = (0.75-val)*2*Math.PI;
 		lineto(0.8*Math.cos(theta),0.8*Math.sin(theta));
+
+		 */
 	}
 }
 
