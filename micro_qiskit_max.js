@@ -14,7 +14,7 @@ var last_x = 0;
 var last_y = 0;
 
 // process arguments
-post('in process args');
+//post('in process args');
 if (jsarguments.length>1) {
 	//vfrgb[0] = jsarguments[1]/255.;
 }
