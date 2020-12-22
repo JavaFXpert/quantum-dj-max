@@ -203,31 +203,57 @@ function draw()
 
 		glcolor(0,0,0,1);
 
-		// for (let wireIdx = 0; wireIdx < NUM_GRID_ROWS; wireIdx++) {
-		// 	moveto(-0.8, 0);
-		// }
+		//var curNodeType = qasmPadObj.js.curCircNodeType;
+		if (midiNum == 36) {
+			// Draw delete character
+			moveto(-0.6, -0.4);
+			text("\u232b");
+		}
+		else {
+			moveto(-0.8, -0.8);
 
-		moveto(-0.8, -0.8);
+			// Draw square
+			lineto(0.8, -0.8);
+			lineto(0.8, 0.8);
+			lineto(-0.8, 0.8);
+			lineto(-0.8, -0.8);
+		}
 
-		// Draw square
-		lineto(0.8, -0.8);
-		lineto(0.8, 0.8);
-		lineto(-0.8, 0.8);
-		lineto(-0.8, -0.8);
-
-		// Draw connector
-		moveto(-1.0, 0.0);
-		lineto(-0.8, -0.0);
-		moveto(0.8, 0.0);
-		lineto(1.0, 0.0);
-
-
-		//text("H");
-
-		// draw arc outline
-		// glcolor(0,0,0,1);
-		// circle(0.8,-90-val*360,-90);
-
+		if (midiNum == 43) {
+		  // CircuitNodeTypes.H
+			moveto(-0.32, -0.4);
+			text("H");
+		}
+		else if (midiNum == 42) {
+			// CircuitNodeTypes.X
+			moveto(-0.32, -0.4);
+			text("X");
+		}
+		else if (midiNum == 41) {
+			// CircuitNodeTypes.Z
+			moveto(-0.32, -0.4);
+			text("Z");
+		}
+		else if (midiNum == 40) {
+			// CircuitNodeTypes.C
+			moveto(-0.32, -0.4);
+			text("S");
+		}
+		else if (midiNum == 39) {
+			// CircuitNodeTypes.SDG
+			moveto(-0.6, -0.32);
+			text("S\u2020");
+		}
+		else if (midiNum == 38) {
+			// CircuitNodeTypes.T
+			moveto(-0.32, -0.4);
+			text("T");
+		}
+		else if (midiNum == 37) {
+			// CircuitNodeTypes.TDG
+			moveto(-0.6, -0.32);
+			text("T\u2020");
+		}
 	}
 }
 
@@ -280,6 +306,9 @@ function onclick(x,y,but,cmd,shift,capslock,option,ctrl)
 	last_y = y;
 	post('In onclick');
 	messnamed('bob', this.midiNum, 127);
+
+	draw();
+	refresh();
 }
 onclick.local = 1; //private. could be left public to permit "synthetic" events
 

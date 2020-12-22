@@ -45,6 +45,8 @@ var circGrid = [
     [-1, -1, -1, -1,-1]
 ];
 
+
+
 /**
  * Determine how many wires are represented on the circGrid
  */
@@ -123,7 +125,20 @@ function setCircGridGate(notePitchVelocity) {
       var gridRow = Math.floor((highMidiPitch - pitch) / NUM_GRID_COLS);
 
       circGrid[gridRow][gridCol] = curCircNodeType;
-			//printCircGrid();
+
+			// TODO: Make the object redraw when updating
+			var rowIdx = NUM_GRID_ROWS - gridRow - 1;
+			var colIdx = gridCol;
+
+			var midiPitch = lowMidiPitch + (rowIdx * NUM_GRID_COLS) + colIdx;
+			post('midiPitch: ' + midiPitch);
+			var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
+			post('circBtnObj: ' + circBtnObj);
+			circBtnObj.js.draw();
+			circBtnObj.js.refresh();
+
+
+			printCircGrid();
 			createQasmFromGrid();
 
 		}
@@ -193,6 +208,15 @@ function resetCircGrid() {
 	for (rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
 		for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
 			circGrid[rowIdx][colIdx] = CircuitNodeTypes.EMPTY;
+
+			// TODO: Make the object redraw when updating
+			var midiPitch = lowMidiPitch + (rowIdx * NUM_GRID_COLS) + colIdx;
+			//post('midiPitch: ' + midiPitch);
+			var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
+			//post('circBtnObj: ' + circBtnObj);
+			circBtnObj.js.draw();
+			circBtnObj.js.refresh();
+
 		}
 	}
 	printCircGrid();

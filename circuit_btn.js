@@ -85,10 +85,9 @@ if (jsarguments.length > 1) {
 	this.midiNum = jsarguments[1];
 	//post('\njsarguments[1]: ' + jsarguments[1]);
 
-	this.varname = 'circbtn' + this.midiNum;
+	//this.varname = 'circbtn' + this.midiNum;
+	//post('this.varname: ' + this.varname);
 }
-
-draw();
 
 
 function msg_int(n)
@@ -194,6 +193,8 @@ function setCurCircNodeType(controllerNumValue) {
 
 function draw()
 {
+	this.qasmPadObj = this.patcher.getnamed("qasmpad");
+
 	var theta;
 	var width = box.rect[2] - box.rect[0];
 
@@ -207,7 +208,8 @@ function draw()
 		glcolor(0,0,0,1);
 
 		var curNodeType = qasmPadObj.js.curCircNodeType;
-    if (curNodeType == CircuitNodeTypes.EMPTY) {
+		post('in draw(), curNodeType:  ' + curNodeType);
+    if (curNodeType == CircuitNodeTypes.EMPTY || curNodeType == 0) {
 			// Draw empty circuit wire
     	moveto(-1.0, 0.0);
 			lineto(1.0, 0.0);
@@ -311,10 +313,11 @@ function onclick(x,y,but,cmd,shift,capslock,option,ctrl)
 
 	//ob = this.patcher.getnamed("qasmpad");
 	//post('ob.curCircNodeType: ' + ob.curCircNodeType);
-	post('qasmPadObj.js.curCircNodeType: ' + qasmPadObj.js.curCircNodeType);
-	post('qasmPadObj.varname: ' + qasmPadObj.varname);
-
-	post('this.varname: ' + this.varname);
+	// this.qasmPadObj = this.patcher.getnamed("qasmpad");
+	// post('qasmPadObj.js.curCircNodeType: ' + qasmPadObj.js.curCircNodeType);
+	// post('qasmPadObj.varname: ' + qasmPadObj.varname);
+	//
+	// post('this.varname: ' + this.varname);
 
 	draw();
 	refresh();
