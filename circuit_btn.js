@@ -279,7 +279,7 @@ function onclick(x,y,but,cmd,shift,capslock,option,ctrl)
 	last_x = x;
 	last_y = y;
 	post('In onclick');
-	messnamed('bob', this.midiNum, 127);
+	messnamed('alice', this.midiNum, 127);
 }
 onclick.local = 1; //private. could be left public to permit "synthetic" events
 
