@@ -1,6 +1,8 @@
 /**
  * MicroQiskit implementation in Max
  */
+include('common.js');
+
 var r2 = 0.70710678118;
 
 this.inlets = 2;

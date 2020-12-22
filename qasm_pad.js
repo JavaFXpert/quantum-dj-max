@@ -1,28 +1,30 @@
 /**
  * Quantum DJ device user interface
  */
+include('common.js');
+
 var r2 = 0.70710678118;
 
 this.inlets = 2;
 this.outlets = 1;
 
-var CircuitNodeTypes = {
-    EMPTY: -1,
-    IDEN: 0,
-    X: 1,
-    Y: 2,
-    Z: 3,
-    S: 4,
-    SDG: 5,
-    T: 6,
-    TDG: 7,
-    H: 8,
-    SWAP: 9,
-    BARRIER: 10,
-    CTRL: 11, // "control" part of multi-qubit gate
-    TRACE: 12, // In the path between a gate part and a "control" or "swap" part
-    MEASURE_Z: 13
-}
+// var CircuitNodeTypes = {
+//     EMPTY: -1,
+//     IDEN: 0,
+//     X: 1,
+//     Y: 2,
+//     Z: 3,
+//     S: 4,
+//     SDG: 5,
+//     T: 6,
+//     TDG: 7,
+//     H: 8,
+//     SWAP: 9,
+//     BARRIER: 10,
+//     CTRL: 11, // "control" part of multi-qubit gate
+//     TRACE: 12, // In the path between a gate part and a "control" or "swap" part
+//     MEASURE_Z: 13
+// }
 
 var curCircNodeType = CircuitNodeTypes.EMPTY;
 
@@ -84,7 +86,7 @@ if (jsarguments.length>1) {
 	//vfrgb[0] = jsarguments[1]/255.;
 }
 
-draw();
+resetCircGrid();
 
 
 function msg_int(n)
