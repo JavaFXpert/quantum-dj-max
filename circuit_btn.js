@@ -229,18 +229,33 @@ function draw()
 		}
 
 		if (curNodeType == CircuitNodeTypes.H) {
-			moveto(-0.4, -0.4);
+			moveto(-0.32, -0.4);
 			text("H");
 		}
-
-
-
-		//text("H");
-
-		// draw arc outline
-		// glcolor(0,0,0,1);
-		// circle(0.8,-90-val*360,-90);
-
+		else if (curNodeType == CircuitNodeTypes.X) {
+			moveto(-0.32, -0.4);
+			text("X");
+		}
+		else if (curNodeType == CircuitNodeTypes.Z) {
+			moveto(-0.32, -0.4);
+			text("Z");
+		}
+		else if (curNodeType == CircuitNodeTypes.S) {
+			moveto(-0.32, -0.4);
+			text("S");
+		}
+		else if (curNodeType == CircuitNodeTypes.SDG) {
+			moveto(-0.6, -0.32);
+			text("S\u2020");
+		}
+		else if (curNodeType == CircuitNodeTypes.T) {
+			moveto(-0.32, -0.4);
+			text("T");
+		}
+		else if (curNodeType == CircuitNodeTypes.TDG) {
+			moveto(-0.6, -0.32);
+			text("T\u2020");
+		}
 	}
 }
 
