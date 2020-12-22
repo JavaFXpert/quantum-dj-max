@@ -371,6 +371,11 @@ function createQasmFromGrid() {
 		}
 	}
 
+	// If circuit is empty, add an identity gate
+	if (qasmGatesStr.trim().length == 0) {
+		qasmGatesStr = ' id q[0];'
+	}
+
 	qasm = qasmHeaderStr + qasmGatesStr;
 
 	post('\nqasm: ' + qasm);
