@@ -79,10 +79,12 @@ var last_x = 0;
 var last_y = 0;
 
 // process arguments
-post('processing args');
+//post('processing args');
 if (jsarguments.length > 1) {
 	this.midiNum = jsarguments[1];
-	post('\njsarguments[1]: ' + jsarguments[1]);
+	//post('\njsarguments[1]: ' + jsarguments[1]);
+
+	this.varname = 'circbtn' + this.midiNum;
 }
 
 draw();
@@ -280,6 +282,13 @@ function onclick(x,y,but,cmd,shift,capslock,option,ctrl)
 	last_y = y;
 	post('In onclick');
 	messnamed('alice', this.midiNum, 127);
+
+	ob = this.patcher.getnamed("qasmpad");
+	//post('ob.curCircNodeType: ' + ob.curCircNodeType);
+	post('ob.js.curCircNodeType: ' + ob.js.curCircNodeType);
+	post('ob.varname: ' + ob.varname);
+
+	post('this.varname: ' + this.varname);
 }
 onclick.local = 1; //private. could be left public to permit "synthetic" events
 
