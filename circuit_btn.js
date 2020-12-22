@@ -7,6 +7,7 @@ this.inlets = 2;
 this.outlets = 1;
 
 this.midiNum = 0;
+this.qasmPadObj = this.patcher.getnamed("qasmpad");
 
 var CircuitNodeTypes = {
     EMPTY: -1,
@@ -205,23 +206,33 @@ function draw()
 
 		glcolor(0,0,0,1);
 
-		// for (let wireIdx = 0; wireIdx < NUM_GRID_ROWS; wireIdx++) {
-		// 	moveto(-0.8, 0);
-		// }
+		var curNodeType = qasmPadObj.js.curCircNodeType;
+    if (curNodeType == CircuitNodeTypes.EMPTY) {
+			// Draw empty circuit wire
+    	moveto(-1.0, 0.0);
+			lineto(1.0, 0.0);
+		}
+    else {
+			moveto(-0.8, -0.8);
 
-		moveto(-0.8, -0.8);
+			// Draw square
+			lineto(0.8, -0.8);
+			lineto(0.8, 0.8);
+			lineto(-0.8, 0.8);
+			lineto(-0.8, -0.8);
 
-		// Draw square
-		lineto(0.8, -0.8);
-		lineto(0.8, 0.8);
-		lineto(-0.8, 0.8);
-		lineto(-0.8, -0.8);
+			// Draw connector
+			moveto(-1.0, 0.0);
+			lineto(-0.8, -0.0);
+			moveto(0.8, 0.0);
+			lineto(1.0, 0.0);
+		}
 
-		// Draw connector
-		moveto(-1.0, 0.0);
-		lineto(-0.8, -0.0);
-		moveto(0.8, 0.0);
-		lineto(1.0, 0.0);
+		if (curNodeType == CircuitNodeTypes.H) {
+			moveto(-0.4, -0.4);
+			text("H");
+		}
+
 
 
 		//text("H");
@@ -283,12 +294,15 @@ function onclick(x,y,but,cmd,shift,capslock,option,ctrl)
 	post('In onclick');
 	messnamed('alice', this.midiNum, 127);
 
-	ob = this.patcher.getnamed("qasmpad");
+	//ob = this.patcher.getnamed("qasmpad");
 	//post('ob.curCircNodeType: ' + ob.curCircNodeType);
-	post('ob.js.curCircNodeType: ' + ob.js.curCircNodeType);
-	post('ob.varname: ' + ob.varname);
+	post('qasmPadObj.js.curCircNodeType: ' + qasmPadObj.js.curCircNodeType);
+	post('qasmPadObj.varname: ' + qasmPadObj.varname);
 
 	post('this.varname: ' + this.varname);
+
+	draw();
+	refresh();
 }
 onclick.local = 1; //private. could be left public to permit "synthetic" events
 
