@@ -3,52 +3,18 @@
  */
 include('common.js');
 
-var r2 = 0.70710678118;
-
-this.inlets = 2;
+// Inlet 0 receives simulator messages that include a QASM string
+this.inlets = 1;
 
 sketch.default2d();
 var val = 0;
 var vbrgb = [1.,1.,1.,1.];
-var vfrgb = [0.5,0.5,0.5,1.];
-var vrgb2 = [0.7,0.7,0.7,1.];
-var last_x = 0;
-var last_y = 0;
-
-// process arguments
-//post('in process args');
-if (jsarguments.length>1) {
-	//vfrgb[0] = jsarguments[1]/255.;
-}
 
 draw();
 
 
-function msg_int(n)
-{
-    //post('n: ' + n);    
-}
-
-
-function list(lst) 
-{
-	// post('from inlet: ' + inlet);
-	// post('arguments.length: ' + arguments.length);
-	// post('arguments[0]: ' + arguments[0] + ', arguments[1]: ' + arguments[1]);
-
-	// if (inlet == 0) {
-	// 	createQuantumCircuitFromQasm(arguments);
-	// }
-	// else if (inlet == 0) {
-	// 	setCurCircNodeType(arguments);
-	// }
-}
-
-
-
 function draw()
 {
-	var theta;
 	var width = box.rect[2] - box.rect[0];
 
 
@@ -61,80 +27,13 @@ function draw()
 		glcolor(0,0,0,1);
 
 		moveto(-1.3, -0.4);
-		//font("plex");
 		fontsize(24);
 		text("µQiskit");
-
-		// draw arc outline
-		// glcolor(0,0,0,1);
-		// circle(0.8,-90-val*360,-90);
-
-		/*
-		// fill arc
-		glcolor(vfrgb);
-		circle(0.7,-90-val*360,-90);
-		// draw rest of outline
-		if (width<=32)
-			gllinewidth(1);
-		else
-			gllinewidth(2);
-		glcolor(0,0,0,1);
-		moveto(0,0);
-		lineto(0,-0.8);
-		moveto(0,0);
-		theta = (0.75-val)*2*Math.PI;
-		lineto(0.8*Math.cos(theta),0.8*Math.sin(theta));
-
-		 */
 	}
 }
 
-function bang()
-{
-	draw();
-	refresh();
-	outlet(0,val);
-}
-
-function msg_float(v)
-{
-	val = Math.min(Math.max(0,v),1);
-	notifyclients();
-	bang();
-}
-
-function set(v)
-{
-	val = Math.min(Math.max(0,v),1);
-	notifyclients();
-	draw();
-	refresh();
-}
-
-
-function setvalueof(v)
-{
-	msg_float(v);
-}
-
-function getvalueof()
-{
-	return val;
-}
-
-
-function forcesize(w,h)
-{
-	// if (w!=h) {
-	// 	h = w;
-	// 	box.size(w,h);
-	// }
-}
-forcesize.local = 1; //private
-
 function onresize(w,h)
 {
-	forcesize(w,h);
 	draw();
 	refresh();
 }
@@ -149,7 +48,6 @@ function svsim(qasm) {
 	//post('qasm: ' + qasm);
 	var qc = createQuantumCircuitFromQasm(qasm);
 	if (qc != null) {
-
 		var statevector = simulate(qc, 0, 'statevector');
 		post('\n');
 		post('statevector: ' + statevector);
@@ -177,9 +75,6 @@ function createQuantumCircuitFromQasm(qasm) {
 			post('\ninstruction: ' + instruction);
 			var keywordArgumentArray = instruction.split(' ');
 			if (keywordArgumentArray.length == 2) {
-				//post('\nkeywordArgumentArray[0]: ' + keywordArgumentArray[0]);
-				//post('\nkeywordArgumentArray[1]: ' + keywordArgumentArray[1]);
-
 				var keyword = keywordArgumentArray[0];
 				var argument = keywordArgumentArray[1];
 
@@ -201,7 +96,6 @@ function createQuantumCircuitFromQasm(qasm) {
 							// so make sure it is created
 							if (quantumCircuit == null) {
 								quantumCircuit = new QuantumCircuit(numQuantumWires, numClassicalWires);
-								//post('Creating quantumCircuit, quantumCircuit: ' + quantumCircuit.numQubits);
 							}
 
 							// TODO: Expand list of gates supported
@@ -237,42 +131,10 @@ function createQuantumCircuitFromQasm(qasm) {
 }
 
 
-/**
- * Creates a quantum gate from an element in the circuit grid
- * and adds it to the supplied QuantumCircuit instance
- * // TODO: Support CNOT gates
- */
-function addGateFromGrid(quantumCircuit, gridRow, gridCol) {
-	var circNodeType = circGrid[gridRow][gridCol];
-
-	if (circNodeType == CircuitNodeTypes.H) {
-		quantumCircuit.h(gridRow);
-	}
-	else if (circNodeType == CircuitNodeTypes.X) {
-		quantumCircuit.x(gridRow);
-	}
-	else if (circNodeType == CircuitNodeTypes.Z) {
-		quantumCircuit.z(gridRow);
-	}
-	else if (circNodeType == CircuitNodeTypes.S) {
-		quantumCircuit.s(gridRow);
-	}
-	else if (circNodeType == CircuitNodeTypes.SDG) {
-		quantumCircuit.sdg(gridRow);
-	}
-	else if (circNodeType == CircuitNodeTypes.T) {
-		quantumCircuit.t(gridRow);
-	}
-	else if (circNodeType == CircuitNodeTypes.TDG) {
-		quantumCircuit.tdg(gridRow);
-	}
-
-	return quantumCircuit;
-}
-
-
 // This is a JavaScript version of Qiskit. For the full version, see qiskit.org.
 // It has many more features, and access to real quantum computers.
+var r2 = 0.70710678118;
+
 function QuantumCircuit(n, m) {
 	this.numQubits = n;
 	this.numClbits = m;
