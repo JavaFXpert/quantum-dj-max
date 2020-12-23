@@ -119,8 +119,7 @@ function setCircGridGate(notePitchVelocity) {
 			post('midiPitch: ' + midiPitch);
 			var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
 			post('circBtnObj: ' + circBtnObj);
-			circBtnObj.js.draw();
-			circBtnObj.js.refresh();
+			circBtnObj.js.updateDisplay();
 
 
 			printCircGrid();
@@ -194,17 +193,13 @@ function resetCircGrid() {
 		for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
 			circGrid[rowIdx][colIdx] = CircuitNodeTypes.EMPTY;
 
-			// TODO: Make the object redraw when updating
 			var midiPitch = lowMidiPitch + (rowIdx * NUM_GRID_COLS) + colIdx;
 			//post('midiPitch: ' + midiPitch);
 			var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
-			//post('circBtnObj: ' + circBtnObj);
-			circBtnObj.js.draw();
-			circBtnObj.js.refresh();
-
+			circBtnObj.js.updateDisplay();
 		}
 	}
-	printCircGrid();
+	//printCircGrid();
 }
 
 

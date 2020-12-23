@@ -30,6 +30,10 @@ var circGrid = [
     [-1, -1, -1, -1,-1]
 ];
 
+function updateDisplay() {
+	draw();
+	refresh();
+}
 
 /**
  * Determine how many wires are represented on the circGrid
