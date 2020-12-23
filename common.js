@@ -1,3 +1,8 @@
+/*
+ * Variables and methods common to more than one JS file
+ * in this app.
+ */
+
 var CircuitNodeTypes = {
   EMPTY: -1,
   IDEN: 0,

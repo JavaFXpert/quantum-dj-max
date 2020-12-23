@@ -1,4 +1,4 @@
-/**
+/*
  * Quantum DJ device circuit pad that may be used when
  * a Push 2 device is not connected.
  */
