@@ -18,6 +18,7 @@
  * Variables and methods common to more than one JS file
  * in this app.
  */
+var NUM_PITCHES = 8;
 
 var CircuitNodeTypes = {
   EMPTY: -1,

@@ -19,6 +19,8 @@
  */
 include('common.js');
 
+this.svgridObj = this.patcher.getnamed("svgrid");
+
 sketch.default2d();
 var vbrgb = [1.,1.,1.,1.];
 
@@ -33,7 +35,46 @@ draw();
  *               that symbolizes an imaginary component.
  */
 function viz(svlist) {
-	post("\nsvlist: " + svlist)
+	post("\nsvlist: " + svlist);
+
+	// Compute probabilities and phases.
+	// var probs = [];
+	// var phases = [];
+
+	var svArray = svlist.toString().split(' ');
+	post("\nsvArray: " + svArray);
+	var numStates = svArray.length / 2;
+	post('\nnumStates: ' + numStates);
+
+	//svgridObj.columns(numStates);
+	messnamed('cmd_to_svgrid', 'columns', numStates);
+	messnamed('cmd_to_svgrid', 'clear');
+
+  for (var svIdx = 0; svIdx < svArray.length; svIdx += 2) {
+		var polar = cartesianToPolar(svArray[svIdx], svArray[svIdx + 1]);
+		post('\npolar.theta: ' + polar.theta);
+		var pitchNum = Math.round(polar.theta / 6.283185307179586 * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
+		post('\npitchNum: ' + pitchNum);
+
+		messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pitchNum + 1, 127);
+		//svgridObj.setcell(svIdx * 2 + 1, pitchNum + 1, 127);
+	}
+
+	//var polar = cartesianToPolar(Math.sqrt(0.5), Math.sqrt(0.5));
+
+	// var polar = cartesianToPolar(0, -1);
+	// //post('polar.r: ' + polar.r);
+	// polar.theta = (polar.theta + (Math.PI * 2)) / Math.PI * 2;
+	// post('polar.theta: ' + polar.theta);
+}
+
+// Given an object in Cartesian coordinates x, y
+// compute its Polar coordiantes { r: …, theta: … }
+function cartesianToPolar(x, y) {
+	return {
+		r: Math.sqrt(x * x + y * y),
+		theta: Math.atan2(y, x)
+	};
 }
 
 
