@@ -4,7 +4,11 @@
  */
 include('common.js');
 
+// Inlet 0 receives note messages that include velocity.
+// Inlet 1 receives control change messages.
 this.inlets = 2;
+
+// Outlet 0 sends message to a simulator with generated QASM
 this.outlets = 1;
 
 var curCircNodeType = CircuitNodeTypes.EMPTY;
@@ -15,6 +19,7 @@ var NUM_GRID_COLS = 5;
 var lowMidiPitch = 36;
 var highMidiPitch = NUM_GRID_ROWS * NUM_GRID_COLS + lowMidiPitch - 1;
 
+// TODO: Dynamically initialize this array
 var circGrid = [
     [-1, -1, -1, -1,-1],
     [-1, -1, -1, -1,-1],
@@ -50,28 +55,6 @@ function list(lst)
 
 
 /**
- * Determine how many wires are represented on the circGrid
- */
-function computeNumWires() {
-	var numWires = 1;
-	var foundPopulatedRow = false;
-	var rowIdx = NUM_GRID_ROWS - 1;
-
-	while (!foundPopulatedRow && rowIdx > 0) {
-		for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
-			if (circGrid[rowIdx][colIdx] != CircuitNodeTypes.EMPTY) {
-				numWires = rowIdx + 1;
-				foundPopulatedRow = true;
-			}
-		}
-		rowIdx--;
-	}
-
-	return numWires;
-}
-
-
-/**
  * Set all elements to EMPTY
  */
 function resetCircGrid() {
@@ -85,22 +68,13 @@ function resetCircGrid() {
 	//printCircGrid();
 }
 
-/**
- * Ask the relevant circuit button to ascertain and update its state
- *
- * @param rowIdx Zero-based row number on circuit grid
- * @param colIdx Zero-based column number on circuit grid
- */
-function informCircuitBtn(gridRowIdx, gridColIdx) {
-	var midiPitch = lowMidiPitch + (gridRowIdx * NUM_GRID_COLS) + gridColIdx;
-	var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
-	circBtnObj.js.updateDisplay();
-}
 
-/*
-Given an array with midi pitch and velocity, 
-populates the corresponding circuit grid element
-*/
+/**
+ * Given an array with midi pitch and velocity,
+ * populates the corresponding circuit grid element
+ *
+ * @param notePitchVelocity Array containing midi pitch and velocity
+ */
 function setCircGridGate(notePitchVelocity) {
 	//post('notePitchVel: ' + notePitchVel[0]);
 	if (notePitchVelocity.length >= 2) {
@@ -130,11 +104,13 @@ function setCircGridGate(notePitchVelocity) {
 }
 
 
-/*
-Given an array with controller number and value, 
-sets the current circuit node type for when
-a node is placed on the circuit
-*/
+/**
+ * Given an array with controller number and value,
+ * sets the current circuit node type for when
+ * a node is placed on the circuit
+ *
+ * @param controllerNumValue Array containing controller number and value
+ */
 function setCurCircNodeType(controllerNumValue) {
 	//post('controllerNumValue: ' + controllerNumValue[0]);
 	if (controllerNumValue.length >= 2) {
@@ -173,8 +149,6 @@ function setCurCircNodeType(controllerNumValue) {
 			
       post('curCircNodeType is now ' + curCircNodeType);
 		}
-	
-
 	}
 	else {
 		post('Unexpected controllerNumValue.length: ' + controllerNumValue.length);
@@ -182,47 +156,13 @@ function setCurCircNodeType(controllerNumValue) {
 }
 
 
-function printCircGrid() {
-	post('\n');
-    for (rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
-        for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
-	        post(circGrid[rowIdx][colIdx] + ' ');
-	    }	
-	    post('\n');
-	}	
-}	
-
-
-function draw()
-{
-	var theta;
-	var width = box.rect[2] - box.rect[0];
-
-
-	with (sketch) {
-		shapeslice(180,1);
-		// erase background
-		glclearcolor(vbrgb[0],vbrgb[1],vbrgb[2],vbrgb[3]);
-		glclear();
-
-		glcolor(0, 0, 0, 1);
-
-		moveto(-2.5, -0.4);
-		fontsize(12);
-		text("Push 2 proxy");
-	}
-}
-
-
 /**
- * Analyze the circuit grid and return a QuantumCircuit
+ * Analyze the circuit grid and create QASM code, sending
+ * a statevector simulator message to an outlet.
  */
 function createQasmFromGrid() {
 	var numCircuitWires = computeNumWires();
-	post('numCircuitWires: ' + numCircuitWires);
-
 	var qasmHeaderStr = 'qreg q[' + numCircuitWires + '];' + ' creg c[' + numCircuitWires + '];';
-
 	var qasmGatesStr = '';
 
 	for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
@@ -238,7 +178,7 @@ function createQasmFromGrid() {
 
 	qasm = qasmHeaderStr + qasmGatesStr;
 
-	// Send message to outlet
+	// Send statevector simulator message to outlet
   outlet(0, 'svsim', qasm);
 }
 
@@ -246,7 +186,12 @@ function createQasmFromGrid() {
 /**
  * Creates a quantum gate from an element in the circuit grid
  * and adds it to the supplied QuantumCircuit instance
- * // TODO: Support CNOT and some other gates
+ * TODO: Support CNOT and some other gates
+ *
+ * @param qasmStr Current QASM string
+ * @param gridRow Zero-based row number on circuit grid
+ * @param gridCol Zero-based column number on circuit grid
+ * @returns QASM string for the gate
  */
 function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	var circNodeType = circGrid[gridRow][gridCol];
@@ -275,3 +220,79 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 
 	return qasmStr;
 }
+
+
+/**
+ * Determine how many wires are represented on the circGrid
+ */
+function computeNumWires() {
+	var numWires = 1;
+	var foundPopulatedRow = false;
+	var rowIdx = NUM_GRID_ROWS - 1;
+
+	while (!foundPopulatedRow && rowIdx > 0) {
+		for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+			if (circGrid[rowIdx][colIdx] != CircuitNodeTypes.EMPTY) {
+				numWires = rowIdx + 1;
+				foundPopulatedRow = true;
+			}
+		}
+		rowIdx--;
+	}
+
+	return numWires;
+}
+
+
+/**
+ * Ask the relevant circuit button to ascertain and update its state
+ *
+ * @param rowIdx Zero-based row number on circuit grid
+ * @param colIdx Zero-based column number on circuit grid
+ */
+function informCircuitBtn(gridRowIdx, gridColIdx) {
+	var midiPitch = lowMidiPitch + (gridRowIdx * NUM_GRID_COLS) + gridColIdx;
+	var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
+	circBtnObj.js.updateDisplay();
+}
+
+
+/**
+ * Output the circuit grid to the console for debug purposes
+ */
+function printCircGrid() {
+	post('\n');
+	for (rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
+		for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+			post(circGrid[rowIdx][colIdx] + ' ');
+		}
+		post('\n');
+	}
+}
+
+
+/**
+ * Draw this component, which is currently just a label. The rest of
+ * the UI consists of components placed in the Max UI designer tool.
+ * TODO: Ascertain whether there is a better UI pattern to use.
+ */
+function draw()
+{
+	var theta;
+	var width = box.rect[2] - box.rect[0];
+
+
+	with (sketch) {
+		shapeslice(180,1);
+		// erase background
+		glclearcolor(vbrgb[0],vbrgb[1],vbrgb[2],vbrgb[3]);
+		glclear();
+
+		glcolor(0, 0, 0, 1);
+
+		moveto(-2.5, -0.4);
+		fontsize(12);
+		text("Push 2 proxy");
+	}
+}
+
