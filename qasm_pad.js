@@ -1,11 +1,11 @@
 /**
- * Quantum DJ device user interface
+ * Quantum DJ device circuit pad that may be used when
+ * a Push 2 device is not connected.
  */
 include('common.js');
 
 this.inlets = 2;
 this.outlets = 1;
-
 
 var curCircNodeType = CircuitNodeTypes.EMPTY;
 
@@ -14,7 +14,6 @@ var NUM_GRID_COLS = 5;
 
 var lowMidiPitch = 36;
 var highMidiPitch = NUM_GRID_ROWS * NUM_GRID_COLS + lowMidiPitch - 1;
-
 
 var circGrid = [
     [-1, -1, -1, -1,-1],
@@ -27,6 +26,27 @@ var circGrid = [
     [-1, -1, -1, -1,-1]
 ];
 
+sketch.default2d();
+var val = 0;
+var vbrgb = [1.,1.,1.,1.];
+var last_x = 0;
+var last_y = 0;
+
+resetCircGrid();
+
+draw();
+refresh();
+
+
+function list(lst)
+{
+	if (inlet == 0) {
+		setCircGridGate(arguments);
+	}
+	else if (inlet == 1) {
+		setCurCircNodeType(arguments);
+	}
+}
 
 
 /**
@@ -51,31 +71,31 @@ function computeNumWires() {
 }
 
 
-sketch.default2d();
-var val = 0;
-var vbrgb = [1.,1.,1.,1.];
-var last_x = 0;
-var last_y = 0;
+/**
+ * Set all elements to EMPTY
+ */
+function resetCircGrid() {
+	for (rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
+		for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+			circGrid[rowIdx][colIdx] = CircuitNodeTypes.EMPTY;
 
-resetCircGrid();
-
-
-// function msg_int(n)
-// {
-//     post('msg_int(n): ' + n);
-// }
-
-
-function list(lst) 
-{
-	if (inlet == 0) {
-		setCircGridGate(arguments);
+			informCircuitBtn(rowIdx, colIdx);
+		}
 	}
-	else if (inlet == 1) {
-		setCurCircNodeType(arguments);
-	}
+	//printCircGrid();
 }
 
+/**
+ * Ask the relevant circuit button to ascertain and update its state
+ *
+ * @param rowIdx Zero-based row number on circuit grid
+ * @param colIdx Zero-based column number on circuit grid
+ */
+function informCircuitBtn(gridRowIdx, gridColIdx) {
+	var midiPitch = lowMidiPitch + (gridRowIdx * NUM_GRID_COLS) + gridColIdx;
+	var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
+	circBtnObj.js.updateDisplay();
+}
 
 /*
 Given an array with midi pitch and velocity, 
@@ -95,20 +115,13 @@ function setCircGridGate(notePitchVelocity) {
 
       circGrid[gridRow][gridCol] = curCircNodeType;
 
-			// TODO: Make the object redraw when updating
 			var rowIdx = NUM_GRID_ROWS - gridRow - 1;
 			var colIdx = gridCol;
 
-			var midiPitch = lowMidiPitch + (rowIdx * NUM_GRID_COLS) + colIdx;
-			post('midiPitch: ' + midiPitch);
-			var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
-			post('circBtnObj: ' + circBtnObj);
-			circBtnObj.js.updateDisplay();
+			informCircuitBtn(rowIdx, colIdx);
 
-
-			printCircGrid();
+			// printCircGrid();
 			createQasmFromGrid();
-
 		}
 	}
 	else {
@@ -169,24 +182,6 @@ function setCurCircNodeType(controllerNumValue) {
 }
 
 
-/**
- * Set all elements to EMPTY
- */
-function resetCircGrid() {
-	for (rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
-		for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
-			circGrid[rowIdx][colIdx] = CircuitNodeTypes.EMPTY;
-
-			var midiPitch = lowMidiPitch + (rowIdx * NUM_GRID_COLS) + colIdx;
-			//post('midiPitch: ' + midiPitch);
-			var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
-			circBtnObj.js.updateDisplay();
-		}
-	}
-	//printCircGrid();
-}
-
-
 function printCircGrid() {
 	post('\n');
     for (rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
@@ -210,134 +205,13 @@ function draw()
 		glclearcolor(vbrgb[0],vbrgb[1],vbrgb[2],vbrgb[3]);
 		glclear();
 
-		glcolor(0,0,0,1);
-
-		// for (let wireIdx = 0; wireIdx < NUM_GRID_ROWS; wireIdx++) {
-		// 	moveto(-0.8, 0);
-		// }
+		glcolor(0, 0, 0, 1);
 
 		moveto(-2.5, -0.4);
-		//font("plex");
 		fontsize(12);
 		text("Push 2 proxy");
-
-		// draw arc outline
-		// glcolor(0,0,0,1);
-		// circle(0.8,-90-val*360,-90);
-
-		/*
-		// fill arc
-		glcolor(vfrgb);
-		circle(0.7,-90-val*360,-90);
-		// draw rest of outline
-		if (width<=32)
-			gllinewidth(1);
-		else
-			gllinewidth(2);
-		glcolor(0,0,0,1);
-		moveto(0,0);
-		lineto(0,-0.8);
-		moveto(0,0);
-		theta = (0.75-val)*2*Math.PI;
-		lineto(0.8*Math.cos(theta),0.8*Math.sin(theta));
-
-		 */
 	}
 }
-
-function bang()
-{
-	draw();
-	refresh();
-	outlet(0,val);
-}
-
-// function msg_float(v)
-// {
-// 	val = Math.min(Math.max(0,v),1);
-// 	notifyclients();
-// 	bang();
-// }
-
-function set(v)
-{
-	val = Math.min(Math.max(0,v),1);
-	notifyclients();
-	draw();
-	refresh();
-}
-
-
-function setvalueof(v)
-{
-	msg_float(v);
-}
-
-function getvalueof()
-{
-	return val;
-}
-
-// all mouse events are of the form: 
-// onevent <x>, <y>, <button down>, <cmd(PC ctrl)>, <shift>, <capslock>, <option>, <ctrl(PC rbutton)>
-// if you don't care about the additonal modifiers args, you can simply leave them out.
-// one potentially confusing thing is that mouse events are in absolute screen coordinates, 
-// with (0,0) as left top, and (width,height) as right, bottom, while drawing 
-// coordinates are in relative world coordinates, with (0,0) as the center, +1 top, -1 bottom,
-// and x coordinates using a uniform scale based on the y coordinates. to convert between screen 
-// and world coordinates, use sketch.screentoworld(x,y) and sketch.worldtoscreen(x,y,z).
-
-function onclick(x,y,but,cmd,shift,capslock,option,ctrl)
-{
-	// cache mouse position for tracking delta movements
-	last_x = x;
-	last_y = y;
-}
-onclick.local = 1; //private. could be left public to permit "synthetic" events
-
-function ondrag(x,y,but,cmd,shift,capslock,option,ctrl)
-{
-	var f,dy;
-	
-	// calculate delta movements
-	dy = y - last_y;
-	if (shift) { 
-		// fine tune if shift key is down
-		f = val - dy*0.001; 
-	} else {
-		f = val - dy*0.01;
-	}
-	msg_float(f); //set new value with clipping + refresh
-	// cache mouse position for tracking delta movements
-	last_x = x;
-	last_y = y;
-}
-ondrag.local = 1; //private. could be left public to permit "synthetic" events
-
-function ondblclick(x,y,but,cmd,shift,capslock,option,ctrl)
-{
-	last_x = x;
-	last_y = y;
-	msg_float(0); // reset dial?
-}
-ondblclick.local = 1; //private. could be left public to permit "synthetic" events
-
-function forcesize(w,h)
-{
-	// if (w!=h) {
-	// 	h = w;
-	// 	box.size(w,h);
-	// }
-}
-forcesize.local = 1; //private
-
-function onresize(w,h)
-{
-	forcesize(w,h);
-	draw();
-	refresh();
-}
-onresize.local = 1; //private
 
 
 /**
@@ -364,21 +238,15 @@ function createQasmFromGrid() {
 
 	qasm = qasmHeaderStr + qasmGatesStr;
 
-	post('\nqasm: ' + qasm);
-
 	// Send message to outlet
   outlet(0, 'svsim', qasm);
-
-	// var statevector = simulate(qc, 0, 'statevector');
-	// post('\n');
-	// post('statevector: ' + statevector);
 }
 
 
 /**
  * Creates a quantum gate from an element in the circuit grid
  * and adds it to the supplied QuantumCircuit instance
- * // TODO: Support CNOT gates
+ * // TODO: Support CNOT and some other gates
  */
 function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	var circNodeType = circGrid[gridRow][gridCol];
