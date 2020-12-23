@@ -22,7 +22,6 @@ draw();
 
 function draw()
 {
-	var theta;
 	var width = box.rect[2] - box.rect[0];
 
 
