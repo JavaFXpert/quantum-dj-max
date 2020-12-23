@@ -3,8 +3,6 @@
  */
 include('common.js');
 
-var r2 = 0.70710678118;
-
 this.inlets = 2;
 this.outlets = 1;
 
@@ -16,7 +14,6 @@ var NUM_GRID_COLS = 5;
 
 var lowMidiPitch = 36;
 var highMidiPitch = NUM_GRID_ROWS * NUM_GRID_COLS + lowMidiPitch - 1;
-//post('highMidiPitch: ' + highMidiPitch);
 
 
 var circGrid = [
@@ -50,7 +47,6 @@ function computeNumWires() {
 		rowIdx--;
 	}
 
-	//post('numWires: ' + numWires);
 	return numWires;
 }
 
@@ -58,33 +54,21 @@ function computeNumWires() {
 sketch.default2d();
 var val = 0;
 var vbrgb = [1.,1.,1.,1.];
-var vfrgb = [0.5,0.5,0.5,1.];
-var vrgb2 = [0.7,0.7,0.7,1.];
 var last_x = 0;
 var last_y = 0;
-
-// process arguments
-//post('in process args');
-if (jsarguments.length>1) {
-	//vfrgb[0] = jsarguments[1]/255.;
-}
 
 resetCircGrid();
 
 
-function msg_int(n)
-{
-    //post('n: ' + n);    
-}
+// function msg_int(n)
+// {
+//     post('msg_int(n): ' + n);
+// }
 
 
 function list(lst) 
 {
-	// post('from inlet: ' + inlet);
-	// post('arguments.length: ' + arguments.length);
-	// post('arguments[0]: ' + arguments[0] + ', arguments[1]: ' + arguments[1]);
-	
-	if (inlet == 0) { 
+	if (inlet == 0) {
 		setCircGridGate(arguments);
 	}
 	else if (inlet == 1) {
@@ -268,12 +252,12 @@ function bang()
 	outlet(0,val);
 }
 
-function msg_float(v)
-{
-	val = Math.min(Math.max(0,v),1);
-	notifyclients();
-	bang();
-}
+// function msg_float(v)
+// {
+// 	val = Math.min(Math.max(0,v),1);
+// 	notifyclients();
+// 	bang();
+// }
 
 function set(v)
 {
