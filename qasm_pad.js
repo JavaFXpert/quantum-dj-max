@@ -8,23 +8,6 @@ var r2 = 0.70710678118;
 this.inlets = 2;
 this.outlets = 1;
 
-// var CircuitNodeTypes = {
-//     EMPTY: -1,
-//     IDEN: 0,
-//     X: 1,
-//     Y: 2,
-//     Z: 3,
-//     S: 4,
-//     SDG: 5,
-//     T: 6,
-//     TDG: 7,
-//     H: 8,
-//     SWAP: 9,
-//     BARRIER: 10,
-//     CTRL: 11, // "control" part of multi-qubit gate
-//     TRACE: 12, // In the path between a gate part and a "control" or "swap" part
-//     MEASURE_Z: 13
-// }
 
 var curCircNodeType = CircuitNodeTypes.EMPTY;
 
@@ -254,12 +237,10 @@ function draw()
 		// 	moveto(-0.8, 0);
 		// }
 
-		moveto(-0.8, -0.8);
-		lineto(0.8, 0.8);
-		// lineto(10, 10);
-		// lineto(-10, 10);
-		// lineto(-10, -10);
-		text("H");
+		moveto(-2.5, -0.4);
+		//font("plex");
+		fontsize(12);
+		text("Push 2 proxy");
 
 		// draw arc outline
 		// glcolor(0,0,0,1);
