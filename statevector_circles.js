@@ -15,15 +15,11 @@
  */
 
 /*
- * Button that represents a quantum gate on a Push 2 matrix
+ * Component that renders a statevector as circles with phases and amplitudes
  */
 include('common.js');
 
-this.midiNum = 0;
-
-
 sketch.default2d();
-var val = 0;
 var vbrgb = [1.,1.,1.,1.];
 
 // process arguments
