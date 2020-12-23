@@ -22,18 +22,22 @@ include('common.js');
 sketch.default2d();
 var vbrgb = [1.,1.,1.,1.];
 
-// process arguments
-//post'processing args');
-if (jsarguments.length > 1) {
-	this.midiNum = jsarguments[1];
-	//post'\njsarguments[1]: ' + jsarguments[1]);
-}
-
 draw();
 
 
-function draw()
-{
+/**
+ * Accept a viz message, which visualizes a statevector
+ *
+ * @param svlist Statevector as a list of floats, with each pair of floats
+ *               expressing one complex number (without a character such as i
+ *               that symbolizes an imaginary component.
+ */
+function viz(svlist) {
+	post("\nsvlist: " + svlist)
+}
+
+
+function draw() {
 	var width = box.rect[2] - box.rect[0];
 
 
@@ -45,77 +49,12 @@ function draw()
 
 		glcolor(0,0,0,1);
 
-		//var curNodeType = qasmPadObj.js.curCircNodeType;
-		if (midiNum == 36) {
-			// Draw delete character
-			moveto(-0.6, -0.4);
-			text("\u232b");
-		}
-		else {
-			moveto(-0.8, -0.8);
-
-			// Draw square
-			lineto(0.8, -0.8);
-			lineto(0.8, 0.8);
-			lineto(-0.8, 0.8);
-			lineto(-0.8, -0.8);
-		}
-
-		if (midiNum == 43) {
-		  // CircuitNodeTypes.H
-			moveto(-0.32, -0.4);
-			text("H");
-		}
-		else if (midiNum == 42) {
-			// CircuitNodeTypes.X
-			moveto(-0.32, -0.4);
-			text("X");
-		}
-		else if (midiNum == 41) {
-			// CircuitNodeTypes.Z
-			moveto(-0.32, -0.4);
-			text("Z");
-		}
-		else if (midiNum == 40) {
-			// CircuitNodeTypes.C
-			moveto(-0.32, -0.4);
-			text("S");
-		}
-		else if (midiNum == 39) {
-			// CircuitNodeTypes.SDG
-			moveto(-0.6, -0.32);
-			text("S\u2020");
-		}
-		else if (midiNum == 38) {
-			// CircuitNodeTypes.T
-			moveto(-0.32, -0.4);
-			text("T");
-		}
-		else if (midiNum == 37) {
-			// CircuitNodeTypes.TDG
-			moveto(-0.6, -0.32);
-			text("T\u2020");
-		}
 	}
 }
 
 
 /**
- * When button is clicked send a message and update its appearance.
- */
-function onclick(x, y, but, cmd, shift, capslock, option, ctrl)
-{
-	// TODO: Change 'bob' remote message everywhere
-	messnamed('bob', this.midiNum, 127);
-
-	draw();
-	refresh();
-}
-onclick.local = 1;  //private
-
-
-/**
- * Force the button to be square
+ * Force the view to be square
  *
  * @param w Proposed width of button
  * @param h Proposed height of button
@@ -131,7 +70,7 @@ forcesize.local = 1; //private
 
 
 /**
- * Attempt to resize the button
+ * Attempt to resize the view
  *
  * @param w Proposed width of button
  * @param h Proposed height of button

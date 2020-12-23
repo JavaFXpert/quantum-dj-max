@@ -22,6 +22,11 @@ include('common.js');
 // Inlet 0 receives simulator messages that include a QASM string
 this.inlets = 1;
 
+// Outlet 0 sends a statevector as a list of floats, with each pair of floats
+// expressing one complex number (without a character such as i that symbolizes
+// an imaginary component.
+this.outlets = 1;
+
 sketch.default2d();
 var val = 0;
 var vbrgb = [1.,1.,1.,1.];
@@ -66,6 +71,12 @@ function svsim(qasm) {
 	if (qc != null) {
 		var statevector = simulate(qc, 0, 'statevector');
 		post('\nstatevector: ' + statevector);
+
+		var svSpaceDelim = statevector.toString().replace(/,/g, ' ');
+		post('\nsvSpaceDelim: ' + svSpaceDelim);
+
+		outlet(0, 'viz', svSpaceDelim);
+
 	}
 	else {
 		post('\nUnexpectedly, qc: ' + qc);

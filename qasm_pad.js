@@ -194,7 +194,7 @@ function createQasmFromGrid() {
 
 	qasm = qasmHeaderStr + qasmGatesStr;
 
-	// Send statevector simulator message to outlet
+	// Send statevector simulator message with QASM to outlet
   outlet(0, 'svsim', qasm);
 }
 
