@@ -49,11 +49,10 @@ function svsim(qasm) {
 	var qc = createQuantumCircuitFromQasm(qasm);
 	if (qc != null) {
 		var statevector = simulate(qc, 0, 'statevector');
-		post('\n');
-		post('statevector: ' + statevector);
+		post('\nstatevector: ' + statevector);
 	}
 	else {
-		post('Unexpectedly, qc: ' + qc);
+		post('\nUnexpectedly, qc: ' + qc);
 	}
 }
 
@@ -72,7 +71,7 @@ function createQuantumCircuitFromQasm(qasm) {
 		var instruction = qasmArray[tokenIdx].trim();
 
 		if (instruction.length > 0) {
-			post('\ninstruction: ' + instruction);
+			//post('\ninstruction: ' + instruction);
 			var keywordArgumentArray = instruction.split(' ');
 			if (keywordArgumentArray.length == 2) {
 				var keyword = keywordArgumentArray[0];

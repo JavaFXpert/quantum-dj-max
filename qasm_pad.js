@@ -147,7 +147,7 @@ function setCurCircNodeType(controllerNumValue) {
 				curCircNodeType = CircuitNodeTypes.EMPTY;
 			}
 			
-      post('curCircNodeType is now ' + curCircNodeType);
+      //post('curCircNodeType is now ' + curCircNodeType);
 		}
 	}
 	else {
