@@ -70,10 +70,10 @@ function svsim(qasm) {
 	var qc = createQuantumCircuitFromQasm(qasm);
 	if (qc != null) {
 		var statevector = simulate(qc, 0, 'statevector');
-		post('\nstatevector: ' + statevector);
+		//post('\nstatevector: ' + statevector);
 
 		var svSpaceDelim = statevector.toString().replace(/,/g, ' ');
-		post('\nsvSpaceDelim: ' + svSpaceDelim);
+		//post('\nsvSpaceDelim: ' + svSpaceDelim);
 
 		outlet(0, 'viz', svSpaceDelim);
 
