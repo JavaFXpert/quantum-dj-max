@@ -20,6 +20,8 @@
  */
 var NUM_PITCHES = 8;
 
+var PROBABILITY_THRESHOLD = 0.0001
+
 var CircuitNodeTypes = {
   EMPTY: -1,
   IDEN: 0,

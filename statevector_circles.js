@@ -19,13 +19,11 @@
  */
 include('common.js');
 
-this.svgridObj = this.patcher.getnamed("svgrid");
-
 sketch.default2d();
 var vbrgb = [1.,1.,1.,1.];
 
 draw();
-
+refresh();
 
 /**
  * Accept a viz message, which visualizes a statevector
@@ -46,18 +44,23 @@ function viz(svlist) {
 	var numStates = svArray.length / 2;
 	post('\nnumStates: ' + numStates);
 
-	//svgridObj.columns(numStates);
 	messnamed('cmd_to_svgrid', 'columns', numStates);
 	messnamed('cmd_to_svgrid', 'clear');
 
   for (var svIdx = 0; svIdx < svArray.length; svIdx += 2) {
-		var polar = cartesianToPolar(svArray[svIdx], svArray[svIdx + 1]);
-		post('\npolar.theta: ' + polar.theta);
-		var pitchNum = Math.round(polar.theta / 6.283185307179586 * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
-		post('\npitchNum: ' + pitchNum);
+  	var real = svArray[svIdx];
+		var imag = svArray[svIdx + 1];
 
-		messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pitchNum + 1, 127);
-		//svgridObj.setcell(svIdx * 2 + 1, pitchNum + 1, 127);
+		var amplitude = Math.sqrt(Math.pow(Math.abs(real), 2) + Math.pow(Math.abs(imag), 2));
+		var probability = Math.pow(Math.abs(amplitude), 2);
+
+		if (probability > PROBABILITY_THRESHOLD) {
+			var polar = cartesianToPolar(real, imag);
+			post('\npolar.theta: ' + polar.theta);
+			var pitchNum = Math.round(polar.theta / 6.283185307179586 * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
+			post('\npitchNum: ' + pitchNum);
+			messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pitchNum + 1, 127);
+		}
 	}
 
 	//var polar = cartesianToPolar(Math.sqrt(0.5), Math.sqrt(0.5));
@@ -90,6 +93,9 @@ function draw() {
 
 		glcolor(0,0,0,1);
 
+		moveto(-0.5, -0.4);
+		fontsize(12);
+		text("svgrid");
 	}
 }
 
