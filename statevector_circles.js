@@ -19,8 +19,10 @@
  */
 include('common.js');
 
+var maxDisplayedSteps = 32
+
 // Inlet 0 receives "viz" messages with a statevector to display
-// Inlet 1 receives control change messages.
+// Inlet 1 receives global phase shift integer from 0 - 127
 this.inlets = 2;
 
 sketch.default2d();
@@ -37,9 +39,9 @@ draw();
 refresh();
 
 
-function list(lst) {
+function msg_int(val) {
 	if (inlet == 1) {
-		setGlobalPhaseShift(arguments);
+		setGlobalPhaseShift(val);
 	}
 }
 
@@ -62,7 +64,7 @@ function viz(svlist) {
 	var numStates = svArray.length / 2;
 	//post('\nnumStates: ' + numStates);
 
-	messnamed('cmd_to_svgrid', 'columns', numStates);
+	messnamed('cmd_to_svgrid', 'columns', Math.min(numStates, maxDisplayedSteps));
 	//messnamed('cmd_to_svgrid', 'clear');
 
 	computeProbsPhases();
@@ -106,41 +108,25 @@ function computeProbsPhases() {
 			var pitchNum = Math.round(shiftedPhase / 6.283185307179586 * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
 
 			//post('\npitchNum: ' + pitchNum);
-			messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pitchNum + 1, 127);
+			if (svIdx / 2 < maxDisplayedSteps) {
+				messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pitchNum + 1, 127);
+			}
 		}
 	}
 }
 
 /**
- * Given an array with controller number and value,
- * calculates global phase adjustment.
+ * Given an integer from 0 - 127, calculates and implements
+ * global phase adjustment.
  *
  * TODO: Accept input from Push 2 dial
- * TODO: Automatically adjust phases to make first beat 0 rads?
  *
- * @param controllerNumValue Array containing controller number and value
+ * @param phaseShiftDialVal Integer from 0 - 127 received from
+ *        global phase shift dial
  */
-function setGlobalPhaseShift(controllerNumValue) {
-	//post('controllerNumValue: ' + controllerNumValue[0]);
-	//if (controllerNumValue.length >= 2) {
-		var contNum = controllerNumValue[0];
-		var contVal = controllerNumValue[1];
-
-		//if (contVal > 0) {
-			//if (contNum == 78) {
-				// Convert from range 0..127 to 0..(almost 2pi)
-				//globalPhaseShift = contVal / 128.0 * (2 * Math.PI);
-			  globalPhaseShift = contNum / 128.0 * (2 * Math.PI);
-			//}
-
-			//post('globalPhaseShift is now ' + globalPhaseShift);
-
-			computeProbsPhases();
-		//}
-	//}
-	//else {
-		//post('Unexpected controllerNumValue.length: ' + controllerNumValue.length);
-	//}
+function setGlobalPhaseShift(phaseShiftDialVal) {
+	globalPhaseShift = phaseShiftDialVal / 128.0 * (2 * Math.PI);
+	computeProbsPhases();
 }
 
 
@@ -202,5 +188,3 @@ function onresize(w, h)
 	refresh();
 }
 onresize.local = 1; //private
-
-
