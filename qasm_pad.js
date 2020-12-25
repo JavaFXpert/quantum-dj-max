@@ -27,6 +27,10 @@ this.inlets = 2;
 // Outlet 0 sends message to a simulator with generated QASM
 this.outlets = 1;
 
+// Flag that tracks whether the circuit should be cleared
+// when the CircuitNodeTypes.EMPTY key is net pressed
+var clearCircuitWhenEmptyKeyNextPressed = false;
+
 var curCircNodeType = CircuitNodeTypes.EMPTY;
 
 var NUM_GRID_ROWS = 8;
@@ -111,6 +115,8 @@ function setCircGridGate(notePitchVelocity) {
 
 			informCircuitBtn(rowIdx, colIdx);
 
+			clearCircuitWhenEmptyKeyNextPressed = false;
+
 			// printCircGrid();
 			createQasmFromGrid();
 		}
@@ -131,41 +137,50 @@ function setCircGridGate(notePitchVelocity) {
 function setCurCircNodeType(controllerNumValue) {
 	//post('controllerNumValue: ' + controllerNumValue[0]);
 	if (controllerNumValue.length >= 2) {
-	    var contNum = controllerNumValue[0];
-	    var contVal = controllerNumValue[1];
-	
-	    if (contVal > 0) {
-		    if (contNum == 43) {
-			    curCircNodeType = CircuitNodeTypes.H;
+		var contNum = controllerNumValue[0];
+		var contVal = controllerNumValue[1];
+
+		if (contVal > 0) {
+			if (contNum == 43) {
+				clearCircuitWhenEmptyKeyNextPressed = false;
+				curCircNodeType = CircuitNodeTypes.H;
 			}
 			else if (contNum == 42) {
+				clearCircuitWhenEmptyKeyNextPressed = false;
 				curCircNodeType = CircuitNodeTypes.X;
 			}
 			else if (contNum == 41) {
+				clearCircuitWhenEmptyKeyNextPressed = false;
 				curCircNodeType = CircuitNodeTypes.Z;
 			}
 			else if (contNum == 40) {
+				clearCircuitWhenEmptyKeyNextPressed = false;
 				curCircNodeType = CircuitNodeTypes.S;
 			}
 			else if (contNum == 39) {
+				clearCircuitWhenEmptyKeyNextPressed = false;
 				curCircNodeType = CircuitNodeTypes.SDG;
 			}
 			else if (contNum == 38) {
+				clearCircuitWhenEmptyKeyNextPressed = false;
 				curCircNodeType = CircuitNodeTypes.T;
 			}
 			else if (contNum == 37) {
+				clearCircuitWhenEmptyKeyNextPressed = false;
 				curCircNodeType = CircuitNodeTypes.TDG;
 			}
 			else if (contNum == 36) {
-				if (curCircNodeType == CircuitNodeTypes.EMPTY){
-					// User pressed EMPTY key twice, so clear grid
-					resetCircGrid();
-				}
 				curCircNodeType = CircuitNodeTypes.EMPTY;
+				if (clearCircuitWhenEmptyKeyNextPressed){
+					resetCircGrid();
+					clearCircuitWhenEmptyKeyNextPressed = false;
+				}
+				else {
+					clearCircuitWhenEmptyKeyNextPressed = true;
+				}
 			}
-			
-      //post('curCircNodeType is now ' + curCircNodeType);
 		}
+		//post('curCircNodeType is now ' + curCircNodeType);
 	}
 	else {
 		post('Unexpected controllerNumValue.length: ' + controllerNumValue.length);
