@@ -75,6 +75,8 @@ function viz(svlist) {
  */
 function computeProbsPhases() {
 	messnamed('cmd_to_svgrid', 'clear');
+	var pitchNums = [];
+	var numNotes = 0;
 
 	for (var svIdx = 0; svIdx < svArray.length; svIdx += 2) {
 		var real = svArray[svIdx];
@@ -82,6 +84,7 @@ function computeProbsPhases() {
 
 		var amplitude = Math.sqrt(Math.pow(Math.abs(real), 2) + Math.pow(Math.abs(imag), 2));
 		var probability = Math.pow(Math.abs(amplitude), 2);
+		var pitchNum = -1;
 
 		if (probability > PROBABILITY_THRESHOLD) {
 			var polar = cartesianToPolar(real, imag);
@@ -105,20 +108,63 @@ function computeProbsPhases() {
 			//post('\nshiftedPhase: ' + shiftedPhase);
 
 			// TODO: Change to 2 * Math.PI?
-			var pitchNum = Math.round(shiftedPhase / 6.283185307179586 * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
+			pitchNum = Math.round(shiftedPhase / 6.283185307179586 * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
+			numNotes++;
 
-			//post('\npitchNum: ' + pitchNum);
 			if (svIdx / 2 < maxDisplayedSteps) {
 				messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pitchNum + 1, 127);
 			}
 		}
+		pitchNums.push(pitchNum);
+		post('\npitchNum: ' + pitchNum);
 	}
 
+	// Set the notes into the clip
+	var clip = new LiveAPI('live_set tracks 0 clip_slots 1 clip');
+	clip.call('remove_notes', 0, 0, 256, 128);
+	clip.call('set_notes');
+	clip.call('notes', numNotes);
+
+	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
+		if (pitchNums[pnIdx] > -1) {
+			post('writing note ' + pnIdx);
+			//clip.call('note', 64, "0.0", "0.5", 100, 0);
+			var temp = (pnIdx / 4.0).toFixed(2);
+			post(temp);
+			clip.call('note', pitchNums[pnIdx] + 36, temp, ".25", 100, 0);
+		}
+	}
+	clip.call('done');
+
+
+	/*
 	// Experiment with writing midi to clip (TODO: fold into code)
-  var api = new LiveAPI('live_set tracks 0 clip_slots 0 clip');
-  post('api.id: ' + api.id);
-  post('api.get(is_midi_clip): ' + api.get('is_midi_clip'));
-	post("notes:", api.call("get_notes", 0, 0, 256, 128));
+  var api = new LiveAPI('live_set');
+	post('\n~~~~~~~~~api.info: ' + api.info);
+
+	var track = new LiveAPI('live_set tracks 0');
+	post('\n=========track.info: ' + track.info);
+
+	var clip_slot = new LiveAPI('live_set tracks 0 clip_slots 1');
+	post('\n$$$$$$$$$clip_slot.info: ' + clip_slot.info);
+	post('\nclip_slot.id: ' + clip_slot.id);
+
+	var clip = new LiveAPI('live_set tracks 0 clip_slots 1 clip');
+	post('\n#########clip.info: ' + clip.info);
+  post('\nclip.id: ' + clip.id);
+	post('\nclip.get(name): ' + clip.get('name'));
+  post('\nclip.get(is_midi_clip): ' + clip.get('is_midi_clip'));
+	post("\nnotes before:", clip.call('get_notes', 0, 0, 256, 128));
+
+	clip.call('remove_notes', 0, 0, 256, 128);
+	clip.call('set_notes');
+	clip.call('notes', 2);
+	clip.call('note', 64, "0.0", "0.5", 100, 0);
+	clip.call('note', 65, "0.5", "0.5", 64, 0);
+	clip.call('done');
+
+	post("\nnotes after:", clip.call('get_notes', 0, 0, 256, 128));
+	*/
 }
 
 /**
