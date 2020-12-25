@@ -113,6 +113,12 @@ function computeProbsPhases() {
 			}
 		}
 	}
+
+	// Experiment with writing midi to clip (TODO: fold into code)
+  var api = new LiveAPI('live_set tracks 0 clip_slots 0 clip');
+  post('api.id: ' + api.id);
+  post('api.get(is_midi_clip): ' + api.get('is_midi_clip'));
+	post("notes:", api.call("get_notes", 0, 0, 256, 128));
 }
 
 /**
