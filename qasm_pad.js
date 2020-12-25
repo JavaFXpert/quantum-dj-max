@@ -81,6 +81,7 @@ function resetCircGrid() {
 			informCircuitBtn(rowIdx, colIdx);
 		}
 	}
+	createQasmFromGrid();
 	//printCircGrid();
 }
 
@@ -256,7 +257,7 @@ function computeNumWires() {
 		rowIdx--;
 	}
 
-	return numWires;
+	return Math.max(numWires, MIN_CIRCUIT_WIRES);
 }
 
 

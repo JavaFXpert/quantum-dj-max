@@ -54,9 +54,8 @@ function list(lst) {
 function viz(svlist) {
 	//post("\nsvlist: " + svlist);
 
-	// Compute probabilities and phases.
-	// var probs = [];
-	// var phases = [];
+	// Reset global phase shift
+	outlet(0, 'int', 0);
 
 	svArray = svlist.toString().split(' ');
 	//post("\nsvArray: " + svArray);
@@ -69,7 +68,9 @@ function viz(svlist) {
 	computeProbsPhases();
 }
 
-
+/**
+ * Compute probabilities and phases
+ */
 function computeProbsPhases() {
 	messnamed('cmd_to_svgrid', 'clear');
 
@@ -82,12 +83,28 @@ function computeProbsPhases() {
 
 		if (probability > PROBABILITY_THRESHOLD) {
 			var polar = cartesianToPolar(real, imag);
-			//post('\npolar.theta: ' + polar.theta);
+
+			// If first basis state has non-zero phase, and global phase isn't
+			// already shifted, shift global phase by its phase
+			// TODO: Prevent this from processing while global phase dial is being moved
+			if (svIdx == 0 && polar.theta != 0.0 && globalPhaseShift == 0.0) {
+				if (polar.theta < 0) {
+					polar.theta += 2 * Math.PI;
+				}
+				var phaseDialValue = 128 - (Math.floor((polar.theta / (2 * Math.PI)) * 128) % 128);
+
+				//post('\nGlobal phase now: ' + polar.theta);
+				//post('\nGlobal phase dial now: ' + phaseDialValue);
+
+				outlet(0, 'int', phaseDialValue);
+			}
 
 			var shiftedPhase = polar.theta + globalPhaseShift;
 			//post('\nshiftedPhase: ' + shiftedPhase);
 
+			// TODO: Change to 2 * Math.PI?
 			var pitchNum = Math.round(shiftedPhase / 6.283185307179586 * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
+
 			//post('\npitchNum: ' + pitchNum);
 			messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pitchNum + 1, 127);
 		}

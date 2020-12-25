@@ -18,8 +18,14 @@
  * Variables and methods common to more than one JS file
  * in this app.
  */
+
+// Resolution of calculation from phase to notes or sounds in a kit
 var NUM_PITCHES = 8;
 
+// Minimum number of qubits in a circuit
+var MIN_CIRCUIT_WIRES = 2;
+
+// Threshold for regarding a state as having any probability
 var PROBABILITY_THRESHOLD = 0.0001
 
 var CircuitNodeTypes = {
