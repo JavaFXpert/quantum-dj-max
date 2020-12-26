@@ -19,7 +19,7 @@
  */
 include('common.js');
 
-var maxDisplayedSteps = 32
+var maxDisplayedSteps = 64
 
 // Inlet 0 receives "viz" messages with a statevector to display
 // Inlet 1 receives global phase shift integer from 0 - 127
