@@ -122,6 +122,9 @@ function computeProbsPhases() {
 	// Set the notes into the clip
 	var clip = new LiveAPI('live_set tracks 0 clip_slots 1 clip');
 	clip.call('remove_notes', 0, 0, 256, 128);
+
+	clip.set('loop_end', svArray.length / 8);
+
 	clip.call('set_notes');
 	clip.call('notes', numNotes);
 
@@ -135,6 +138,7 @@ function computeProbsPhases() {
 		}
 	}
 	clip.call('done');
+
 
 
 	/*
