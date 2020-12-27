@@ -106,6 +106,7 @@ function computeProbsPhases() {
 		var probability = Math.pow(Math.abs(amplitude), 2);
 		var pitchNum = -1;
 
+		//post('probability: ' + probability);
 		if (probability > PROBABILITY_THRESHOLD) {
 			var polar = cartesianToPolar(real, imag);
 
@@ -298,6 +299,6 @@ function pitchIdxToDiatonic(pitchIdx, octaveNum) {
 	else if (pitchIdx == 7) {
 		diatonicMidiPitch = octaveNum * 12 + 36;
 	}
-	post('diatonicMidiPitch: ' + diatonicMidiPitch);
+	//post('diatonicMidiPitch: ' + diatonicMidiPitch);
 	return diatonicMidiPitch;
 }

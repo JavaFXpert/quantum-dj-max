@@ -26,7 +26,7 @@ var NUM_PITCHES = 8;
 var MIN_CIRCUIT_WIRES = 2;
 
 // Threshold for regarding a state as having any probability
-var PROBABILITY_THRESHOLD = 0.0001
+var PROBABILITY_THRESHOLD = 0.03
 
 var CircuitNodeTypes = {
   EMPTY: -1,
@@ -43,5 +43,7 @@ var CircuitNodeTypes = {
   BARRIER: 10,
   CTRL: 11, // "control" part of multi-qubit gate
   TRACE: 12, // In the path between a gate part and a "control" or "swap" part
-  MEASURE_Z: 13
+  MEASURE_Z: 13,
+  RY_PLUS: 20, // Ry +pi/4
+  RY_MINUS: 21 // Ry -pi/4
 }

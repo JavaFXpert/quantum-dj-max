@@ -146,6 +146,12 @@ function createQuantumCircuitFromQasm(qasm) {
 							else if (keyword == 'tdg') {
 								quantumCircuit.tdg(argInt);
 							}
+							else if (keyword == 'ry(-pi/4)') {
+								quantumCircuit.ry(-Math.PI / 4, argInt);
+							}
+							else if (keyword == 'ry(pi/4)') {
+								quantumCircuit.ry(Math.PI / 4, argInt);
+							}
 						}
 					}
 				}

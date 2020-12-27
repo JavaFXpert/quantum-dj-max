@@ -120,6 +120,15 @@ function setCircGridGate(notePitchVelocity) {
 			// printCircGrid();
 			createQasmFromGrid();
 		}
+		// Additional gates TODO: Move these
+		else if (pitch == 77) {
+			clearCircuitWhenEmptyKeyNextPressed = false;
+			curCircNodeType = CircuitNodeTypes.RY_MINUS;
+		}
+		else if (pitch == 78) {
+			clearCircuitWhenEmptyKeyNextPressed = false;
+			curCircNodeType = CircuitNodeTypes.RY_PLUS;
+		}
 	}
 	else {
 		post('Unexpected notePitchVelocity.length: ' + notePitchVelocity.length);
@@ -248,6 +257,12 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	}
 	else if (circNodeType == CircuitNodeTypes.TDG) {
 		qasmStr += ' tdg q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_MINUS) {
+		qasmStr += ' ry(-pi/4) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_PLUS) {
+		qasmStr += ' ry(pi/4) q[' + gridRow + '];';
 	}
 
 	return qasmStr;

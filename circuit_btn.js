@@ -106,6 +106,14 @@ function draw()
 			moveto(-0.6, -0.32);
 			text("T\u2020");
 		}
+		else if (curNodeType == CircuitNodeTypes.RY_MINUS) {
+			moveto(-0.6, -0.32);
+			text("y-");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_PLUS) {
+			moveto(-0.6, -0.32);
+			text("y+");
+		}
 	}
 }
 
