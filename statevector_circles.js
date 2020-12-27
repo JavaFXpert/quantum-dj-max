@@ -116,7 +116,7 @@ function computeProbsPhases() {
 			}
 		}
 		pitchNums.push(pitchNum);
-		post('\npitchNum: ' + pitchNum);
+		//post('\npitchNum: ' + pitchNum);
 	}
 
 	// Set the notes into the clip
@@ -130,11 +130,12 @@ function computeProbsPhases() {
 
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
 		if (pitchNums[pnIdx] > -1) {
-			post('writing note ' + pnIdx);
+			//post('writing note ' + pnIdx);
 			//clip.call('note', 64, "0.0", "0.5", 100, 0);
-			var temp = (pnIdx / 4.0).toFixed(2);
-			post(temp);
-			clip.call('note', pitchNums[pnIdx] + 36, temp, ".25", 100, 0);
+			var time = (pnIdx / 4.0).toFixed(2);
+			//post('foo: ' + pitchNums[pnIdx]);
+			//clip.call('note', pitchNums[pnIdx] + 36, time, ".25", 100, 0);
+			clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx]), time, ".25", 100, 0);
 		}
 	}
 	clip.call('done');
@@ -244,3 +245,34 @@ function onresize(w, h)
 	refresh();
 }
 onresize.local = 1; //private
+
+
+function pitchIdxToDiatonic(pitchIdx) {
+	var diatonicMidiPitch = 0
+	if (pitchIdx == 0) {
+		diatonicMidiPitch = 64;
+	}
+	else if (pitchIdx == 1) {
+		diatonicMidiPitch = 66;
+	}
+	else if (pitchIdx == 2) {
+		diatonicMidiPitch = 68;
+	}
+	else if (pitchIdx == 3) {
+		diatonicMidiPitch = 69;
+	}
+	else if (pitchIdx == 4) {
+		diatonicMidiPitch = 71;
+	}
+	else if (pitchIdx == 5) {
+		diatonicMidiPitch = 73;
+	}
+	else if (pitchIdx == 6) {
+		diatonicMidiPitch = 75;
+	}
+	else if (pitchIdx == 7) {
+		diatonicMidiPitch = 76;
+	}
+	post('diatonicMidiPitch: ' + diatonicMidiPitch);
+	return diatonicMidiPitch;
+}
