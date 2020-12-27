@@ -23,7 +23,14 @@ var maxDisplayedSteps = 64
 
 // Inlet 0 receives "viz" messages with a statevector to display
 // Inlet 1 receives global phase shift integer from 0 - 127
-this.inlets = 2;
+// Inlet 2 receives instrument type selection:
+//     0: kit (midi is chromatic, from 36 - 43
+//     1: diatonic octave 1,
+//     2: diatonic octave 2
+//     3: diatonic octave 3
+//     4: diatonic octave 4
+
+this.inlets = 3;
 
 sketch.default2d();
 var vbrgb = [1.,1.,1.,1.];
@@ -35,6 +42,16 @@ var svArray = [1.0, 0.0, 0.0, 0.0];
 // apply the desired global phase
 var globalPhaseShift = 0.0;
 
+
+// Instrument type selection:
+//     0: kit (midi is chromatic, from 36 - 43
+//     1: diatonic octave 1,
+//     2: diatonic octave 2
+//     3: diatonic octave 3
+//     4: diatonic octave 4
+// TODO: Find better name
+var instrumentType = 0;
+
 draw();
 refresh();
 
@@ -42,6 +59,9 @@ refresh();
 function msg_int(val) {
 	if (inlet == 1) {
 		setGlobalPhaseShift(val);
+	}
+	else if (inlet == 2) {
+		instrumentType = val;
 	}
 }
 
@@ -134,8 +154,13 @@ function computeProbsPhases() {
 			//clip.call('note', 64, "0.0", "0.5", 100, 0);
 			var time = (pnIdx / 4.0).toFixed(2);
 			//post('foo: ' + pitchNums[pnIdx]);
-			//clip.call('note', pitchNums[pnIdx] + 36, time, ".25", 100, 0);
-			clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx]), time, ".25", 100, 0);
+
+			if (instrumentType == 0) {
+				clip.call('note', pitchNums[pnIdx] + 36, time, ".25", 100, 0);
+			}
+			else {
+				clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx], instrumentType), time, ".25", 100, 0);
+			}
 		}
 	}
 	clip.call('done');
@@ -247,31 +272,31 @@ function onresize(w, h)
 onresize.local = 1; //private
 
 
-function pitchIdxToDiatonic(pitchIdx) {
+function pitchIdxToDiatonic(pitchIdx, octaveNum) {
 	var diatonicMidiPitch = 0
 	if (pitchIdx == 0) {
-		diatonicMidiPitch = 64;
+		diatonicMidiPitch = octaveNum * 12 + 24;
 	}
 	else if (pitchIdx == 1) {
-		diatonicMidiPitch = 66;
+		diatonicMidiPitch = octaveNum * 12 + 26;
 	}
 	else if (pitchIdx == 2) {
-		diatonicMidiPitch = 68;
+		diatonicMidiPitch = octaveNum * 12 + 28;
 	}
 	else if (pitchIdx == 3) {
-		diatonicMidiPitch = 69;
+		diatonicMidiPitch = octaveNum * 12 + 29;
 	}
 	else if (pitchIdx == 4) {
-		diatonicMidiPitch = 71;
+		diatonicMidiPitch = octaveNum * 12 + 31;
 	}
 	else if (pitchIdx == 5) {
-		diatonicMidiPitch = 73;
+		diatonicMidiPitch = octaveNum * 12 + 33;
 	}
 	else if (pitchIdx == 6) {
-		diatonicMidiPitch = 75;
+		diatonicMidiPitch = octaveNum * 12 + 35;
 	}
 	else if (pitchIdx == 7) {
-		diatonicMidiPitch = 76;
+		diatonicMidiPitch = octaveNum * 12 + 36;
 	}
 	post('diatonicMidiPitch: ' + diatonicMidiPitch);
 	return diatonicMidiPitch;
