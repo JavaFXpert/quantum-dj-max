@@ -170,11 +170,18 @@ function computeProbsPhases() {
 	}
 
 	// Encode circuit grid into the clip, after the loop end
+	var qasmPadObj = this.patcher.getnamed("qasmpad");
 	var startIdx = pitchNums.length;
-  for (var rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
-  	for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+  for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+  	for (var rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
+  		var gateMidi = qasmPadObj.js.circGrid[rowIdx][colIdx];
+  		if (gateMidi == -1) {
+  			gateMidi = 127;
+			}
+  		//post('gateMidi: ' + gateMidi);
+
   		var metaDataTime = ((startIdx + (rowIdx * NUM_GRID_COLS + colIdx)) / 4.0).toFixed(2);
-  		clip.call('note', 127, metaDataTime, ".25", 100, 0);
+  		clip.call('note', gateMidi, metaDataTime, ".25", 100, 0);
 		}
 	}
 
