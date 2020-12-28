@@ -37,10 +37,6 @@ var curCircNodeType = CircuitNodeTypes.EMPTY;
 var CONTR_MAT_ROWS = 8;
 var CONTR_MAT_COLS = 8;
 
-// Controller pad rows and columns reserved for circuit
-var NUM_GRID_ROWS = 8;
-var NUM_GRID_COLS = 5;
-
 // Controller pad columns reserved for gates
 var NUM_GATE_COLS = 3;
 

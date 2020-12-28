@@ -19,6 +19,10 @@
  * in this app.
  */
 
+// Controller pad rows and columns reserved for circuit
+var NUM_GRID_ROWS = 8;
+var NUM_GRID_COLS = 5;
+
 // Resolution of calculation from phase to notes or sounds in a kit
 var NUM_PITCHES = 8;
 

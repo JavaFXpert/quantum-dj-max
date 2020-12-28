@@ -148,7 +148,10 @@ function computeProbsPhases() {
 	clip.set('loop_end', svArray.length / 8);
 
 	clip.call('set_notes');
-	clip.call('notes', numNotes);
+	//clip.call('notes', numNotes);
+
+	// Number of notes will include circuit node type values from grid
+	clip.call('notes', numNotes + (NUM_GRID_ROWS * NUM_GRID_COLS));
 
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
 		if (pitchNums[pnIdx] > -1) {
@@ -165,6 +168,17 @@ function computeProbsPhases() {
 			}
 		}
 	}
+
+	// Encode circuit grid into the clip, after the loop end
+	var startIdx = pitchNums.length;
+  for (var rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
+  	for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+  		var metaDataTime = ((startIdx + (rowIdx * NUM_GRID_COLS + colIdx)) / 4.0).toFixed(2);
+  		clip.call('note', 127, metaDataTime, ".25", 100, 0);
+		}
+	}
+
+
 	clip.call('done');
 
 
