@@ -62,6 +62,7 @@ function msg_int(val) {
 	}
 	else if (inlet == 2) {
 		instrumentType = val;
+		computeProbsPhases();
 	}
 }
 
@@ -197,6 +198,21 @@ function computeProbsPhases() {
 	post("\nnotes after:", clip.call('get_notes', 0, 0, 256, 128));
 	*/
 }
+
+/**
+ * Given an integer from 0 - 127, calculates and implements
+ * global phase adjustment.
+ *
+ * TODO: Accept input from Push 2 dial
+ *
+ * @param phaseShiftDialVal Integer from 0 - 127 received from
+ *        global phase shift dial
+ */
+function setGlobalPhaseShift(phaseShiftDialVal) {
+	globalPhaseShift = phaseShiftDialVal / 128.0 * (2 * Math.PI);
+	computeProbsPhases();
+}
+
 
 /**
  * Given an integer from 0 - 127, calculates and implements
