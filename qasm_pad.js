@@ -33,11 +33,20 @@ var clearCircuitWhenEmptyKeyNextPressed = false;
 
 var curCircNodeType = CircuitNodeTypes.EMPTY;
 
+// Dimensions of controller pad matrix
+var CONTR_MAT_ROWS = 8;
+var CONTR_MAT_COLS = 8;
+
+// Controller pad rows and columns reserved for circuit
 var NUM_GRID_ROWS = 8;
 var NUM_GRID_COLS = 5;
 
+// Controller pad columns reserved for gates
+var NUM_GATE_COLS = 3;
+
 var lowMidiPitch = 36;
-var highMidiPitch = NUM_GRID_ROWS * NUM_GRID_COLS + lowMidiPitch - 1;
+var highMidiPitch = (NUM_GRID_ROWS - 1) * CONTR_MAT_COLS + NUM_GRID_COLS + lowMidiPitch - 1;
+//post('highMidiPitch: ' + highMidiPitch);
 
 // TODO: Dynamically initialize this array
 var circGrid = [
@@ -103,29 +112,33 @@ function setCircGridGate(notePitchVelocity) {
 		var velocity = notePitchVelocity[1];
 	
 		if (pitch >= lowMidiPitch && pitch <= highMidiPitch & velocity > 0) {
-			var gridCol = (highMidiPitch - pitch) % NUM_GRID_COLS;
-			gridCol = NUM_GRID_COLS - gridCol - 1;
+			// var gridCol = (highMidiPitch - pitch) % NUM_GRID_COLS;
+			// gridCol = NUM_GRID_COLS - gridCol - 1;
+      // var gridRow = Math.floor((highMidiPitch - pitch) / NUM_GRID_COLS);
 
-      var gridRow = Math.floor((highMidiPitch - pitch) / NUM_GRID_COLS);
+			var gridRow = Math.floor((highMidiPitch - pitch) / CONTR_MAT_COLS);
+			var gridCol = (highMidiPitch - pitch) % CONTR_MAT_COLS;
 
-      circGrid[gridRow][gridCol] = curCircNodeType;
-
-			var rowIdx = NUM_GRID_ROWS - gridRow - 1;
-			var colIdx = gridCol;
-
-			informCircuitBtn(rowIdx, colIdx);
-
-			clearCircuitWhenEmptyKeyNextPressed = false;
-
-			// printCircGrid();
-			createQasmFromGrid();
+			if (gridCol < NUM_GRID_COLS) {
+				gridCol = NUM_GRID_COLS - gridCol - 1;
+				circGrid[gridRow][gridCol] = curCircNodeType;
+				var rowIdx = NUM_GRID_ROWS - gridRow - 1;
+				var colIdx = gridCol;
+				informCircuitBtn(rowIdx, colIdx);
+				clearCircuitWhenEmptyKeyNextPressed = false;
+				// printCircGrid();
+				createQasmFromGrid();
+			}
+			else {
+				post('gridCol not on circuit: ' + gridCol);
+			}
 		}
 		// Additional gates TODO: Move these
-		else if (pitch == 77) {
+		else if (pitch == 97) {
 			clearCircuitWhenEmptyKeyNextPressed = false;
 			curCircNodeType = CircuitNodeTypes.RY_MINUS;
 		}
-		else if (pitch == 78) {
+		else if (pitch == 98) {
 			clearCircuitWhenEmptyKeyNextPressed = false;
 			curCircNodeType = CircuitNodeTypes.RY_PLUS;
 		}
@@ -298,7 +311,7 @@ function computeNumWires() {
  * @param colIdx Zero-based column number on circuit grid
  */
 function informCircuitBtn(gridRowIdx, gridColIdx) {
-	var midiPitch = lowMidiPitch + (gridRowIdx * NUM_GRID_COLS) + gridColIdx;
+	var midiPitch = lowMidiPitch + (gridRowIdx * CONTR_MAT_COLS) + gridColIdx;
 	var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
 	circBtnObj.js.updateDisplay();
 }

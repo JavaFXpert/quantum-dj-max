@@ -56,7 +56,6 @@ function draw()
 		glcolor(0,0,0,1);
 
 		var curNodeType = qasmPadObj.js.curCircNodeType;
-		//post'in draw(), curNodeType:  ' + curNodeType);
     if (curNodeType == CircuitNodeTypes.EMPTY || curNodeType == 0) {
 			// Draw empty circuit wire
     	moveto(-1.0, 0.0);
