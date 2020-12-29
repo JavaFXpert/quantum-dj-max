@@ -57,6 +57,22 @@ var circGrid = [
     [-1, -1, -1, -1,-1]
 ];
 
+
+// Associates clip name to id
+var clipsIds = [];
+
+function getIdByClipName(clipName) {
+	for (var clipIdx = 0; clipIdx < clipsIds.length; clipIdx++) {
+		var caratPos = clipsIds[clipIdx].indexOf('^');
+		if (caratPos > 0 && clipName == clipsIds[clipIdx].substring(0, caratPos)) {
+			var clipId = parseInt(clipsIds[clipIdx].substring(caratPos + 1));
+			return clipId;
+		}
+	}
+	// Not found
+	return 0;
+}
+
 sketch.default2d();
 var val = 0;
 var vbrgb = [1.,1.,1.,1.];
@@ -76,9 +92,6 @@ function list(lst)
 	}
 	else if (inlet == 1) {
 		setCurCircNodeType(arguments);
-
-		// TODO: Move this elsewhere
-		populateMidiClipsList();
 	}
 }
 
@@ -96,6 +109,8 @@ function resetCircGrid() {
 	}
 	createQasmFromGrid();
 	//printCircGrid();
+
+	populateMidiClipsList();
 }
 
 
@@ -424,6 +439,7 @@ function populateMidiClipsList() {
 
 	// Send midi clips names to outlet
 	outlet(1, 'clear');
+	clipsIds = [];
 
 	var live_set = new LiveAPI('live_set');
 	var numTracks = live_set.getcount('tracks');
@@ -450,6 +466,10 @@ function populateMidiClipsList() {
 						post('\nclip id: ' + clip.id);
 
 						outlet(1, 'append', clipName);
+						clipsIds.push(clipName + '^' + clip.id);
+
+						//post('\nclipsIds: ' + clipsId[0]);
+						post('\nSecond slot id: ' + getIdByClipName('Second slot'));
 					}
 				}
 			}
