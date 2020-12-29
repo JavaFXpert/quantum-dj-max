@@ -15,14 +15,15 @@
  */
 
 /*
- * Quantum DJ device circuit pad that may be used when
+ * Quantum DJ device circuit pad that may be used even when
  * a Push 2 device is not connected.
  */
 include('common.js');
 
 // Inlet 0 receives note messages that include velocity.
 // Inlet 1 receives control change messages.
-this.inlets = 2;
+// Inlet 2 receives bang message to update clips
+this.inlets = 3;
 
 // Outlet 0 sends message to a simulator with generated QASM
 // Outlet 1 sends messages to the midi clips list box
@@ -65,34 +66,13 @@ var circGrid = [
 // Associates clip name to path
 var clipsPaths = [];
 
-// function getIdByClipName(clipName) {
-// 	for (var clipIdx = 0; clipIdx < clipsIds.length; clipIdx++) {
-// 		var caratPos = clipsIds[clipIdx].indexOf('^');
-// 		if (caratPos > 0 && clipName == clipsIds[clipIdx].substring(0, caratPos)) {
-// 			var clipId = parseInt(clipsIds[clipIdx].substring(caratPos + 1));
-// 			return clipId;
-// 		}
-// 	}
-// 	// Not found
-// 	return 0;
-// }
 
-
-// function getIdByClipNameIdx(clipNameIdx) {
-// 	if (clipNameIdx < clipsIds.length) {
-// 		var caratPos = clipsIds[clipNameIdx].indexOf('^');
-// 		if (caratPos > 0) {
-// 			var clipId = parseInt(clipsIds[clipNameIdx].substring(caratPos + 1));
-// 			return clipId;
-// 		}
-// 		else {
-// 			return 0;
-// 		}
-// 	}
-// 	else {
-// 		return 0;
-// 	}
-// }
+function bang() {
+	if (inlet == 2) {
+		// bang received to refresh list of clips
+		populateMidiClipsList();
+	}
+}
 
 
 function getPathByClipNameIdx(clipNameIdx) {
@@ -111,7 +91,6 @@ function getPathByClipNameIdx(clipNameIdx) {
 		return "";
 	}
 }
-
 
 
 sketch.default2d();
@@ -150,8 +129,6 @@ function resetCircGrid() {
 	}
 	createQasmFromGrid();
 	//printCircGrid();
-
-	populateMidiClipsList();
 }
 
 
@@ -168,10 +145,6 @@ function setCircGridGate(notePitchVelocity) {
 		var velocity = notePitchVelocity[1];
 	
 		if (pitch >= lowMidiPitch && pitch <= highMidiPitch & velocity > 0) {
-			// var gridCol = (highMidiPitch - pitch) % NUM_GRID_COLS;
-			// gridCol = NUM_GRID_COLS - gridCol - 1;
-      // var gridRow = Math.floor((highMidiPitch - pitch) / NUM_GRID_COLS);
-
 			var gridRow = Math.floor((highMidiPitch - pitch) / CONTR_MAT_COLS);
 			var gridCol = (highMidiPitch - pitch) % CONTR_MAT_COLS;
 
@@ -190,11 +163,11 @@ function setCircGridGate(notePitchVelocity) {
 			}
 		}
 		// Additional gates TODO: Move these
-		else if (pitch == 97) {
+		else if (pitch == 98) {
 			clearCircuitWhenEmptyKeyNextPressed = false;
 			curCircNodeType = CircuitNodeTypes.RY_MINUS;
 		}
-		else if (pitch == 98) {
+		else if (pitch == 99) {
 			clearCircuitWhenEmptyKeyNextPressed = false;
 			curCircNodeType = CircuitNodeTypes.RY_PLUS;
 		}
@@ -415,68 +388,6 @@ function draw()
 
 function populateMidiClipsList() {
 	var live_set = new LiveAPI('live_set');
-	//post('\n--------live_set.info: ' + live_set.info);
-	/*
-	post('\n#############live_set.getcount(tracks): ' + live_set.getcount('tracks'));
-
-	var track0 = new LiveAPI('live_set tracks 0');
-	post('\n-------------#track0.id: ' + track0.id);
-	post('\n#############track0.get(has_midi_input): ' + track0.get('has_midi_input'));
-	post('\n#############track0.getcount(clip_slots): ' + track0.getcount('clip_slots'));
-	post('\n#############track0.get(name): ' + track0.get('name'));
-
-	var track0clip0 = new LiveAPI('live_set tracks 0 clip_slots 0 clip');
-	post('\n-------------#track0clip0.id: ' + track0clip0.id);
-	post('\n#############track0clip0.get(is_midi_track): ' + track0clip0.get('is_midi_clip'));
-	post('\n#############track0clip0.get(name): ' + track0clip0.get('name'));
-
-	var track0clip1 = new LiveAPI('live_set tracks 0 clip_slots 1 clip');
-	post('\n-------------#track0clip1.id: ' + track0clip1.id);
-	post('\n#############track0clip1.get(is_midi_track): ' + track0clip1.get('is_midi_clip'));
-	post('\n#############track0clip1.get(name): ' + track0clip1.get('name'));
-
-	var track0clipslot2 = new LiveAPI('live_set tracks 0 clip_slots 2');
-	post('\n-------------#track0clipslot2.id: ' + track0clipslot2.id);
-	post('\n#############track0clipslot2.get(has_clip): ' + track0clipslot2.get('has_clip'));
-
-	var track0clip2 = new LiveAPI('live_set tracks 0 clip_slots 2 clip');
-	post('\n-------------#track0clip2.id: ' + track0clip2.id);
-	post('\n#############track0clip2.get(is_midi_track): ' + track0clip2.get('is_midi_clip'));
-	post('\n#############track0clip2.get(name): ' + track0clip2.get('name'));
-
-	var track0clipslot3 = new LiveAPI('live_set tracks 0 clip_slots 3');
-	post('\n-------------#track0clipslot3.id: ' + track0clipslot3.id);
-	post('\n#############track0clipslot3.get(has_clip): ' + track0clipslot3.get('has_clip'));
-
-
-	var track1 = new LiveAPI('live_set tracks 1');
-	post('\n-------------#track1.id: ' + track1.id);
-	post('\n#############track1.get(has_midi_input): ' + track1.get('has_midi_input'));
-
-	var track2 = new LiveAPI('live_set tracks 2');
-	post('\n-------------#track2.id: ' + track2.id);
-	post('\n#############track2.get(has_midi_input): ' + track2.get('has_midi_input'));
-
-	var track3 = new LiveAPI('live_set tracks 3');
-	post('\n-------------#track3.id: ' + track3.id);
-	post('\n#############track3.get(has_midi_input): ' + track3.get('has_midi_input'));
-
-	var track4 = new LiveAPI('live_set tracks 4');
-	post('\n-------------#track4.id: ' + track4.id);
-	post('\n#############track4.get(has_midi_input): ' + track4.get('has_midi_input'));
-
-	var track5 = new LiveAPI('live_set tracks 5');
-	post('\n-------------#track5.id: ' + track5.id);
-	//post('\n#############track5.get(has_midi_input): ' + track5.get('has_midi_input'));
-
-	var track6 = new LiveAPI('live_set tracks 6');
-	post('\n-------------#track6.id: ' + track6.id);
-	//post('\n#############track6.get(has_midi_input): ' + track6.get('has_midi_input'));
-
-	//post('\ntracks: ' + tracks.children);
-
-	//post('\ntrac.get(name): ' + clip.get('name'));
-	*/
 
 	// Send midi clips names to outlet
 	outlet(1, 'clear');
