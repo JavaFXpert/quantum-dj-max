@@ -59,19 +59,60 @@ var circGrid = [
 
 
 // Associates clip name to id
-var clipsIds = [];
+//var clipsIds = [];
 
-function getIdByClipName(clipName) {
-	for (var clipIdx = 0; clipIdx < clipsIds.length; clipIdx++) {
-		var caratPos = clipsIds[clipIdx].indexOf('^');
-		if (caratPos > 0 && clipName == clipsIds[clipIdx].substring(0, caratPos)) {
-			var clipId = parseInt(clipsIds[clipIdx].substring(caratPos + 1));
-			return clipId;
+
+// Associates clip name to path
+var clipsPaths = [];
+
+// function getIdByClipName(clipName) {
+// 	for (var clipIdx = 0; clipIdx < clipsIds.length; clipIdx++) {
+// 		var caratPos = clipsIds[clipIdx].indexOf('^');
+// 		if (caratPos > 0 && clipName == clipsIds[clipIdx].substring(0, caratPos)) {
+// 			var clipId = parseInt(clipsIds[clipIdx].substring(caratPos + 1));
+// 			return clipId;
+// 		}
+// 	}
+// 	// Not found
+// 	return 0;
+// }
+
+
+// function getIdByClipNameIdx(clipNameIdx) {
+// 	if (clipNameIdx < clipsIds.length) {
+// 		var caratPos = clipsIds[clipNameIdx].indexOf('^');
+// 		if (caratPos > 0) {
+// 			var clipId = parseInt(clipsIds[clipNameIdx].substring(caratPos + 1));
+// 			return clipId;
+// 		}
+// 		else {
+// 			return 0;
+// 		}
+// 	}
+// 	else {
+// 		return 0;
+// 	}
+// }
+
+
+function getPathByClipNameIdx(clipNameIdx) {
+	post('In getPathByClipNameIdx, clipNameIdx: ' + clipNameIdx);
+	if (clipNameIdx < clipsPaths.length) {
+		var caratPos = clipsPaths[clipNameIdx].indexOf('^');
+		if (caratPos > 0) {
+			var clipPath = clipsPaths[clipNameIdx].substring(caratPos + 1);
+			return clipPath;
+		}
+		else {
+			return "";
 		}
 	}
-	// Not found
-	return 0;
+	else {
+		return "";
+	}
 }
+
+
 
 sketch.default2d();
 var val = 0;
@@ -439,37 +480,37 @@ function populateMidiClipsList() {
 
 	// Send midi clips names to outlet
 	outlet(1, 'clear');
-	clipsIds = [];
+	clipsPaths = [];
 
 	var live_set = new LiveAPI('live_set');
 	var numTracks = live_set.getcount('tracks');
 
 	for (var trackIdx = 0; trackIdx < numTracks; trackIdx++ ) {
 		var track = new LiveAPI('live_set tracks ' + trackIdx);
-		//post('\ntrack ' + trackIdx + ' id: ' + track.id);
+		post('\ntrack ' + trackIdx + ' id: ' + track.id);
 
 		if (track.get('has_midi_input')) {
 			var numClipSlots = track.getcount('clip_slots');
 
 			for (var clipSlotIdx = 0; clipSlotIdx < numClipSlots; clipSlotIdx++) {
 				var clipSlot = new LiveAPI('live_set tracks ' + trackIdx + ' clip_slots ' + clipSlotIdx);
-				//post('\nclipSlot ' + clipSlotIdx + ' id: ' + clipSlot.id);
+				post('\nclipSlot ' + clipSlotIdx + ' id: ' + clipSlot.id);
 
 				if (clipSlot.get('has_clip') != 0) {
 					var clip = new LiveAPI('live_set tracks ' + trackIdx + ' clip_slots ' + clipSlotIdx + ' clip');
-					//post('\nclip id: ' + clip.id);
+					post('\nclip id: ' + clip.id);
 
 					var clipName = clip.getstring('name');
 					if (clipName.length > 2) {
 						clipName = clipName.substring(1, clipName.length - 1);
 						post('\nclipName: ' + clipName);
-						post('\nclip id: ' + clip.id);
+						post('\nclip path: ' + clip.unquotedpath);
 
 						outlet(1, 'append', clipName);
-						clipsIds.push(clipName + '^' + clip.id);
+						clipsPaths.push(clipName + '^' + clip.unquotedpath);
 
 						//post('\nclipsIds: ' + clipsId[0]);
-						post('\nSecond slot id: ' + getIdByClipName('Second slot'));
+						post('\nSecond slot path: ' + getPathByClipNameIdx(1));
 					}
 				}
 			}

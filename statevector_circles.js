@@ -29,8 +29,8 @@ var maxDisplayedSteps = 64
 //     2: diatonic octave 2
 //     3: diatonic octave 3
 //     4: diatonic octave 4
-
-this.inlets = 3;
+// Inlet 2 receives name of current clip
+this.inlets = 4;
 
 sketch.default2d();
 var vbrgb = [1.,1.,1.,1.];
@@ -52,6 +52,10 @@ var globalPhaseShift = 0.0;
 // TODO: Find better name
 var instrumentType = 0;
 
+
+//var curClipId = 0;
+var curClipPath = "";
+
 draw();
 refresh();
 
@@ -63,6 +67,11 @@ function msg_int(val) {
 	else if (inlet == 2) {
 		instrumentType = val;
 		computeProbsPhases();
+	}
+	else if (inlet == 3) {
+		var qasmPadObj = this.patcher.getnamed("qasmpad");
+		curClipPath = qasmPadObj.js.getPathByClipNameIdx(val);
+		post('curClipPath: ' + curClipPath);
 	}
 }
 
@@ -90,6 +99,13 @@ function viz(svlist) {
 
 	computeProbsPhases();
 }
+
+
+// function anything(clipName) {
+// 	var qasmPadObj = this.patcher.getnamed("qasmpad");
+// 	curClipId = qasmPadObj.js.getIdByClipName(clipName);
+// 	post('curClipId: ' + curClipId);
+// }
 
 /**
  * Compute probabilities and phases
@@ -142,7 +158,9 @@ function computeProbsPhases() {
 	}
 
 	// Set the notes into the clip
-	var clip = new LiveAPI('live_set tracks 0 clip_slots 1 clip');
+	//var clip = new LiveAPI('live_set tracks 0 clip_slots 1 clip');
+	var clip = new LiveAPI(curClipPath);
+	post('clip.path: ' + clip.unquotedpath);
 	clip.call('remove_notes', 0, 0, 256, 128);
 
 	clip.set('loop_end', svArray.length / 8);
