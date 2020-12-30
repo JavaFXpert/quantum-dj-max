@@ -65,7 +65,8 @@ function msg_int(val) {
 	else if (inlet == 3) {
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		curClipPath = qasmPadObj.js.getPathByClipNameIdx(val);
-		post('curClipPath: ' + curClipPath);
+		populateCircGridFromClip();
+		//post('curClipPath: ' + curClipPath);
 	}
 }
 
@@ -193,18 +194,50 @@ function computeProbsPhases() {
 	clip.call('done');
 }
 
+
 /**
- * Given an integer from 0 - 127, calculates and implements
- * global phase adjustment.
- *
- * TODO: Accept input from Push 2 dial
- *
- * @param phaseShiftDialVal Integer from 0 - 127 received from
- *        global phase shift dial
+ * Reads a clip, populating the circuit grid if that data exists
+ * @param clipPath
  */
-function setGlobalPhaseShift(phaseShiftDialVal) {
-	globalPhaseShift = phaseShiftDialVal / 128.0 * (2 * Math.PI);
-	computeProbsPhases();
+function populateCircGridFromClip() {
+	post("\nIn populateCircGridFromClip, curClipPath: " + curClipPath);
+
+	var notesArrayPeriod = 6;
+	var numGridCells = NUM_GRID_ROWS * NUM_GRID_COLS;
+	var qasmPadObj = this.patcher.getnamed("qasmpad");
+	var clip = new LiveAPI(curClipPath);
+	var loopEnd = clip.get('loop_end');
+	post('\nloopEnd: ' + loopEnd);
+
+	var notes = clip.call('get_notes', loopEnd, 0, numGridCells, 128);
+	post('\nnotes: ' + notes);
+
+	if (notes[0] == 'notes' && notes[1] == numGridCells) {
+		for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+			for (var rowIdx = NUM_GRID_ROWS - 1; rowIdx >= 0; rowIdx--) {
+				var noteMidi = notes[(colIdx * NUM_GRID_ROWS + rowIdx) * notesArrayPeriod + 3];
+				post('\nnoteMidi: ' + noteMidi);
+				//messnamed('bob', noteMidi, 127);
+
+				//var temp = [1, noteMidi];
+				//qasmPadObj.js.setCurCircNodeType(temp);
+				//qasmPadObj.js.circGrid[rowIdx][colIdx] = noteMidi;
+
+				//var btnMidi = qasmPadObj.js.lowMidiPitch + (rowIdx * qasmPadObj.js.CONTR_MAT_COLS) + colIdx;
+				//post('\nbtnMidi: ' + btnMidi);
+
+				//messnamed('bob', btnMidi, 127);
+				//qasmPadObj.js.informCircuitBtn(rowIdx, colIdx);
+			}
+		}
+		// var temp = [1, 8];
+		// qasmPadObj.js.setCurCircNodeType(temp);
+		// qasmPadObj.js.circGrid[2][0] = 8;
+		// messnamed('bob', 8, 127);
+		// qasmPadObj.js.informCircuitBtn(5, 0);
+
+		// messnamed('alice', 96, 127);
+	}
 }
 
 
@@ -221,6 +254,7 @@ function setGlobalPhaseShift(phaseShiftDialVal) {
 	globalPhaseShift = phaseShiftDialVal / 128.0 * (2 * Math.PI);
 	computeProbsPhases();
 }
+
 
 
 // Given an object in Cartesian coordinates x, y
