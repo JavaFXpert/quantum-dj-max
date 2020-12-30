@@ -65,38 +65,136 @@ function draw()
 			lineto(-0.8, -0.8);
 		}
 
-		if (midiNum == 43) {
+		if (midiNum == 39) {
 		  // CircuitNodeTypes.H
 			moveto(-0.32, -0.4);
 			text("H");
 		}
-		else if (midiNum == 42) {
-			// CircuitNodeTypes.X
-			moveto(-0.32, -0.4);
-			text("X");
+
+		else if (midiNum == 97) {
+			// CircuitNodeTypes.RX_0
+			moveto(-0.6, -0.32);
+			text("x0");
 		}
-		else if (midiNum == 41) {
-			// CircuitNodeTypes.Z
-			moveto(-0.32, -0.4);
-			text("Z");
+		else if (midiNum == 98) {
+			// CircuitNodeTypes.RY_0
+			moveto(-0.6, -0.32);
+			text("y0");
 		}
-		else if (midiNum == 40) {
-			// CircuitNodeTypes.C
-			moveto(-0.32, -0.4);
+		else if (midiNum == 99) {
+			// CircuitNodeTypes.RZ_0
+			moveto(-0.6, -0.32);
+			text("z0");
+		}
+
+		else if (midiNum == 89) {
+			// CircuitNodeTypes.RX_1
+			moveto(-0.6, -0.32);
+			text("x1");
+		}
+		else if (midiNum == 90) {
+			// CircuitNodeTypes.RY_1
+			moveto(-0.6, -0.32);
+			text("y1");
+		}
+		else if (midiNum == 91) {
+			// CircuitNodeTypes.RZ_1
+			moveto(-0.6, -0.32);
+			text("T");
+		}
+
+		else if (midiNum == 81) {
+			// CircuitNodeTypes.RX_2
+			moveto(-0.6, -0.32);
+			text("x2");
+		}
+		else if (midiNum == 82) {
+			// CircuitNodeTypes.RY_2
+			moveto(-0.6, -0.32);
+			text("y2");
+		}
+		else if (midiNum == 83) {
+			// CircuitNodeTypes.RZ_2
+			moveto(-0.6, -0.32);
 			text("S");
 		}
-		else if (midiNum == 39) {
-			// CircuitNodeTypes.SDG
+
+		else if (midiNum == 73) {
+			// CircuitNodeTypes.RX_3
+			moveto(-0.6, -0.32);
+			text("x3");
+		}
+		else if (midiNum == 74) {
+			// CircuitNodeTypes.RY_3
+			moveto(-0.6, -0.32);
+			text("y3");
+		}
+		else if (midiNum == 75) {
+			// CircuitNodeTypes.RZ_3
+			moveto(-0.6, -0.32);
+			text("z3");
+		}
+
+		else if (midiNum == 65) {
+			// CircuitNodeTypes.RX_4
+			moveto(-0.6, -0.32);
+			text("X");
+		}
+		else if (midiNum == 66) {
+			// CircuitNodeTypes.RY_4
+			moveto(-0.6, -0.32);
+			text("Y");
+		}
+		else if (midiNum == 67) {
+			// CircuitNodeTypes.RZ_4
+			moveto(-0.6, -0.32);
+			text("Z");
+		}
+
+		else if (midiNum == 57) {
+			// CircuitNodeTypes.RX_5
+			moveto(-0.6, -0.32);
+			text("x5");
+		}
+		else if (midiNum == 58) {
+			// CircuitNodeTypes.RY_5
+			moveto(-0.6, -0.32);
+			text("y5");
+		}
+		else if (midiNum == 59) {
+			// CircuitNodeTypes.RZ_5
+			moveto(-0.6, -0.32);
+			text("z5");
+		}
+
+		else if (midiNum == 49) {
+			// CircuitNodeTypes.RX_6
+			moveto(-0.6, -0.32);
+			text("x6");
+		}
+		else if (midiNum == 50) {
+			// CircuitNodeTypes.RY_6
+			moveto(-0.6, -0.32);
+			text("y6");
+		}
+		else if (midiNum == 51) {
+			// CircuitNodeTypes.RZ_6
 			moveto(-0.6, -0.32);
 			text("S\u2020");
 		}
-		else if (midiNum == 38) {
-			// CircuitNodeTypes.T
-			moveto(-0.32, -0.4);
-			text("T");
+
+		else if (midiNum == 41) {
+			// CircuitNodeTypes.RX_7
+			moveto(-0.6, -0.32);
+			text("x7");
 		}
-		else if (midiNum == 37) {
-			// CircuitNodeTypes.TDG
+		else if (midiNum == 42) {
+			// CircuitNodeTypes.RY_7
+			moveto(-0.6, -0.32);
+			text("y7");
+		}
+		else if (midiNum == 43) {
+			// CircuitNodeTypes.RZ_7
 			moveto(-0.6, -0.32);
 			text("T\u2020");
 		}

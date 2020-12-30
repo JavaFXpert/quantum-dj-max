@@ -105,13 +105,104 @@ function draw()
 			moveto(-0.6, -0.32);
 			text("T\u2020");
 		}
-		else if (curNodeType == CircuitNodeTypes.RY_MINUS) {
+
+		else if (curNodeType == CircuitNodeTypes.RX_0) {
 			moveto(-0.6, -0.32);
-			text("y-");
+			text("x0");
 		}
-		else if (curNodeType == CircuitNodeTypes.RY_PLUS) {
+		else if (curNodeType == CircuitNodeTypes.RX_1) {
 			moveto(-0.6, -0.32);
-			text("y+");
+			text("x1");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_2) {
+			moveto(-0.6, -0.32);
+			text("x2");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_3) {
+			moveto(-0.6, -0.32);
+			text("x3");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_4) {
+			moveto(-0.6, -0.32);
+			text("X");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_5) {
+			moveto(-0.6, -0.32);
+			text("x5");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_6) {
+			moveto(-0.6, -0.32);
+			text("x6");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_7) {
+			moveto(-0.6, -0.32);
+			text("x7");
+		}
+
+		else if (curNodeType == CircuitNodeTypes.RY_0) {
+			moveto(-0.6, -0.32);
+			text("y0");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_1) {
+			moveto(-0.6, -0.32);
+			text("y1");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_2) {
+			moveto(-0.6, -0.32);
+			text("y2");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_3) {
+			moveto(-0.6, -0.32);
+			text("y3");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_4) {
+			moveto(-0.6, -0.32);
+			text("Y");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_5) {
+			moveto(-0.6, -0.32);
+			text("y5");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_6) {
+			moveto(-0.6, -0.32);
+			text("y6");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_7) {
+			moveto(-0.6, -0.32);
+			text("y7");
+		}
+
+		else if (curNodeType == CircuitNodeTypes.RZ_0) {
+			moveto(-0.6, -0.32);
+			text("z0");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_1) {
+			moveto(-0.6, -0.32);
+			text("T");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_2) {
+			moveto(-0.6, -0.32);
+			text("S");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_3) {
+			moveto(-0.6, -0.32);
+			text("z3");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_4) {
+			moveto(-0.6, -0.32);
+			text("Z");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_5) {
+			moveto(-0.6, -0.32);
+			text("z5");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_6) {
+			moveto(-0.6, -0.32);
+			text("S\u2020");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_7) {
+			moveto(-0.6, -0.32);
+			text("T\u2020");
 		}
 	}
 }

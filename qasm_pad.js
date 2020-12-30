@@ -141,6 +141,7 @@ function resetCircGrid() {
 function setCircGridGate(notePitchVelocity) {
 	//post('notePitchVel: ' + notePitchVel[0]);
 	if (notePitchVelocity.length >= 2) {
+		clearCircuitWhenEmptyKeyNextPressed = false;
 		var pitch = notePitchVelocity[0];
 		var velocity = notePitchVelocity[1];
 	
@@ -154,7 +155,6 @@ function setCircGridGate(notePitchVelocity) {
 				var rowIdx = NUM_GRID_ROWS - gridRow - 1;
 				var colIdx = gridCol;
 				informCircuitBtn(rowIdx, colIdx);
-				clearCircuitWhenEmptyKeyNextPressed = false;
 				// printCircGrid();
 				createQasmFromGrid();
 			}
@@ -163,13 +163,84 @@ function setCircGridGate(notePitchVelocity) {
 			}
 		}
 		// Additional gates TODO: Move these
+		else if (pitch == 97) {
+			curCircNodeType = CircuitNodeTypes.RX_0;
+		}
 		else if (pitch == 98) {
-			clearCircuitWhenEmptyKeyNextPressed = false;
-			curCircNodeType = CircuitNodeTypes.RY_MINUS;
+			curCircNodeType = CircuitNodeTypes.RY_0;
 		}
 		else if (pitch == 99) {
-			clearCircuitWhenEmptyKeyNextPressed = false;
-			curCircNodeType = CircuitNodeTypes.RY_PLUS;
+			curCircNodeType = CircuitNodeTypes.RZ_0;
+		}
+
+		else if (pitch == 89) {
+			curCircNodeType = CircuitNodeTypes.RX_1;
+		}
+		else if (pitch == 90) {
+			curCircNodeType = CircuitNodeTypes.RY_1;
+		}
+		else if (pitch == 91) {
+			curCircNodeType = CircuitNodeTypes.RZ_1;
+		}
+
+		else if (pitch == 81) {
+			curCircNodeType = CircuitNodeTypes.RX_2;
+		}
+		else if (pitch == 82) {
+			curCircNodeType = CircuitNodeTypes.RY_2;
+		}
+		else if (pitch == 83) {
+			curCircNodeType = CircuitNodeTypes.RZ_2;
+		}
+
+		else if (pitch == 73) {
+			curCircNodeType = CircuitNodeTypes.RX_3;
+		}
+		else if (pitch == 74) {
+			curCircNodeType = CircuitNodeTypes.RY_3;
+		}
+		else if (pitch == 75) {
+			curCircNodeType = CircuitNodeTypes.RZ_3;
+		}
+
+		else if (pitch == 65) {
+			curCircNodeType = CircuitNodeTypes.RX_4;
+		}
+		else if (pitch == 66) {
+			curCircNodeType = CircuitNodeTypes.RY_4;
+		}
+		else if (pitch == 67) {
+			curCircNodeType = CircuitNodeTypes.RZ_4;
+		}
+
+		else if (pitch == 57) {
+			curCircNodeType = CircuitNodeTypes.RX_5;
+		}
+		else if (pitch == 58) {
+			curCircNodeType = CircuitNodeTypes.RY_5;
+		}
+		else if (pitch == 59) {
+			curCircNodeType = CircuitNodeTypes.RZ_5;
+		}
+
+		else if (pitch == 49) {
+			curCircNodeType = CircuitNodeTypes.RX_6;
+		}
+		else if (pitch == 50) {
+			curCircNodeType = CircuitNodeTypes.RY_6;
+		}
+		else if (pitch == 51) {
+			curCircNodeType = CircuitNodeTypes.RZ_6;
+		}
+
+		else if (pitch == 41) {
+			curCircNodeType = CircuitNodeTypes.RX_7;
+		}
+		else if (pitch == 42) {
+			curCircNodeType = CircuitNodeTypes.RY_7;
+		}
+		else if (pitch == 43) {
+			curCircNodeType = CircuitNodeTypes.RZ_7;
 		}
 	}
 	else {
@@ -192,33 +263,9 @@ function setCurCircNodeType(controllerNumValue) {
 		var contVal = controllerNumValue[1];
 
 		if (contVal > 0) {
-			if (contNum == 43) {
-				clearCircuitWhenEmptyKeyNextPressed = false;
+			clearCircuitWhenEmptyKeyNextPressed = false;
+			if (contNum == 39) {
 				curCircNodeType = CircuitNodeTypes.H;
-			}
-			else if (contNum == 42) {
-				clearCircuitWhenEmptyKeyNextPressed = false;
-				curCircNodeType = CircuitNodeTypes.X;
-			}
-			else if (contNum == 41) {
-				clearCircuitWhenEmptyKeyNextPressed = false;
-				curCircNodeType = CircuitNodeTypes.Z;
-			}
-			else if (contNum == 40) {
-				clearCircuitWhenEmptyKeyNextPressed = false;
-				curCircNodeType = CircuitNodeTypes.S;
-			}
-			else if (contNum == 39) {
-				clearCircuitWhenEmptyKeyNextPressed = false;
-				curCircNodeType = CircuitNodeTypes.SDG;
-			}
-			else if (contNum == 38) {
-				clearCircuitWhenEmptyKeyNextPressed = false;
-				curCircNodeType = CircuitNodeTypes.T;
-			}
-			else if (contNum == 37) {
-				clearCircuitWhenEmptyKeyNextPressed = false;
-				curCircNodeType = CircuitNodeTypes.TDG;
 			}
 			else if (contNum == 36) {
 				curCircNodeType = CircuitNodeTypes.EMPTY;
@@ -229,6 +276,86 @@ function setCurCircNodeType(controllerNumValue) {
 				else {
 					clearCircuitWhenEmptyKeyNextPressed = true;
 				}
+			}
+
+			else if (contNum == 97) {
+				curCircNodeType = CircuitNodeTypes.RX_0;
+			}
+			else if (contNum == 98) {
+				curCircNodeType = CircuitNodeTypes.RY_0;
+			}
+			else if (contNum == 99) {
+				curCircNodeType = CircuitNodeTypes.RZ_0;
+			}
+
+			else if (contNum == 89) {
+				curCircNodeType = CircuitNodeTypes.RX_1;
+			}
+			else if (contNum == 90) {
+				curCircNodeType = CircuitNodeTypes.RY_1;
+			}
+			else if (contNum == 91) {
+				curCircNodeType = CircuitNodeTypes.RZ_1;
+			}
+
+			else if (contNum == 81) {
+				curCircNodeType = CircuitNodeTypes.RX_2;
+			}
+			else if (contNum == 82) {
+				curCircNodeType = CircuitNodeTypes.RY_2;
+			}
+			else if (contNum == 83) {
+				curCircNodeType = CircuitNodeTypes.RZ_2;
+			}
+
+			else if (contNum == 73) {
+				curCircNodeType = CircuitNodeTypes.RX_3;
+			}
+			else if (contNum == 74) {
+				curCircNodeType = CircuitNodeTypes.RY_3;
+			}
+			else if (contNum == 74) {
+				curCircNodeType = CircuitNodeTypes.RZ_3;
+			}
+
+			else if (contNum == 65) {
+				curCircNodeType = CircuitNodeTypes.RX_4;
+			}
+			else if (contNum == 66) {
+				curCircNodeType = CircuitNodeTypes.RY_4;
+			}
+			else if (contNum == 67) {
+				curCircNodeType = CircuitNodeTypes.RZ_4;
+			}
+
+			else if (contNum == 57) {
+				curCircNodeType = CircuitNodeTypes.RX_5;
+			}
+			else if (contNum == 58) {
+				curCircNodeType = CircuitNodeTypes.RY_5;
+			}
+			else if (contNum == 59) {
+				curCircNodeType = CircuitNodeTypes.RZ_5;
+			}
+
+			else if (contNum == 49) {
+				curCircNodeType = CircuitNodeTypes.RX_6;
+			}
+			else if (contNum == 50) {
+				curCircNodeType = CircuitNodeTypes.RY_6;
+			}
+			else if (contNum == 51) {
+				curCircNodeType = CircuitNodeTypes.RZ_6;
+			}
+
+			else if (contNum == 41) {
+				curCircNodeType = CircuitNodeTypes.RX_7;
+			}
+			else if (contNum == 42) {
+				curCircNodeType = CircuitNodeTypes.RY_7;
+			}
+			else if (contNum == 43) {
+				curCircNodeType = CircuitNodeTypes.RZ_7;
 			}
 		}
 		//post('curCircNodeType is now ' + curCircNodeType);
@@ -300,11 +427,80 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	else if (circNodeType == CircuitNodeTypes.TDG) {
 		qasmStr += ' tdg q[' + gridRow + '];';
 	}
-	else if (circNodeType == CircuitNodeTypes.RY_MINUS) {
-		qasmStr += ' ry(-pi/4) q[' + gridRow + '];';
+
+	else if (circNodeType == CircuitNodeTypes.RX_0) {
+		qasmStr += ' rx(0) q[' + gridRow + '];';
 	}
-	else if (circNodeType == CircuitNodeTypes.RY_PLUS) {
+	else if (circNodeType == CircuitNodeTypes.RX_1) {
+		qasmStr += ' rx(pi/4) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_2) {
+		qasmStr += ' rx(pi/2) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_3) {
+		qasmStr += ' rx(3*pi/4) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_4) {
+		qasmStr += ' rx(pi) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_5) {
+		qasmStr += ' rx(5*pi/4) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_6) {
+		qasmStr += ' rx(3*pi/2) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_7) {
+		qasmStr += ' rx(7*pi/4) q[' + gridRow + '];';
+	}
+
+	else if (circNodeType == CircuitNodeTypes.RY_0) {
+		qasmStr += ' ry(0) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_1) {
 		qasmStr += ' ry(pi/4) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_2) {
+		qasmStr += ' ry(pi/2) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_3) {
+		qasmStr += ' ry(3*pi/4) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_4) {
+		qasmStr += ' ry(pi) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_5) {
+		qasmStr += ' ry(5*pi/4) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_6) {
+		qasmStr += ' ry(3*pi/2) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_7) {
+		qasmStr += ' ry(7*pi/4) q[' + gridRow + '];';
+	}
+
+	else if (circNodeType == CircuitNodeTypes.RZ_0) {
+		qasmStr += ' rz(0) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_1) {
+		qasmStr += ' rz(pi/4) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_2) {
+		qasmStr += ' rz(pi/2) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_3) {
+		qasmStr += ' rz(3*pi/4) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_4) {
+		qasmStr += ' rz(pi) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_5) {
+		qasmStr += ' rz(5*pi/4) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_6) {
+		qasmStr += ' rz(3*pi/2) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_7) {
+		qasmStr += ' rz(7*pi/4) q[' + gridRow + '];';
 	}
 
 	return qasmStr;

@@ -48,6 +48,33 @@ var CircuitNodeTypes = {
   CTRL: 11, // "control" part of multi-qubit gate
   TRACE: 12, // In the path between a gate part and a "control" or "swap" part
   MEASURE_Z: 13,
-  RY_PLUS: 20, // Ry +pi/4
-  RY_MINUS: 21 // Ry -pi/4
+  // RY_PLUS: 20, // Ry +pi/4
+  // RY_MINUS: 21, // Ry -pi/4
+
+  RX_0: 30, // Rx
+  RX_1: 31, // Rx pi/4
+  RX_2: 32, // Rx pi/2
+  RX_3: 33, // Rx 3pi/4
+  RX_4: 34, // Rx pi (X)
+  RX_5: 35, // Rx 5pi/4
+  RX_6: 36, // Rx 3pi/2
+  RX_7: 37, // Rx 7pi/4
+
+  RY_0: 40, // Ry
+  RY_1: 41, // Ry pi/4
+  RY_2: 42, // Ry pi/2
+  RY_3: 43, // Ry 3pi/4
+  RY_4: 44, // Ry pi (Y)
+  RY_5: 45, // Ry 5pi/4
+  RY_6: 46, // Ry 3pi/2
+  RY_7: 47, // Ry 7pi/4
+
+  RZ_0: 50, // Rz
+  RZ_1: 51, // Rz pi/4 (T)
+  RZ_2: 52, // Rz pi/2 (S)
+  RZ_3: 53, // Rz 3pi/4
+  RZ_4: 54, // Rz pi (Z)
+  RZ_5: 55, // Rz 5pi/4
+  RZ_6: 56, // Rz 3pi/2 (S†)
+  RZ_7: 57 // Rz 7pi/4 (T†)
 }
