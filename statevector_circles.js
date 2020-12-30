@@ -101,6 +101,7 @@ function computeProbsPhases() {
 	messnamed('cmd_to_svgrid', 'clear');
 	var pitchNums = [];
 	var numNotes = 0;
+	var numBasisStates = svArray.length / 2;
 
 	for (var svIdx = 0; svIdx < svArray.length; svIdx += 2) {
 		var real = svArray[svIdx];
@@ -110,8 +111,10 @@ function computeProbsPhases() {
 		var probability = Math.pow(Math.abs(amplitude), 2);
 		var pitchNum = -1;
 
-		//post('probability: ' + probability);
-		if (probability > PROBABILITY_THRESHOLD) {
+		// post('\nprobability: ' + probability);
+		// post('\nnumBasisStates: ' + numBasisStates);
+		// post('\nPROBABILITY_THRESHOLD / numBasisStates: ' + PROBABILITY_THRESHOLD / numBasisStates);
+		if (probability > PROBABILITY_THRESHOLD / numBasisStates) {
 			var polar = cartesianToPolar(real, imag);
 
 			// If first basis state has non-zero phase, and global phase isn't

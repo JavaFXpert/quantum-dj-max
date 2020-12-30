@@ -30,7 +30,7 @@ var NUM_PITCHES = 8;
 var MIN_CIRCUIT_WIRES = 2;
 
 // Threshold for regarding a state as having any probability
-var PROBABILITY_THRESHOLD = 0.03
+var PROBABILITY_THRESHOLD = 0.12
 
 var CircuitNodeTypes = {
   EMPTY: -1,
