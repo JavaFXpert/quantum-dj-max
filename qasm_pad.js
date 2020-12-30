@@ -609,7 +609,9 @@ function populateMidiClipsList() {
 
 					var clipName = clip.getstring('name');
 					if (clipName.length > 2) {
-						clipName = clipName.substring(1, clipName.length - 1);
+						if (clipName.substring(0, 1) == '\"') {
+							clipName = clipName.substring(1, clipName.length - 1);
+						}
 						post('\nclipName: ' + clipName);
 						post('\nclip path: ' + clip.unquotedpath);
 
