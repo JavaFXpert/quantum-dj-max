@@ -151,7 +151,7 @@ function computeProbsPhases() {
 	// Set the notes into the clip
 	//var clip = new LiveAPI('live_set tracks 0 clip_slots 1 clip');
 	var clip = new LiveAPI(curClipPath);
-	post('clip.path: ' + clip.unquotedpath);
+	//post('clip.path: ' + clip.unquotedpath);
 	clip.call('remove_notes', 0, 0, 256, 128);
 
 	clip.set('loop_end', svArray.length / 8);
@@ -185,7 +185,8 @@ function computeProbsPhases() {
 			}
   		//post('gateMidi: ' + gateMidi);
 
-  		var metaDataTime = ((startIdx + (rowIdx * NUM_GRID_COLS + colIdx)) / 4.0).toFixed(2);
+  		//var metaDataTime = ((startIdx + (rowIdx * NUM_GRID_COLS + colIdx)) / 4.0).toFixed(2);
+			var metaDataTime = ((startIdx + (colIdx * NUM_GRID_ROWS + rowIdx)) / 4.0).toFixed(2);
   		clip.call('note', gateMidi, metaDataTime, ".25", 100, 0);
 		}
 	}
@@ -214,20 +215,37 @@ function populateCircGridFromClip() {
 
 	if (notes[0] == 'notes' && notes[1] == numGridCells) {
 		for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
-			for (var rowIdx = NUM_GRID_ROWS - 1; rowIdx >= 0; rowIdx--) {
+			//for (var rowIdx = NUM_GRID_ROWS - 1; rowIdx >= 0; rowIdx--) {
+			for (var rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
 				var noteMidi = notes[(colIdx * NUM_GRID_ROWS + rowIdx) * notesArrayPeriod + 3];
-				post('\nnoteMidi: ' + noteMidi);
+				var noteStart = notes[(colIdx * NUM_GRID_ROWS + rowIdx) * notesArrayPeriod + 4];
 				//messnamed('bob', noteMidi, 127);
 
-				//var temp = [1, noteMidi];
-				//qasmPadObj.js.setCurCircNodeType(temp);
-				//qasmPadObj.js.circGrid[rowIdx][colIdx] = noteMidi;
+				if (noteMidi < 127) {
+					post('\n----- noteMidi: ' + noteMidi);
+					post('\nnoteStart: ' + noteStart);
 
-				//var btnMidi = qasmPadObj.js.lowMidiPitch + (rowIdx * qasmPadObj.js.CONTR_MAT_COLS) + colIdx;
-				//post('\nbtnMidi: ' + btnMidi);
+					// Use the start time for each note for ascertaining
+					// proper place in grid
+					// TODO: Create class(es) to abstract Clip and notes?
+					var adjNoteStart = noteStart - loopEnd;
 
-				//messnamed('bob', btnMidi, 127);
-				//qasmPadObj.js.informCircuitBtn(rowIdx, colIdx);
+					var noteCol = Math.floor(adjNoteStart * 4 / NUM_GRID_ROWS);
+					post('\nnoteCol: ' + noteCol);
+
+					var noteRow = Math.floor(adjNoteStart * 4 % NUM_GRID_ROWS);
+					post('\nnoteRow: ' + noteRow);
+
+					var temp = [1, noteMidi];
+					qasmPadObj.js.setCurCircNodeType(temp);
+					qasmPadObj.js.circGrid[noteRow][noteCol] = noteMidi;
+					qasmPadObj.js.informCircuitBtn(noteRow, noteCol);
+
+					var btnMidi = qasmPadObj.js.lowMidiPitch + (rowIdx * qasmPadObj.js.CONTR_MAT_COLS) + colIdx;
+					post('\nbtnMidi: ' + btnMidi);
+
+					//messnamed('bob', btnMidi, 127);
+				}
 			}
 		}
 		// var temp = [1, 8];

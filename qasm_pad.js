@@ -152,9 +152,9 @@ function setCircGridGate(notePitchVelocity) {
 			if (gridCol < NUM_GRID_COLS) {
 				gridCol = NUM_GRID_COLS - gridCol - 1;
 				circGrid[gridRow][gridCol] = curCircNodeType;
-				var rowIdx = NUM_GRID_ROWS - gridRow - 1;
-				var colIdx = gridCol;
-				informCircuitBtn(rowIdx, colIdx);
+				//var rowIdx = NUM_GRID_ROWS - gridRow - 1;
+				//var colIdx = gridCol;
+				informCircuitBtn(gridRow, gridCol);
 				// printCircGrid();
 				createQasmFromGrid();
 			}
@@ -536,7 +536,10 @@ function computeNumWires() {
  * @param colIdx Zero-based column number on circuit grid
  */
 function informCircuitBtn(gridRowIdx, gridColIdx) {
-	var midiPitch = lowMidiPitch + (gridRowIdx * CONTR_MAT_COLS) + gridColIdx;
+	var midiPitch = lowMidiPitch + ((NUM_GRID_ROWS - gridRowIdx - 1) * CONTR_MAT_COLS) + gridColIdx;
+	post('\n----In informCircuitBtn, midiPitch: ' + midiPitch);
+	post('\nIn informCircuitBtn, gridRowIdx: ' + gridRowIdx);
+	post('\nIn informCircuitBtn, gridColIdx: ' + gridColIdx);
 	var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
 	circBtnObj.js.updateDisplay();
 }
