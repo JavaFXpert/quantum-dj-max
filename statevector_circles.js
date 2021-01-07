@@ -45,7 +45,7 @@ var globalPhaseShift = 0.0;
 
 // Instrument type selection
 // TODO: Find better name
-var instrumentType = 0;
+var pitchTransformIndex = 0;
 
 
 var curClipPath = "";
@@ -59,7 +59,7 @@ function msg_int(val) {
 		setGlobalPhaseShift(val);
 	}
 	else if (inlet == 2) {
-		instrumentType = val;
+		pitchTransformIndex = val;
 		computeProbsPhases();
 	}
 	else if (inlet == 3) {
@@ -158,18 +158,21 @@ function computeProbsPhases() {
 
 	clip.call('set_notes');
 
-	// Number of notes will include circuit node type values from grid
+	// Number of notes will include circuit node type values from grid,
+	// plus pitchTransformationIndex
+
+	// clip.call('notes', numNotes + (NUM_GRID_ROWS * NUM_GRID_COLS) + 1);
 	clip.call('notes', numNotes + (NUM_GRID_ROWS * NUM_GRID_COLS));
 
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
 		if (pitchNums[pnIdx] > -1) {
 			var time = (pnIdx / 4.0).toFixed(2);
 
-			if (instrumentType == 0) {
+			if (pitchTransformIndex == 0) {
 				clip.call('note', pitchNums[pnIdx] + 36, time, ".25", 100, 0);
 			}
 			else {
-				clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx], instrumentType), time, ".25", 100, 0);
+				clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex), time, ".25", 100, 0);
 			}
 		}
 	}
@@ -185,12 +188,18 @@ function computeProbsPhases() {
 			}
   		//post('gateMidi: ' + gateMidi);
 
-  		//var metaDataTime = ((startIdx + (rowIdx * NUM_GRID_COLS + colIdx)) / 4.0).toFixed(2);
 			var metaDataTime = ((startIdx + (colIdx * NUM_GRID_ROWS + rowIdx)) / 4.0).toFixed(2);
+  		post('metaDataTime: ' + metaDataTime);
   		clip.call('note', gateMidi, metaDataTime, ".25", 100, 0);
 		}
 	}
 
+  // Encode pitch transformation index
+	var pitchTransformIndexTime = ((startIdx + NUM_GRID_ROWS * NUM_GRID_COLS) / 4.0).toFixed(2);
+
+	//clip.call('note', pitchTransformIndex, pitchTransformIndexTime, ".25", 100, 0);
+	// clip.call('note', 126, pitchTransformIndexTime, ".25", 100, 0);
+	// post('pitchTransformIndexTime: ' + pitchTransformIndexTime);
 
 	clip.call('done');
 }
@@ -216,6 +225,8 @@ function populateCircGridFromClip() {
 	//qasmPadObj.js.setCurCircNodeType(ignore);
 
 	var notes = clip.call('get_notes', loopEnd, 0, numGridCells, 128);
+	//var notes = clip.call('get_notes', loopEnd, 0, numGridCells + 1, 128);
+
 	post('\nnotes: ' + notes);
 
 	if (notes[0] == 'notes' && notes[1] == numGridCells) {
