@@ -33,17 +33,9 @@ this.outlets = 2;
 // when the CircuitNodeTypes.EMPTY key is net pressed
 var clearCircuitWhenEmptyKeyNextPressed = false;
 
-var curCircNodeType = CircuitNodeTypes.EMPTY;
+var curCircNodeType = CircuitNodeTypes.IGNORE;
 
-// Dimensions of controller pad matrix
-var CONTR_MAT_ROWS = 8;
-var CONTR_MAT_COLS = 8;
-
-// Controller pad columns reserved for gates
-var NUM_GATE_COLS = 3;
-
-var lowMidiPitch = 36;
-var highMidiPitch = (NUM_GRID_ROWS - 1) * CONTR_MAT_COLS + NUM_GRID_COLS + lowMidiPitch - 1;
+var highMidiPitch = (NUM_GRID_ROWS - 1) * CONTR_MAT_COLS + NUM_GRID_COLS + LOW_MIDI_PITCH - 1;
 //post('highMidiPitch: ' + highMidiPitch);
 
 // TODO: Dynamically initialize this array
@@ -109,6 +101,7 @@ function list(lst)
 {
 	if (inlet == 0) {
 		setCircGridGate(arguments);
+		createQasmFromGrid();
 	}
 	else if (inlet == 1) {
 		setCurCircNodeType(arguments);
@@ -127,7 +120,7 @@ function resetCircGrid() {
 			informCircuitBtn(rowIdx, colIdx);
 		}
 	}
-	createQasmFromGrid();
+	//createQasmFromGrid();
 	//printCircGrid();
 }
 
@@ -145,18 +138,23 @@ function setCircGridGate(notePitchVelocity) {
 		var pitch = notePitchVelocity[0];
 		var velocity = notePitchVelocity[1];
 	
-		if (pitch >= lowMidiPitch && pitch <= highMidiPitch & velocity > 0) {
+		if (pitch >= LOW_MIDI_PITCH && pitch <= highMidiPitch & velocity > 0) {
 			var gridRow = Math.floor((highMidiPitch - pitch) / CONTR_MAT_COLS);
 			var gridCol = (highMidiPitch - pitch) % CONTR_MAT_COLS;
 
 			if (gridCol < NUM_GRID_COLS) {
 				gridCol = NUM_GRID_COLS - gridCol - 1;
-				circGrid[gridRow][gridCol] = curCircNodeType;
+
+//				if (curCircNodeType != CircuitNodeTypes.IGNORE) {
+					circGrid[gridRow][gridCol] = curCircNodeType;
+//					curCircNodeType = CircuitNodeTypes.IGNORE
+//				}
+
 				//var rowIdx = NUM_GRID_ROWS - gridRow - 1;
 				//var colIdx = gridCol;
 				informCircuitBtn(gridRow, gridCol);
 				// printCircGrid();
-				createQasmFromGrid();
+				//createQasmFromGrid();
 			}
 			else {
 				post('gridCol not on circuit: ' + gridCol);
@@ -257,7 +255,7 @@ function setCircGridGate(notePitchVelocity) {
  * @param controllerNumValue Array containing controller number and value
  */
 function setCurCircNodeType(controllerNumValue) {
-	//post('controllerNumValue: ' + controllerNumValue[0]);
+	post('controllerNumValue: ' + controllerNumValue[0]);
 	if (controllerNumValue.length >= 2) {
 		var contNum = controllerNumValue[0];
 		var contVal = controllerNumValue[1];
@@ -357,8 +355,11 @@ function setCurCircNodeType(controllerNumValue) {
 			else if (contNum == 43) {
 				curCircNodeType = CircuitNodeTypes.RZ_7;
 			}
+			else {
+				curCircNodeType = CircuitNodeTypes.IGNORE;
+			}
 		}
-		//post('curCircNodeType is now ' + curCircNodeType);
+		post('curCircNodeType is now ' + curCircNodeType);
 	}
 	else {
 		post('Unexpected controllerNumValue.length: ' + controllerNumValue.length);
@@ -536,12 +537,12 @@ function computeNumWires() {
  * @param colIdx Zero-based column number on circuit grid
  */
 function informCircuitBtn(gridRowIdx, gridColIdx) {
-	var midiPitch = lowMidiPitch + ((NUM_GRID_ROWS - gridRowIdx - 1) * CONTR_MAT_COLS) + gridColIdx;
+	var midiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - gridRowIdx - 1) * CONTR_MAT_COLS) + gridColIdx;
 	post('\n----In informCircuitBtn, midiPitch: ' + midiPitch);
 	post('\nIn informCircuitBtn, gridRowIdx: ' + gridRowIdx);
 	post('\nIn informCircuitBtn, gridColIdx: ' + gridColIdx);
 	var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
-	circBtnObj.js.updateDisplay();
+	circBtnObj.js.updateDisplay(circGrid[gridRowIdx][gridColIdx]);
 }
 
 

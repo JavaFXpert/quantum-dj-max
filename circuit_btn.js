@@ -21,9 +21,10 @@ include('common.js');
 
 this.midiNum = 0;
 this.qasmPadObj = this.patcher.getnamed("qasmpad");
+this.circNodeType = CircuitNodeTypes.EMPTY;
 
-
-function updateDisplay() {
+function updateDisplay(nodeType) {
+	this.circNodeType = nodeType;
 	draw();
 	refresh();
 }
@@ -55,8 +56,10 @@ function draw()
 
 		glcolor(0,0,0,1);
 
-		var curNodeType = qasmPadObj.js.curCircNodeType;
-    if (curNodeType == CircuitNodeTypes.EMPTY || curNodeType == 0) {
+		//var curNodeType = qasmPadObj.js.curCircNodeType;
+		var curNodeType = circNodeType;
+
+		if (curNodeType == CircuitNodeTypes.EMPTY || curNodeType == 0) {
 			// Draw empty circuit wire
     	moveto(-1.0, 0.0);
 			lineto(1.0, 0.0);

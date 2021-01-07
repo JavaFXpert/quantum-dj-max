@@ -19,9 +19,19 @@
  * in this app.
  */
 
+// Lowest MIDI pitch on grid
+var LOW_MIDI_PITCH = 36;
+
+// Dimensions of controller pad matrix
+var CONTR_MAT_ROWS = 8;
+var CONTR_MAT_COLS = 8;
+
 // Controller pad rows and columns reserved for circuit
 var NUM_GRID_ROWS = 8;
 var NUM_GRID_COLS = 5;
+
+// Controller pad columns reserved for gates
+var NUM_GATE_COLS = 3;
 
 // Resolution of calculation from phase to notes or sounds in a kit
 var NUM_PITCHES = 8;
@@ -33,6 +43,7 @@ var MIN_CIRCUIT_WIRES = 2;
 var PROBABILITY_THRESHOLD = 0.12
 
 var CircuitNodeTypes = {
+  IGNORE: -2,
   EMPTY: -1,
   IDEN: 0,
   X: 1,

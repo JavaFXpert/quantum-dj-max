@@ -29,7 +29,7 @@ var maxDisplayedSteps = 64
 //     2: diatonic octave 2
 //     3: diatonic octave 3
 //     4: diatonic octave 4
-// Inlet 2 receives name of current clip
+// Inlet 3 receives name of current clip
 this.inlets = 4;
 
 sketch.default2d();
@@ -210,6 +210,11 @@ function populateCircGridFromClip() {
 	var loopEnd = clip.get('loop_end');
 	post('\nloopEnd: ' + loopEnd);
 
+	qasmPadObj.js.resetCircGrid();
+
+	//var ignore = [1, CircuitNodeTypes.IGNORE];
+	//qasmPadObj.js.setCurCircNodeType(ignore);
+
 	var notes = clip.call('get_notes', loopEnd, 0, numGridCells, 128);
 	post('\nnotes: ' + notes);
 
@@ -236,15 +241,21 @@ function populateCircGridFromClip() {
 					var noteRow = Math.floor(adjNoteStart * 4 % NUM_GRID_ROWS);
 					post('\nnoteRow: ' + noteRow);
 
-					var temp = [1, noteMidi];
-					qasmPadObj.js.setCurCircNodeType(temp);
+					//var temp = [1, noteMidi];
+					//qasmPadObj.js.setCurCircNodeType(temp);
+
+					var midiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - noteRow - 1) * CONTR_MAT_COLS) + noteCol;
+					var notePitchVelocity = [midiPitch, 127];
+					qasmPadObj.js.setCircGridGate(notePitchVelocity);
+
 					qasmPadObj.js.circGrid[noteRow][noteCol] = noteMidi;
 					qasmPadObj.js.informCircuitBtn(noteRow, noteCol);
 
-					var btnMidi = qasmPadObj.js.lowMidiPitch + (rowIdx * qasmPadObj.js.CONTR_MAT_COLS) + colIdx;
-					post('\nbtnMidi: ' + btnMidi);
+					// var btnMidi = qasmPadObj.js.LOW_MIDI_PITCH + (rowIdx * qasmPadObj.js.CONTR_MAT_COLS) + colIdx;
+					// post('\nbtnMidi: ' + btnMidi);
 
 					//messnamed('bob', btnMidi, 127);
+
 				}
 			}
 		}
@@ -255,6 +266,8 @@ function populateCircGridFromClip() {
 		// qasmPadObj.js.informCircuitBtn(5, 0);
 
 		// messnamed('alice', 96, 127);
+		qasmPadObj.js.createQasmFromGrid();
+		qasmPadObj.js.printCircGrid();
 	}
 }
 
