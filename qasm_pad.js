@@ -538,9 +538,9 @@ function computeNumWires() {
  */
 function informCircuitBtn(gridRowIdx, gridColIdx) {
 	var midiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - gridRowIdx - 1) * CONTR_MAT_COLS) + gridColIdx;
-	post('\n----In informCircuitBtn, midiPitch: ' + midiPitch);
-	post('\nIn informCircuitBtn, gridRowIdx: ' + gridRowIdx);
-	post('\nIn informCircuitBtn, gridColIdx: ' + gridColIdx);
+	//post('\n----In informCircuitBtn, midiPitch: ' + midiPitch);
+	//post('\nIn informCircuitBtn, gridRowIdx: ' + gridRowIdx);
+	//post('\nIn informCircuitBtn, gridColIdx: ' + gridColIdx);
 	var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
 	circBtnObj.js.updateDisplay(circGrid[gridRowIdx][gridColIdx]);
 }

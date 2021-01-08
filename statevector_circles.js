@@ -42,9 +42,13 @@ var vbrgb = [1.,1.,1.,1.];
 // Current statevector
 var svArray = [1.0, 0.0, 0.0, 0.0];
 
+
 // Number of radians to add to the phase of each state to
 // apply the desired global phase
 var globalPhaseShift = 0.0;
+
+// MIDI (0-127) representation of global phase shift value
+var globalPhaseShiftMidi = 0;
 
 
 // Instrument type selection
@@ -60,6 +64,7 @@ refresh();
 
 function msg_int(val) {
 	if (inlet == 1) {
+		globalPhaseShiftMidi = val;
 		setGlobalPhaseShift(val);
 	}
 	else if (inlet == 2) {
@@ -129,12 +134,15 @@ function computeProbsPhases() {
 				if (polar.theta < 0) {
 					polar.theta += 2 * Math.PI;
 				}
-				var phaseDialValue = 128 - (Math.floor((polar.theta / (2 * Math.PI)) * 128) % 128);
 
-				//post('\nGlobal phase now: ' + polar.theta);
-				//post('\nGlobal phase dial now: ' + phaseDialValue);
+				//TODO: Review/simplify mods in calculation
+				globalPhaseShiftMidi = 128 - (Math.floor((polar.theta / (2 * Math.PI)) * 128) % 128);
+				globalPhaseShiftMidi = globalPhaseShiftMidi % 128;
 
-				outlet(0, 'int', phaseDialValue);
+				post('\nGlobal phase now: ' + polar.theta);
+				post('\nGlobal phase dial now: ' + globalPhaseShiftMidi);
+
+				outlet(0, 'int', globalPhaseShiftMidi);
 			}
 
 			var shiftedPhase = polar.theta + globalPhaseShift;
@@ -163,25 +171,25 @@ function computeProbsPhases() {
 	clip.call('set_notes');
 
 	// Number of notes will include circuit node type values from grid,
-	// plus pitchTransformationIndex
+	// plus globalPhaseShift and pitchTransformationIndex
 
-	clip.call('notes', numNotes + NUM_GRID_CELLS + 1);
+	clip.call('notes', numNotes + NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES);
 
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
 		if (pitchNums[pnIdx] > -1) {
 			var time = (pnIdx / 4.0).toFixed(2);
 
-			post('\npnIdx: ' + pnIdx);
-			post('\npitchTransformIndex: ' + pitchTransformIndex);
+			//post('\npnIdx: ' + pnIdx);
+			//post('\npitchTransformIndex: ' + pitchTransformIndex);
 
 			if (pitchTransformIndex == 0) {
 				clip.call('note', pitchNums[pnIdx] + 36, time, ".25", 100, 0);
-				post('\npitchNums[pnIdx] + 36: ' + pitchNums[pnIdx] + 36);
+				//post('\npitchNums[pnIdx] + 36: ' + pitchNums[pnIdx] + 36);
 			}
 			else {
 				clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex), time, ".25", 100, 0);
-				post('\npitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex): ' +
-					pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex));
+				//post('\npitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex): ' +
+				//	pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex));
 			}
 		}
 	}
@@ -198,19 +206,21 @@ function computeProbsPhases() {
   		//post('gateMidi: ' + gateMidi);
 
 			var metaDataTime = ((startIdx + (colIdx * NUM_GRID_ROWS + rowIdx)) / 4.0).toFixed(2);
-  		post('\nmetaDataTime: ' + metaDataTime);
+  		//post('\nmetaDataTime: ' + metaDataTime);
   		clip.call('note', gateMidi, metaDataTime, ".25", 100, 0);
 		}
 	}
 
-  // Encode pitch transformation index
-	var pitchTransformIndexTime = ((startIdx + NUM_GRID_CELLS) / 4.0).toFixed(2);
+	// Encode global phase shift
+	var globalPhaseShiftTime = ((startIdx + NUM_GRID_CELLS) / 4.0).toFixed(2);
+	post('\nEncoding globalPhaseShiftMidi: ' + globalPhaseShiftMidi);
+	clip.call('note', globalPhaseShiftMidi, globalPhaseShiftTime, ".25", 100, 0);
+	post('\nglobalPhaseShiftTime: ' + globalPhaseShiftTime);
 
-	//clip.call('note', 1, pitchTransformIndexTime, ".25", 100, 0);
-
+	// Encode pitch transformation index
+	var pitchTransformIndexTime = ((startIdx + NUM_GRID_CELLS + 1) / 4.0).toFixed(2);
 	post('\nEncoding pitchTransformIndex: ' + pitchTransformIndex);
 	clip.call('note', pitchTransformIndex, pitchTransformIndexTime, ".25", 100, 0);
-
 	post('\npitchTransformIndexTime: ' + pitchTransformIndexTime);
 
 	clip.call('done');
@@ -237,13 +247,13 @@ function populateCircGridFromClip() {
 	//qasmPadObj.js.setCurCircNodeType(ignore);
 
 	//var notes = clip.call('get_notes', loopEnd, 0, numGridCells, 128);
-	var notes = clip.call('get_notes', loopEnd, 0, NUM_GRID_CELLS + 1, 128);
+	var notes = clip.call('get_notes', loopEnd, 0, NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES, 128);
 
 	post('\nnotes: ' + notes);
 
-	if (notes[0] == 'notes' && notes[1] == NUM_GRID_CELLS + 1) {
+	if (notes[0] == 'notes' && notes[1] == NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES) {
 		//for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
-		for (var noteIdx = 0; noteIdx < NUM_GRID_CELLS + 1; noteIdx++) {
+		for (var noteIdx = 0; noteIdx < NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES; noteIdx++) {
 			//for (var rowIdx = NUM_GRID_ROWS - 1; rowIdx >= 0; rowIdx--) {
 			//for (var rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
 			var noteMidi = notes[noteIdx * notesArrayPeriod + 3];
@@ -261,19 +271,25 @@ function populateCircGridFromClip() {
 				post('\nadjNoteStart: ' + adjNoteStart);
 
 				if (adjNoteStart * 4 == NUM_GRID_CELLS) {
+					globalPhaseShiftMidi = noteMidi;
+					post('\nFound the globalPhaseShiftMidi: ' + globalPhaseShiftMidi);
+
+					// Send globalPhaseShift
+					outlet(0, 'int', globalPhaseShiftMidi);
+				}
+				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 1) {
 					pitchTransformIndex = noteMidi;
 					post('\nFound the pitchTransformIndex: ' + pitchTransformIndex);
 
 					// Send pitch transform index
-					// TODO: Ascertain if this is necessary
 					outlet(1, 'int', pitchTransformIndex);
 				}
 				else {
 					var noteCol = Math.floor(adjNoteStart * 4 / NUM_GRID_ROWS);
-					post('\nnoteCol: ' + noteCol);
+					//post('\nnoteCol: ' + noteCol);
 
 					var noteRow = Math.floor(adjNoteStart * 4 % NUM_GRID_ROWS);
-					post('\nnoteRow: ' + noteRow);
+					//post('\nnoteRow: ' + noteRow);
 
 					//var temp = [1, noteMidi];
 					//qasmPadObj.js.setCurCircNodeType(temp);
@@ -295,7 +311,7 @@ function populateCircGridFromClip() {
 
 		// messnamed('alice', 96, 127);
 		qasmPadObj.js.createQasmFromGrid();
-		qasmPadObj.js.printCircGrid();
+		//qasmPadObj.js.printCircGrid();
 	}
 }
 

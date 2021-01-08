@@ -36,6 +36,10 @@ var NUM_GRID_CELLS = NUM_GRID_ROWS * NUM_GRID_COLS;
 // Controller pad columns reserved for gates
 var NUM_GATE_COLS = 3;
 
+// Number of values in addition to the circuit grid
+// stored as metadata in the clip
+var NUM_ADDITIONAL_METADATA_VALUES = 2;
+
 // Resolution of calculation from phase to notes or sounds in a kit
 var NUM_PITCHES = 8;
 
