@@ -165,8 +165,7 @@ function computeProbsPhases() {
 	// Number of notes will include circuit node type values from grid,
 	// plus pitchTransformationIndex
 
-	clip.call('notes', numNotes + (NUM_GRID_ROWS * NUM_GRID_COLS) + 1);
-	// clip.call('notes', numNotes + (NUM_GRID_ROWS * NUM_GRID_COLS));
+	clip.call('notes', numNotes + NUM_GRID_CELLS + 1);
 
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
 		if (pitchNums[pnIdx] > -1) {
@@ -205,7 +204,7 @@ function computeProbsPhases() {
 	}
 
   // Encode pitch transformation index
-	var pitchTransformIndexTime = ((startIdx + NUM_GRID_ROWS * NUM_GRID_COLS) / 4.0).toFixed(2);
+	var pitchTransformIndexTime = ((startIdx + NUM_GRID_CELLS) / 4.0).toFixed(2);
 
 	//clip.call('note', 1, pitchTransformIndexTime, ".25", 100, 0);
 
@@ -226,7 +225,7 @@ function populateCircGridFromClip() {
 	post("\nIn populateCircGridFromClip, curClipPath: " + curClipPath);
 
 	var notesArrayPeriod = 6;
-	var numGridCells = NUM_GRID_ROWS * NUM_GRID_COLS;
+	//var numGridCells = NUM_GRID_ROWS * NUM_GRID_COLS;
 	var qasmPadObj = this.patcher.getnamed("qasmpad");
 	var clip = new LiveAPI(curClipPath);
 	var loopEnd = clip.get('loop_end');
@@ -238,13 +237,13 @@ function populateCircGridFromClip() {
 	//qasmPadObj.js.setCurCircNodeType(ignore);
 
 	//var notes = clip.call('get_notes', loopEnd, 0, numGridCells, 128);
-	var notes = clip.call('get_notes', loopEnd, 0, numGridCells + 1, 128);
+	var notes = clip.call('get_notes', loopEnd, 0, NUM_GRID_CELLS + 1, 128);
 
 	post('\nnotes: ' + notes);
 
-	if (notes[0] == 'notes' && notes[1] == numGridCells + 1) {
+	if (notes[0] == 'notes' && notes[1] == NUM_GRID_CELLS + 1) {
 		//for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
-		for (var noteIdx = 0; noteIdx < numGridCells + 1; noteIdx++) {
+		for (var noteIdx = 0; noteIdx < NUM_GRID_CELLS + 1; noteIdx++) {
 			//for (var rowIdx = NUM_GRID_ROWS - 1; rowIdx >= 0; rowIdx--) {
 			//for (var rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
 			var noteMidi = notes[noteIdx * notesArrayPeriod + 3];
@@ -261,7 +260,7 @@ function populateCircGridFromClip() {
 				var adjNoteStart = noteStart - loopEnd;
 				post('\nadjNoteStart: ' + adjNoteStart);
 
-				if (adjNoteStart * 4 == numGridCells) {
+				if (adjNoteStart * 4 == NUM_GRID_CELLS) {
 					pitchTransformIndex = noteMidi;
 					post('\nFound the pitchTransformIndex: ' + pitchTransformIndex);
 

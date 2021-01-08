@@ -30,6 +30,9 @@ var CONTR_MAT_COLS = 8;
 var NUM_GRID_ROWS = 8;
 var NUM_GRID_COLS = 5;
 
+//  Number of controller pads reserved for the circuit
+var NUM_GRID_CELLS = NUM_GRID_ROWS * NUM_GRID_COLS;
+
 // Controller pad columns reserved for gates
 var NUM_GATE_COLS = 3;
 
