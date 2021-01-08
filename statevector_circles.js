@@ -50,6 +50,8 @@ var globalPhaseShift = 0.0;
 // MIDI (0-127) representation of global phase shift value
 var globalPhaseShiftMidi = 0;
 
+// Flag that indicates not to zero the globalPhaseShift
+var preserveGlobalPhaseShift = false;
 
 // Instrument type selection
 // TODO: Find better name
@@ -90,8 +92,10 @@ function msg_int(val) {
 function viz(svlist) {
 	//post("\nsvlist: " + svlist);
 
-	// Reset global phase shift
-	outlet(0, 'int', 0);
+	// Conditionally reset global phase shift
+	if (!preserveGlobalPhaseShift) {
+		outlet(0, 'int', 0);
+	}
 
 	svArray = svlist.toString().split(' ');
 	//post("\nsvArray: " + svArray);
@@ -130,6 +134,7 @@ function computeProbsPhases() {
 			// If first basis state has non-zero phase, and global phase isn't
 			// already shifted, shift global phase by its phase
 			// TODO: Prevent this from processing while global phase dial is being moved
+
 			if (svIdx == 0 && polar.theta != 0.0 && globalPhaseShift == 0.0) {
 				if (polar.theta < 0) {
 					polar.theta += 2 * Math.PI;
@@ -274,6 +279,8 @@ function populateCircGridFromClip() {
 					globalPhaseShiftMidi = noteMidi;
 					post('\nFound the globalPhaseShiftMidi: ' + globalPhaseShiftMidi);
 
+						preserveGlobalPhaseShift = true;
+
 					// Send globalPhaseShift
 					outlet(0, 'int', globalPhaseShiftMidi);
 				}
@@ -311,6 +318,7 @@ function populateCircGridFromClip() {
 
 		// messnamed('alice', 96, 127);
 		qasmPadObj.js.createQasmFromGrid();
+		preserveGlobalPhaseShift = false;
 		//qasmPadObj.js.printCircGrid();
 	}
 }
