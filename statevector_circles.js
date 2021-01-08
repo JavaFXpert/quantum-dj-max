@@ -207,8 +207,11 @@ function computeProbsPhases() {
   // Encode pitch transformation index
 	var pitchTransformIndexTime = ((startIdx + NUM_GRID_ROWS * NUM_GRID_COLS) / 4.0).toFixed(2);
 
-	clip.call('note', 0, pitchTransformIndexTime, ".25", 100, 0);
-	//clip.call('note', pitchTransformIndex, pitchTransformIndexTime, ".25", 100, 0);
+	//clip.call('note', 1, pitchTransformIndexTime, ".25", 100, 0);
+
+	post('\nEncoding pitchTransformIndex: ' + pitchTransformIndex);
+	clip.call('note', pitchTransformIndex, pitchTransformIndexTime, ".25", 100, 0);
+
 	post('\npitchTransformIndexTime: ' + pitchTransformIndexTime);
 
 	clip.call('done');
