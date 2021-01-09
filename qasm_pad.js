@@ -27,7 +27,8 @@ this.inlets = 3;
 
 // Outlet 0 sends message to a simulator with generated QASM
 // Outlet 1 sends messages to the midi clips list box
-this.outlets = 2;
+// Outlet 2 sends messages the clip selector dial
+this.outlets = 3;
 
 // Flag that tracks whether the circuit should be cleared
 // when the CircuitNodeTypes.EMPTY key is net pressed
@@ -588,6 +589,9 @@ function draw()
 
 function populateMidiClipsList() {
 	var live_set = new LiveAPI('live_set');
+
+	// Zero the clip selector dial
+	outlet(2, 'int', 0);
 
 	// Send midi clips names to outlet
 	outlet(1, 'clear');
