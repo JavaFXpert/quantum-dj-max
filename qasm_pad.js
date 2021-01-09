@@ -590,9 +590,6 @@ function draw()
 function populateMidiClipsList() {
 	var live_set = new LiveAPI('live_set');
 
-	// Zero the clip selector dial
-	outlet(2, 'int', 0);
-
 	// Send midi clips names to outlet
 	outlet(1, 'clear');
 	clipsPaths = [];
@@ -633,5 +630,8 @@ function populateMidiClipsList() {
 			}
 		}
 	}
+
+	// Zero the clip selector dial
+	outlet(2, 'int', 0);
 }
 
