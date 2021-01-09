@@ -40,7 +40,8 @@ var NUM_GATE_COLS = 3;
 // stored as metadata in the clip
 var NUM_ADDITIONAL_METADATA_VALUES = 2;
 
-// Resolution of calculation from phase to notes or sounds in a kit
+// Resolution of calculation from phase to notes or sounds in a kit.
+// Also represents resolution of phase.
 var NUM_PITCHES = 8;
 
 // Minimum number of qubits in a circuit

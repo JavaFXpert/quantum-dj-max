@@ -66,14 +66,17 @@ refresh();
 
 function msg_int(val) {
 	if (inlet == 1) {
+		preserveGlobalPhaseShift = true;
 		globalPhaseShiftMidi = val;
 		setGlobalPhaseShift(val);
 	}
 	else if (inlet == 2) {
+		preserveGlobalPhaseShift = false;
 		pitchTransformIndex = val;
 		computeProbsPhases();
 	}
 	else if (inlet == 3) {
+		preserveGlobalPhaseShift = true;
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		curClipPath = qasmPadObj.js.getPathByClipNameIdx(val);
 		populateCircGridFromClip();
@@ -92,10 +95,10 @@ function msg_int(val) {
 function viz(svlist) {
 	//post("\nsvlist: " + svlist);
 
-	// Conditionally reset global phase shift
-	if (!preserveGlobalPhaseShift) {
-		outlet(0, 'int', 0);
-	}
+	//if (!preserveGlobalPhaseShift) {
+		//outlet(0, 'int', 0);
+	//}
+
 
 	svArray = svlist.toString().split(' ');
 	//post("\nsvArray: " + svArray);
@@ -133,28 +136,37 @@ function computeProbsPhases() {
 
 			// If first basis state has non-zero phase, and global phase isn't
 			// already shifted, shift global phase by its phase
-			// TODO: Prevent this from processing while global phase dial is being moved
+			// TODO: Make a button trigger this functionality
 
-			if (svIdx == 0 && polar.theta != 0.0 && globalPhaseShift == 0.0) {
+			if (svIdx == 0 && polar.theta != 0.0 &&
+				globalPhaseShift == 0.0 && !preserveGlobalPhaseShift) {
+				preserveGlobalPhaseShift = false;
 				if (polar.theta < 0) {
 					polar.theta += 2 * Math.PI;
 				}
 
-				//TODO: Review/simplify mods in calculation
-				globalPhaseShiftMidi = 128 - (Math.floor((polar.theta / (2 * Math.PI)) * 128) % 128);
-				globalPhaseShiftMidi = globalPhaseShiftMidi % 128;
+				post('\nGlobal phase: ' + polar.theta);
 
-				post('\nGlobal phase now: ' + polar.theta);
+				//TODO: Review/simplify mods in calculation
+				var piOver4Phase = Math.round(polar.theta / (Math.PI / 4));
+				//piOver4Phase = piOver4Phase % NUM_PITCHES;
+				post('\npiOver4Phase: ' + piOver4Phase);
+
+				globalPhaseShiftMidi = (NUM_PITCHES - piOver4Phase) % NUM_PITCHES;
 				post('\nGlobal phase dial now: ' + globalPhaseShiftMidi);
 
 				outlet(0, 'int', globalPhaseShiftMidi);
 			}
 
 			var shiftedPhase = polar.theta + globalPhaseShift;
-			//post('\nshiftedPhase: ' + shiftedPhase);
+			if (shiftedPhase < 0.0) {
+				shiftedPhase += (2*Math.PI);
+			}
+			post('\nshiftedPhase: ' + shiftedPhase);
 
 			// TODO: Change to 2 * Math.PI?
-			pitchNum = Math.round(shiftedPhase / 6.283185307179586 * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
+			pitchNum = Math.round(shiftedPhase / (2 * Math.PI) * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
+			//pitchNum = Math.round(shiftedPhase / (Math.PI / 4)) % NUM_PITCHES;
 			numNotes++;
 
 			if (svIdx / 2 < maxDisplayedSteps) {
@@ -334,7 +346,13 @@ function populateCircGridFromClip() {
  *        global phase shift dial
  */
 function setGlobalPhaseShift(phaseShiftDialVal) {
-	globalPhaseShift = phaseShiftDialVal / 128.0 * (2 * Math.PI);
+	//globalPhaseShift = phaseShiftDialVal / 128.0 * (2 * Math.PI);
+	// var piOver4PhaseShift = Math.min(phaseShiftDialVal, NUM_PITCHES - 1);
+	// piOver4PhaseShift = Math.max(piOver4PhaseShift, 0);
+
+	var piOver4PhaseShift = phaseShiftDialVal;
+	globalPhaseShift = piOver4PhaseShift * (2 * Math.PI / NUM_PITCHES);
+	post('\nglobalPhaseShift: ' + globalPhaseShift);
 	computeProbsPhases();
 }
 
