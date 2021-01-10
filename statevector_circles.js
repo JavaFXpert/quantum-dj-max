@@ -260,10 +260,6 @@ function populateCircGridFromClip() {
 
 	qasmPadObj.js.resetCircGrid();
 
-	//var ignore = [1, CircuitNodeTypes.IGNORE];
-	//qasmPadObj.js.setCurCircNodeType(ignore);
-
-	//var notes = clip.call('get_notes', loopEnd, 0, numGridCells, 128);
 	var notes = clip.call('get_notes', loopEnd, 0, NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES, 128);
 
 	post('\nnotes: ' + notes);

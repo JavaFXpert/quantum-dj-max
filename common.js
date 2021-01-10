@@ -51,9 +51,7 @@ var MIN_CIRCUIT_WIRES = 2;
 var PROBABILITY_THRESHOLD = 0.12
 
 var CircuitNodeTypes = {
-  IGNORE: -2,
   EMPTY: -1,
-  IDEN: 0,
   X: 1,
   Y: 2,
   Z: 3,
@@ -67,8 +65,7 @@ var CircuitNodeTypes = {
   CTRL: 11, // "control" part of multi-qubit gate
   TRACE: 12, // In the path between a gate part and a "control" or "swap" part
   MEASURE_Z: 13,
-  // RY_PLUS: 20, // Ry +pi/4
-  // RY_MINUS: 21, // Ry -pi/4
+  IDEN: 14,
 
   RX_0: 30, // Rx
   RX_1: 31, // Rx pi/4
@@ -95,5 +92,7 @@ var CircuitNodeTypes = {
   RZ_4: 54, // Rz pi (Z)
   RZ_5: 55, // Rz 5pi/4
   RZ_6: 56, // Rz 3pi/2 (S†)
-  RZ_7: 57 // Rz 7pi/4 (T†)
+  RZ_7: 57, // Rz 7pi/4 (T†)
+
+  QFT: 60 // QFT
 }

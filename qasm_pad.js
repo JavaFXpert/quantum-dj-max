@@ -34,8 +34,6 @@ this.outlets = 3;
 // when the CircuitNodeTypes.EMPTY key is net pressed
 var clearCircuitWhenEmptyKeyNextPressed = false;
 
-var curCircNodeType = CircuitNodeTypes.IGNORE;
-
 var highMidiPitch = (NUM_GRID_ROWS - 1) * CONTR_MAT_COLS + NUM_GRID_COLS + LOW_MIDI_PITCH - 1;
 //post('highMidiPitch: ' + highMidiPitch);
 
@@ -145,11 +143,7 @@ function setCircGridGate(notePitchVelocity) {
 
 			if (gridCol < NUM_GRID_COLS) {
 				gridCol = NUM_GRID_COLS - gridCol - 1;
-
-//				if (curCircNodeType != CircuitNodeTypes.IGNORE) {
-					circGrid[gridRow][gridCol] = curCircNodeType;
-//					curCircNodeType = CircuitNodeTypes.IGNORE
-//				}
+				circGrid[gridRow][gridCol] = curCircNodeType;
 
 				//var rowIdx = NUM_GRID_ROWS - gridRow - 1;
 				//var colIdx = gridCol;
@@ -162,6 +156,9 @@ function setCircGridGate(notePitchVelocity) {
 			}
 		}
 		// Additional gates TODO: Move these
+		else if (pitch == 96) {
+			curCircNodeType = CircuitNodeTypes.EMPTY;
+		}
 		else if (pitch == 97) {
 			curCircNodeType = CircuitNodeTypes.RX_0;
 		}
@@ -172,6 +169,9 @@ function setCircGridGate(notePitchVelocity) {
 			curCircNodeType = CircuitNodeTypes.RZ_0;
 		}
 
+		else if (pitch == 88) {
+			curCircNodeType = CircuitNodeTypes.H;
+		}
 		else if (pitch == 89) {
 			curCircNodeType = CircuitNodeTypes.RX_1;
 		}
@@ -182,6 +182,9 @@ function setCircGridGate(notePitchVelocity) {
 			curCircNodeType = CircuitNodeTypes.RZ_1;
 		}
 
+		else if (pitch == 80) {
+			curCircNodeType = CircuitNodeTypes.CTRL;
+		}
 		else if (pitch == 81) {
 			curCircNodeType = CircuitNodeTypes.RX_2;
 		}
@@ -202,6 +205,9 @@ function setCircGridGate(notePitchVelocity) {
 			curCircNodeType = CircuitNodeTypes.RZ_3;
 		}
 
+		else if (pitch == 64) {
+			curCircNodeType = CircuitNodeTypes.IDEN;
+		}
 		else if (pitch == 65) {
 			curCircNodeType = CircuitNodeTypes.RX_4;
 		}
@@ -222,6 +228,9 @@ function setCircGridGate(notePitchVelocity) {
 			curCircNodeType = CircuitNodeTypes.RZ_5;
 		}
 
+		else if (pitch == 48) {
+			curCircNodeType = CircuitNodeTypes.SWAP;
+		}
 		else if (pitch == 49) {
 			curCircNodeType = CircuitNodeTypes.RX_6;
 		}
@@ -232,6 +241,9 @@ function setCircGridGate(notePitchVelocity) {
 			curCircNodeType = CircuitNodeTypes.RZ_6;
 		}
 
+		else if (pitch == 40) {
+			curCircNodeType = CircuitNodeTypes.QFT;
+		}
 		else if (pitch == 41) {
 			curCircNodeType = CircuitNodeTypes.RX_7;
 		}
@@ -277,6 +289,9 @@ function setCurCircNodeType(controllerNumValue) {
 				}
 			}
 
+			else if (contNum == 96) {
+				curCircNodeType = CircuitNodeTypes.EMPTY;
+			}
 			else if (contNum == 97) {
 				curCircNodeType = CircuitNodeTypes.RX_0;
 			}
@@ -287,6 +302,9 @@ function setCurCircNodeType(controllerNumValue) {
 				curCircNodeType = CircuitNodeTypes.RZ_0;
 			}
 
+			else if (contNum == 88) {
+				curCircNodeType = CircuitNodeTypes.H;
+			}
 			else if (contNum == 89) {
 				curCircNodeType = CircuitNodeTypes.RX_1;
 			}
@@ -297,6 +315,9 @@ function setCurCircNodeType(controllerNumValue) {
 				curCircNodeType = CircuitNodeTypes.RZ_1;
 			}
 
+			else if (contNum == 80) {
+				curCircNodeType = CircuitNodeTypes.CTRL;
+			}
 			else if (contNum == 81) {
 				curCircNodeType = CircuitNodeTypes.RX_2;
 			}
@@ -317,6 +338,9 @@ function setCurCircNodeType(controllerNumValue) {
 				curCircNodeType = CircuitNodeTypes.RZ_3;
 			}
 
+			else if (contNum == 64) {
+				curCircNodeType = CircuitNodeTypes.IDEN;
+			}
 			else if (contNum == 65) {
 				curCircNodeType = CircuitNodeTypes.RX_4;
 			}
@@ -337,6 +361,9 @@ function setCurCircNodeType(controllerNumValue) {
 				curCircNodeType = CircuitNodeTypes.RZ_5;
 			}
 
+			else if (contNum == 48) {
+				curCircNodeType = CircuitNodeTypes.SWAP;
+			}
 			else if (contNum == 49) {
 				curCircNodeType = CircuitNodeTypes.RX_6;
 			}
@@ -347,6 +374,9 @@ function setCurCircNodeType(controllerNumValue) {
 				curCircNodeType = CircuitNodeTypes.RZ_6;
 			}
 
+			else if (contNum == 40) {
+				curCircNodeType = CircuitNodeTypes.QFT;
+			}
 			else if (contNum == 41) {
 				curCircNodeType = CircuitNodeTypes.RX_7;
 			}
@@ -355,9 +385,6 @@ function setCurCircNodeType(controllerNumValue) {
 			}
 			else if (contNum == 43) {
 				curCircNodeType = CircuitNodeTypes.RZ_7;
-			}
-			else {
-				curCircNodeType = CircuitNodeTypes.IGNORE;
 			}
 		}
 		post('curCircNodeType is now ' + curCircNodeType);
