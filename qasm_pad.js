@@ -34,19 +34,21 @@ this.outlets = 3;
 // when the CircuitNodeTypes.EMPTY key is net pressed
 var clearCircuitWhenEmptyKeyNextPressed = false;
 
+var curCircNodeType = CircuitNodeTypes.EMPTY;
+
 var highMidiPitch = (NUM_GRID_ROWS - 1) * CONTR_MAT_COLS + NUM_GRID_COLS + LOW_MIDI_PITCH - 1;
 //post('highMidiPitch: ' + highMidiPitch);
 
 // TODO: Dynamically initialize this array
 var circGrid = [
-    [-1, -1, -1, -1,-1],
-    [-1, -1, -1, -1,-1],
-    [-1, -1, -1, -1,-1],
-    [-1, -1, -1, -1,-1],
-    [-1, -1, -1, -1,-1],
-    [-1, -1, -1, -1,-1],
-    [-1, -1, -1, -1,-1],
-    [-1, -1, -1, -1,-1]
+    [-1, -1, -1, -1],
+    [-1, -1, -1, -1],
+    [-1, -1, -1, -1],
+    [-1, -1, -1, -1],
+    [-1, -1, -1, -1],
+    [-1, -1, -1, -1],
+    [-1, -1, -1, -1],
+    [-1, -1, -1, -1]
 ];
 
 
