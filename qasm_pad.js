@@ -635,6 +635,10 @@ function populateMidiClipsList() {
 
 
 			// TODO: Move the below code
+			//var textbox = this.patcher.getnamed('foo_text');
+			var textbox = this.patcher.getnamed('pad_note[0]');
+			post('\ntextbox: ' + textbox.getattr('text'));
+
 			var device = new LiveAPI('live_set tracks ' + trackIdx + ' devices ' + 0);
 			post("\ndevice name: " + device.get('name'));
 
@@ -686,24 +690,3 @@ function populateMidiClipsList() {
 	// Zero the clip selector dial
 	outlet(2, 'int', 0);
 }
-
-
-/**
- * Convert a midi note number into a note name
- * @param noteNum MIDI number for a note
- * @returns Name (e.g. C3) of the note
- */
-function midi2NoteName(noteNum) {
-	var note = '';
-	if (noteNum >= LOW_MIDI_PITCH && noteNum <= highMidiPitch) {
-		var octave = Math.floor(noteNum / 12) - 2;
-		var note = "C C#D D#E F F#G G#A A#B ".substring((noteNum % 12) * 2, (noteNum % 12) * 2 + 2);
-		note = note.trim() + octave;
-	}
-	else {
-		post('Supplied noteNum ' + noteNum + ' is unexpectedly out of range');
-	}
-	return note;
-}
-
-

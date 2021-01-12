@@ -422,33 +422,3 @@ function onresize(w, h)
 }
 onresize.local = 1; //private
 
-
-function pitchIdxToDiatonic(pitchIdx, octaveNum) {
-	var diatonicMidiPitch = 0
-	if (pitchIdx == 0) {
-		diatonicMidiPitch = octaveNum * 12 + 24;
-	}
-	else if (pitchIdx == 1) {
-		diatonicMidiPitch = octaveNum * 12 + 26;
-	}
-	else if (pitchIdx == 2) {
-		diatonicMidiPitch = octaveNum * 12 + 28;
-	}
-	else if (pitchIdx == 3) {
-		diatonicMidiPitch = octaveNum * 12 + 29;
-	}
-	else if (pitchIdx == 4) {
-		diatonicMidiPitch = octaveNum * 12 + 31;
-	}
-	else if (pitchIdx == 5) {
-		diatonicMidiPitch = octaveNum * 12 + 33;
-	}
-	else if (pitchIdx == 6) {
-		diatonicMidiPitch = octaveNum * 12 + 35;
-	}
-	else if (pitchIdx == 7) {
-		diatonicMidiPitch = octaveNum * 12 + 36;
-	}
-	//post('diatonicMidiPitch: ' + diatonicMidiPitch);
-	return diatonicMidiPitch;
-}

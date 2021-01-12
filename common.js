@@ -96,3 +96,53 @@ var CircuitNodeTypes = {
 
   QFT: 60 // QFT
 }
+
+/**
+ * Convert a midi note number into a note name
+ * @param noteNum MIDI number for a note
+ * @returns Name (e.g. C3) of the note
+ */
+function midi2NoteName(noteNum) {
+  var note = '';
+  if (noteNum >= LOW_MIDI_PITCH && noteNum <= highMidiPitch) {
+    var octave = Math.floor(noteNum / 12) - 2;
+    var note = "C C#D D#E F F#G G#A A#B ".substring((noteNum % 12) * 2, (noteNum % 12) * 2 + 2);
+    note = note.trim() + octave;
+  }
+  else {
+    post('Supplied noteNum ' + noteNum + ' is unexpectedly out of range');
+  }
+  return note;
+}
+
+
+function pitchIdxToDiatonic(pitchIdx, octaveNum) {
+  var diatonicMidiPitch = 0
+  if (pitchIdx == 0) {
+    diatonicMidiPitch = octaveNum * 12 + 24;
+  }
+  else if (pitchIdx == 1) {
+    diatonicMidiPitch = octaveNum * 12 + 26;
+  }
+  else if (pitchIdx == 2) {
+    diatonicMidiPitch = octaveNum * 12 + 28;
+  }
+  else if (pitchIdx == 3) {
+    diatonicMidiPitch = octaveNum * 12 + 29;
+  }
+  else if (pitchIdx == 4) {
+    diatonicMidiPitch = octaveNum * 12 + 31;
+  }
+  else if (pitchIdx == 5) {
+    diatonicMidiPitch = octaveNum * 12 + 33;
+  }
+  else if (pitchIdx == 6) {
+    diatonicMidiPitch = octaveNum * 12 + 35;
+  }
+  else if (pitchIdx == 7) {
+    diatonicMidiPitch = octaveNum * 12 + 36;
+  }
+  //post('diatonicMidiPitch: ' + diatonicMidiPitch);
+  return diatonicMidiPitch;
+}
+
