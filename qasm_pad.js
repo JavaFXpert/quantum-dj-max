@@ -690,3 +690,12 @@ function populateMidiClipsList() {
 	// Zero the clip selector dial
 	outlet(2, 'int', 0);
 }
+
+
+/**
+ * Given a track path, pad/note names in display
+ * @param trackPath
+ */
+function populatePadNoteNames(trackPath) {
+	post('\nIn populatePadNoteNames, trackPath: ' + trackPath);
+}

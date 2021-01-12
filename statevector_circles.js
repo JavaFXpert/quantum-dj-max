@@ -327,13 +327,17 @@ function populateCircGridFromClip() {
 				}
 			}
 		}
-		// var temp = [1, 8];
-		// qasmPadObj.js.setCurCircNodeType(temp);
-		// qasmPadObj.js.circGrid[2][0] = 8;
-		// messnamed('bob', 8, 127);
-		// qasmPadObj.js.informCircuitBtn(5, 0);
 
-		// messnamed('alice', 96, 127);
+		// Get Truncated path that only includes track (e.g. live_set tracks 2)
+		var trackPathTokens = curClipPath.split(' ');
+		trackPathTokens.length = 3;
+		var trackPath = trackPathTokens.join(' ');
+		//post('\ntrackPath: ' + trackPath);
+
+		// Display the pads/notes corresponding to each phase
+		qasmPadObj.js.populatePadNoteNames(trackPath);
+
+
 		qasmPadObj.js.createQasmFromGrid();
 		preserveGlobalPhaseShift = false;
 		//qasmPadObj.js.printCircGrid();
