@@ -22,7 +22,7 @@ include('common.js');
 var maxDisplayedSteps = 64
 
 // Inlet 0 receives "viz" messages with a statevector to display
-// Inlet 1 receives global phase shift integer from 0 - 127
+// Inlet 1 receives global phase shift integer from 0 - 7
 // Inlet 2 receives instrument type selection:
 //     0: kit (midi is chromatic, from 36 - 43
 //     1: diatonic octave 1,
@@ -30,7 +30,9 @@ var maxDisplayedSteps = 64
 //     3: diatonic octave 3
 //     4: diatonic octave 4
 // Inlet 3 receives name of current clip
-this.inlets = 4;
+// Inlet 4 receives bang messages to shift global phase in such a way
+// that makes the first basis state have a 0 phase (if possible).
+this.inlets = 5;
 
 // Outlet 0 sends global phase shift
 // Outlet 1 sends pitch transform index
@@ -71,7 +73,7 @@ function msg_int(val) {
 		setGlobalPhaseShift(val);
 	}
 	else if (inlet == 2) {
-		preserveGlobalPhaseShift = false;
+		preserveGlobalPhaseShift = true;
 		pitchTransformIndex = val;
 		computeProbsPhases();
 	}
@@ -81,6 +83,20 @@ function msg_int(val) {
 		curClipPath = qasmPadObj.js.getPathByClipNameIdx(val);
 		populateCircGridFromClip();
 		//post('curClipPath: ' + curClipPath);
+	}
+}
+
+
+function bang() {
+	if (inlet == 4) {
+		// bang received to let global phase shift in such a way
+    // that makes the first basis state have a 0 phase (if possible).
+		// TODO: Make dial move appropriately
+
+		preserveGlobalPhaseShift = false;
+		globalPhaseShiftMidi = 0;
+		setGlobalPhaseShift(0);
+		computeProbsPhases();
 	}
 }
 
@@ -128,32 +144,25 @@ function computeProbsPhases() {
 		var probability = Math.pow(Math.abs(amplitude), 2);
 		var pitchNum = -1;
 
+		// post('\nsvIdx: ' + svIdx);
 		// post('\nprobability: ' + probability);
 		// post('\nnumBasisStates: ' + numBasisStates);
 		// post('\nPROBABILITY_THRESHOLD / numBasisStates: ' + PROBABILITY_THRESHOLD / numBasisStates);
 		if (probability > PROBABILITY_THRESHOLD / numBasisStates) {
 			var polar = cartesianToPolar(real, imag);
 
-			// If first basis state has non-zero phase, and global phase isn't
-			// already shifted, shift global phase by its phase
-			// TODO: Make a button trigger this functionality
-
-			if (svIdx == 0 && polar.theta != 0.0 &&
-				globalPhaseShift == 0.0 && !preserveGlobalPhaseShift) {
-				preserveGlobalPhaseShift = false;
+			// If first basis state with significant probability has non-zero phase,
+			// shift global phase by its phase
+			if (!preserveGlobalPhaseShift) {
+				preserveGlobalPhaseShift = true;
 				if (polar.theta < 0) {
 					polar.theta += 2 * Math.PI;
 				}
 
-				post('\nGlobal phase: ' + polar.theta);
-
 				//TODO: Review/simplify mods in calculation
 				var piOver4Phase = Math.round(polar.theta / (Math.PI / 4));
-				//piOver4Phase = piOver4Phase % NUM_PITCHES;
-				post('\npiOver4Phase: ' + piOver4Phase);
 
 				globalPhaseShiftMidi = (NUM_PITCHES - piOver4Phase) % NUM_PITCHES;
-				post('\nGlobal phase dial now: ' + globalPhaseShiftMidi);
 
 				outlet(0, 'int', globalPhaseShiftMidi);
 			}
@@ -355,7 +364,7 @@ function setGlobalPhaseShift(phaseShiftDialVal) {
 
 
 // Given an object in Cartesian coordinates x, y
-// compute its Polar coordiantes { r: …, theta: … }
+// compute its Polar coordinates { r: …, theta: … }
 function cartesianToPolar(x, y) {
 	return {
 		r: Math.sqrt(x * x + y * y),
