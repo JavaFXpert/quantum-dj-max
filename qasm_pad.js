@@ -631,6 +631,29 @@ function populateMidiClipsList() {
 		post('\ntrack ' + trackIdx + ' id: ' + track.id);
 
 		if (track.get('has_midi_input')) {
+
+
+
+			// TODO: Move the below code
+			var device = new LiveAPI('live_set tracks ' + trackIdx + ' devices ' + 0);
+			post("\ndevice name: " + device.get('name'));
+
+			var canHaveDrumPads = device.get('can_have_drum_pads') == 1;
+			post("\ndevice can_have_drum_pads: " + canHaveDrumPads);
+
+			for (var midiPitch = LOW_MIDI_PITCH; midiPitch <= highMidiPitch; midiPitch++) {
+				if (canHaveDrumPads) {
+					var drumPad =
+						new LiveAPI('live_set tracks ' + trackIdx + ' devices ' + 0 + ' drum_pads ' + midiPitch);
+					post("\ndrumPad name: " + drumPad.getstring('name'));
+				}
+				else {
+					post("\nnote name: " + midi2NoteName(midiPitch));
+				}
+			}
+			// TODO: Move the above code
+
+
 			var numClipSlots = track.getcount('clip_slots');
 
 			for (var clipSlotIdx = 0; clipSlotIdx < numClipSlots; clipSlotIdx++) {
@@ -663,4 +686,24 @@ function populateMidiClipsList() {
 	// Zero the clip selector dial
 	outlet(2, 'int', 0);
 }
+
+
+/**
+ * Convert a midi note number into a note name
+ * @param noteNum MIDI number for a note
+ * @returns Name (e.g. C3) of the note
+ */
+function midi2NoteName(noteNum) {
+	var note = '';
+	if (noteNum >= LOW_MIDI_PITCH && noteNum <= highMidiPitch) {
+		var octave = Math.floor(noteNum / 12) - 2;
+		var note = "C C#D D#E F F#G G#A A#B ".substring((noteNum % 12) * 2, (noteNum % 12) * 2 + 2);
+		note = note.trim() + octave;
+	}
+	else {
+		post('Supplied noteNum ' + noteNum + ' is unexpectedly out of range');
+	}
+	return note;
+}
+
 
