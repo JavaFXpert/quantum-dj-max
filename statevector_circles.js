@@ -328,14 +328,14 @@ function populateCircGridFromClip() {
 			}
 		}
 
-		// Get Truncated path that only includes track (e.g. live_set tracks 2)
+		// Get truncated path that only includes track (e.g. live_set tracks 2)
 		var trackPathTokens = curClipPath.split(' ');
 		trackPathTokens.length = 3;
 		var trackPath = trackPathTokens.join(' ');
-		//post('\ntrackPath: ' + trackPath);
+		post('\ntrackPath: ' + trackPath);
 
 		// Display the pads/notes corresponding to each phase
-		qasmPadObj.js.populatePadNoteNames(trackPath);
+		qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex);
 
 
 		qasmPadObj.js.createQasmFromGrid();

@@ -44,6 +44,12 @@ var NUM_ADDITIONAL_METADATA_VALUES = 2;
 // Also represents resolution of phase.
 var NUM_PITCHES = 8;
 
+// Lowest MIDI value of drum pad
+var LOW_DRUMPAD_MIDI = 36;
+
+// Maximum number of drum pads
+var MAX_DRUMPADS = 16;
+
 // Minimum number of qubits in a circuit
 var MIN_CIRCUIT_WIRES = 2;
 
@@ -104,12 +110,11 @@ var CircuitNodeTypes = {
  */
 function midi2NoteName(noteNum) {
   var note = '';
-  if (noteNum >= LOW_MIDI_PITCH && noteNum <= highMidiPitch) {
+  if (noteNum >= 0 && noteNum <= 127) {
     var octave = Math.floor(noteNum / 12) - 2;
     var note = "C C#D D#E F F#G G#A A#B ".substring((noteNum % 12) * 2, (noteNum % 12) * 2 + 2);
     note = note.trim() + octave;
-  }
-  else {
+  } else {
     post('Supplied noteNum ' + noteNum + ' is unexpectedly out of range');
   }
   return note;
@@ -120,29 +125,33 @@ function pitchIdxToDiatonic(pitchIdx, octaveNum) {
   var diatonicMidiPitch = 0
   if (pitchIdx == 0) {
     diatonicMidiPitch = octaveNum * 12 + 24;
-  }
-  else if (pitchIdx == 1) {
+  } else if (pitchIdx == 1) {
     diatonicMidiPitch = octaveNum * 12 + 26;
-  }
-  else if (pitchIdx == 2) {
+  } else if (pitchIdx == 2) {
     diatonicMidiPitch = octaveNum * 12 + 28;
-  }
-  else if (pitchIdx == 3) {
+  } else if (pitchIdx == 3) {
     diatonicMidiPitch = octaveNum * 12 + 29;
-  }
-  else if (pitchIdx == 4) {
+  } else if (pitchIdx == 4) {
     diatonicMidiPitch = octaveNum * 12 + 31;
-  }
-  else if (pitchIdx == 5) {
+  } else if (pitchIdx == 5) {
     diatonicMidiPitch = octaveNum * 12 + 33;
-  }
-  else if (pitchIdx == 6) {
+  } else if (pitchIdx == 6) {
     diatonicMidiPitch = octaveNum * 12 + 35;
-  }
-  else if (pitchIdx == 7) {
+  } else if (pitchIdx == 7) {
     diatonicMidiPitch = octaveNum * 12 + 36;
   }
   //post('diatonicMidiPitch: ' + diatonicMidiPitch);
   return diatonicMidiPitch;
+}
+
+function removeQuotes(str) {
+  var unquotedStr = str;
+  if (str.length >= 3) {
+    if (str.charAt(0) == '\"' &&
+      str.charAt(str.length - 1) == '\"') {
+      unquotedStr = str.substring(1, str.length - 1);
+    }
+  }
+  return unquotedStr;
 }
 

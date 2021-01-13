@@ -39,6 +39,11 @@ var curCircNodeType = CircuitNodeTypes.EMPTY;
 var highMidiPitch = (NUM_GRID_ROWS - 1) * CONTR_MAT_COLS + NUM_GRID_COLS + LOW_MIDI_PITCH - 1;
 //post('highMidiPitch: ' + highMidiPitch);
 
+// TODO: Allocate the array and call refreshPadNoteNames method?
+var padNoteNames = [];
+refreshPadNoteNames();
+
+
 // TODO: Dynamically initialize this array
 var circGrid = [
     [-1, -1, -1, -1],
@@ -634,28 +639,27 @@ function populateMidiClipsList() {
 
 
 
-			// TODO: Move the below code
-			//var textbox = this.patcher.getnamed('foo_text');
-			var textbox = this.patcher.getnamed('pad_note[0]');
-			post('\ntextbox: ' + textbox.getattr('text'));
-
-			var device = new LiveAPI('live_set tracks ' + trackIdx + ' devices ' + 0);
-			post("\ndevice name: " + device.get('name'));
-
-			var canHaveDrumPads = device.get('can_have_drum_pads') == 1;
-			post("\ndevice can_have_drum_pads: " + canHaveDrumPads);
-
-			for (var midiPitch = LOW_MIDI_PITCH; midiPitch <= highMidiPitch; midiPitch++) {
-				if (canHaveDrumPads) {
-					var drumPad =
-						new LiveAPI('live_set tracks ' + trackIdx + ' devices ' + 0 + ' drum_pads ' + midiPitch);
-					post("\ndrumPad name: " + drumPad.getstring('name'));
-				}
-				else {
-					post("\nnote name: " + midi2NoteName(midiPitch));
-				}
-			}
-			// TODO: Move the above code
+			// TODO: Remove the below code
+			// var textbox = this.patcher.getnamed('pad_note[0]');
+			// post('\ntextbox: ' + textbox.getattr('text'));
+			//
+			// var device = new LiveAPI('live_set tracks ' + trackIdx + ' devices ' + 0);
+			// post("\ndevice name: " + device.get('name'));
+			//
+			// var canHaveDrumPads = device.get('can_have_drum_pads') == 1;
+			// post("\ndevice can_have_drum_pads: " + canHaveDrumPads);
+			//
+			// for (var midiPitch = LOW_MIDI_PITCH; midiPitch <= highMidiPitch; midiPitch++) {
+			// 	if (canHaveDrumPads) {
+			// 		var drumPad =
+			// 			new LiveAPI('live_set tracks ' + trackIdx + ' devices ' + 0 + ' drum_pads ' + midiPitch);
+			// 		post("\ndrumPad name: " + drumPad.getstring('name'));
+			// 	}
+			// 	else {
+			// 		post("\nnote name: " + midi2NoteName(midiPitch));
+			// 	}
+			// }
+			// TODO: Remove the above code
 
 
 			var numClipSlots = track.getcount('clip_slots');
@@ -696,6 +700,53 @@ function populateMidiClipsList() {
  * Given a track path, pad/note names in display
  * @param trackPath
  */
-function populatePadNoteNames(trackPath) {
+function populatePadNoteNames(trackPath, pitchTransformIdx) {
 	post('\nIn populatePadNoteNames, trackPath: ' + trackPath);
+	var track = new LiveAPI(trackPath);
+
+	if (track.get('has_midi_input')) {
+		var textbox = this.patcher.getnamed('pad_note[0]');
+		post('\ntextbox: ' + textbox.getattr('text'));
+
+		var device = new LiveAPI(trackPath + ' devices ' + 0);
+		post("\ndevice name: " + device.get('name'));
+
+		var canHaveDrumPads = device.get('can_have_drum_pads') == 1;
+		post("\ndevice can_have_drum_pads: " + canHaveDrumPads);
+
+		refreshPadNoteNames();
+
+		if (canHaveDrumPads) {
+			for (var drumPadIdx = 0; drumPadIdx < MAX_DRUMPADS; drumPadIdx++) {
+				var drumPad =
+					new LiveAPI(trackPath + ' devices ' + 0 + ' drum_pads ' + (LOW_DRUMPAD_MIDI + drumPadIdx));
+				post("\ndrumPad name: " + drumPad.getstring('name'));
+				padNoteNames[drumPadIdx] = drumPad.getstring('name');
+			}
+		}
+		post('\npadNoteNames: ' + padNoteNames);
+
+		for (var midiPitchIdx = 0; midiPitchIdx < NUM_PITCHES; midiPitchIdx++) {
+			var noteName = '';
+			if (pitchTransformIdx == 0) {
+				noteName = padNoteNames[midiPitchIdx];
+				post('\nPad noteName: ' + noteName);
+			}
+			else {
+				noteName = padNoteNames[pitchIdxToDiatonic(midiPitchIdx, pitchTransformIdx)];
+				post('\nDiatonic noteName: ' + noteName);
+			}
+
+			// Update textbox
+			textbox = this.patcher.getnamed('pad_note[' + midiPitchIdx + ']');
+			textbox.setattr('text', removeQuotes(noteName));
+		}
+	}
+}
+
+function refreshPadNoteNames() {
+	padNoteNames = [];
+	for (var midiNum = 0; midiNum <= 127; midiNum++) {
+		padNoteNames.push(midi2NoteName(midiNum));
+	}
 }
