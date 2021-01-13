@@ -250,6 +250,17 @@ function computeProbsPhases() {
 	post('\npitchTransformIndexTime: ' + pitchTransformIndexTime);
 
 	clip.call('done');
+
+	// TODO: Refactor code below and its occurrence elsewhere into separate method
+	//	 		 and ensure that it doesn't get call unnecessarily
+	// Get truncated path that only includes track (e.g. live_set tracks 2)
+	var trackPathTokens = curClipPath.split(' ');
+	trackPathTokens.length = 3;
+	var trackPath = trackPathTokens.join(' ');
+	post('\ntrackPath: ' + trackPath);
+	// Display the pads/notes corresponding to each phase
+	qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex);
+
 }
 
 
@@ -328,12 +339,13 @@ function populateCircGridFromClip() {
 			}
 		}
 
+		// TODO: Refactor code below and its occurrence elsewhere into separate method
+		//	 		 and ensure that it doesn't get call unnecessarily
 		// Get truncated path that only includes track (e.g. live_set tracks 2)
 		var trackPathTokens = curClipPath.split(' ');
 		trackPathTokens.length = 3;
 		var trackPath = trackPathTokens.join(' ');
 		post('\ntrackPath: ' + trackPath);
-
 		// Display the pads/notes corresponding to each phase
 		qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex);
 
