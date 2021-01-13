@@ -75,12 +75,15 @@ function msg_int(val) {
 	else if (inlet == 2) {
 		preserveGlobalPhaseShift = true;
 		pitchTransformIndex = val;
+		var qasmPadObj = this.patcher.getnamed("qasmpad");
+		qasmPadObj.js.padNoteNamesDirty = true;
 		computeProbsPhases();
 	}
 	else if (inlet == 3) {
 		preserveGlobalPhaseShift = true;
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		curClipPath = qasmPadObj.js.getPathByClipNameIdx(val);
+		qasmPadObj.js.padNoteNamesDirty = true;
 		populateCircGridFromClip();
 		//post('curClipPath: ' + curClipPath);
 	}
