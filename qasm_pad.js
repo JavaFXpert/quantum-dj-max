@@ -184,6 +184,7 @@ function setCircGridGate(notePitchVelocity) {
 					curCircNodeType = CircuitNodeTypes.EMPTY;
 					if (clearCircuitWhenEmptyKeyNextPressed){
 						resetCircGrid();
+						createQasmFromGrid();
 						clearCircuitWhenEmptyKeyNextPressed = false;
 					}
 					else {
@@ -350,10 +351,12 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.X;
+			informCircuitBtn(gridRow, gridCol);
 			qasmStr += ' x q[' + gridRow + '];';
 		}
 		else {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.CTRL_X;
+			informCircuitBtn(gridRow, gridCol);
 			qasmStr += ' cx q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
