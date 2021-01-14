@@ -235,7 +235,7 @@ function draw()
 function onclick(x, y, but, cmd, shift, capslock, option, ctrl)
 {
 	// TODO: Change 'alice' remote message everywhere
-	messnamed('alice', this.midiNum, 127);
+	messnamed('alice', this.midiNum, 0);
 
 	draw();
 	refresh();
