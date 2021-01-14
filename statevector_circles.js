@@ -138,6 +138,18 @@ function computeProbsPhases() {
 	var pitchNums = [];
 	var numNotes = 0;
 	var numBasisStates = svArray.length / 2;
+	var numBasisStatesWithNonZeroProbability = 0;
+
+	for (var svIdx = 0; svIdx < svArray.length; svIdx += 2) {
+		var real = svArray[svIdx];
+		var imag = svArray[svIdx + 1];
+
+		var amplitude = Math.sqrt(Math.pow(Math.abs(real), 2) + Math.pow(Math.abs(imag), 2));
+		var probability = Math.pow(Math.abs(amplitude), 2);
+		if (probability > 0) {
+			numBasisStatesWithNonZeroProbability++;
+		}
+	}
 
 	for (var svIdx = 0; svIdx < svArray.length; svIdx += 2) {
 		var real = svArray[svIdx];
@@ -147,11 +159,7 @@ function computeProbsPhases() {
 		var probability = Math.pow(Math.abs(amplitude), 2);
 		var pitchNum = -1;
 
-		// post('\nsvIdx: ' + svIdx);
-		// post('\nprobability: ' + probability);
-		// post('\nnumBasisStates: ' + numBasisStates);
-		// post('\nPROBABILITY_THRESHOLD / numBasisStates: ' + PROBABILITY_THRESHOLD / numBasisStates);
-		if (probability > PROBABILITY_THRESHOLD / numBasisStates) {
+		if (probability > PROBABILITY_THRESHOLD / numBasisStatesWithNonZeroProbability) {
 			var polar = cartesianToPolar(real, imag);
 
 			// If first basis state with significant probability has non-zero phase,
@@ -162,11 +170,8 @@ function computeProbsPhases() {
 					polar.theta += 2 * Math.PI;
 				}
 
-				//TODO: Review/simplify mods in calculation
 				var piOver4Phase = Math.round(polar.theta / (Math.PI / 4));
-
 				globalPhaseShiftMidi = (NUM_PITCHES - piOver4Phase) % NUM_PITCHES;
-
 				outlet(0, 'int', globalPhaseShiftMidi);
 			}
 
@@ -174,11 +179,7 @@ function computeProbsPhases() {
 			if (shiftedPhase < 0.0) {
 				shiftedPhase += (2*Math.PI);
 			}
-			post('\nshiftedPhase: ' + shiftedPhase);
-
-			// TODO: Change to 2 * Math.PI?
 			pitchNum = Math.round(shiftedPhase / (2 * Math.PI) * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
-			//pitchNum = Math.round(shiftedPhase / (Math.PI / 4)) % NUM_PITCHES;
 			numNotes++;
 
 			if (svIdx / 2 < maxDisplayedSteps) {
@@ -186,7 +187,6 @@ function computeProbsPhases() {
 			}
 		}
 		pitchNums.push(pitchNum);
-		//post('\npitchNum: ' + pitchNum);
 	}
 
 	// Set the notes into the clip
