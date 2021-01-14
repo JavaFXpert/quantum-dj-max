@@ -98,24 +98,37 @@ function createQuantumCircuitFromQasm(qasm) {
 		var instruction = qasmArray[tokenIdx].trim();
 
 		if (instruction.length > 0) {
-			//post('\ninstruction: ' + instruction);
+			post('\ninstruction: ' + instruction);
 			var keywordArgumentArray = instruction.split(' ');
 			if (keywordArgumentArray.length == 2) {
 				var keyword = keywordArgumentArray[0];
 				var argument = keywordArgumentArray[1];
 
-				var leftBracketPos = argument.indexOf('[');
-				var rightBracketPos = argument.indexOf(']');
+				var qArgArray = argument.split(',');
+				var qNumArray = [];
 
-				if (leftBracketPos > 0 && rightBracketPos > 0) {
-					var argInt = parseInt(argument.substring(leftBracketPos + 1, rightBracketPos));
-					if (argInt >= 0) {
+				// Extract all of the wire numbers
+				for (var qArgIdx = 0; qArgIdx < qArgArray.length; qArgIdx++) {
+					var qArg = qArgArray[qArgIdx];
+					var leftBracketPos = qArg.indexOf('[');
+					var rightBracketPos = qArg.indexOf(']');
+					if (leftBracketPos > 0 && rightBracketPos > 0) {
+						var qArgInt = parseInt(qArg.substring(leftBracketPos + 1, rightBracketPos));
+						if (qArgInt >= 0) {
+							qNumArray.push(qArgInt);
+						}
+					}
+				}
+
+
+				if (qNumArray.length > 0) {
+					if (qNumArray[0] >= 0) {
 						keyword = keyword.trim();
 						if (keyword == 'qreg') {
-							numQuantumWires = argInt;
+							numQuantumWires = qNumArray[0];
 						}
 						else if (keyword == 'creg') {
-							numClassicalWires = argInt;
+							numClassicalWires = qNumArray[0];
 						}
 						else {
 							// Subsequent instructions should be added to quantum circuit
@@ -126,101 +139,104 @@ function createQuantumCircuitFromQasm(qasm) {
 
 							// TODO: Expand list of gates supported
 							if (keyword == 'h') {
-								quantumCircuit.h(argInt);
+								quantumCircuit.h(qNumArray[0]);
 							}
 							else if (keyword == 'x') {
-								quantumCircuit.x(argInt);
+								quantumCircuit.x(qNumArray[0]);
 							}
 							else if (keyword == 'z') {
-								quantumCircuit.z(argInt);
+								quantumCircuit.z(qNumArray[0]);
 							}
 							else if (keyword == 's') {
-								quantumCircuit.s(argInt);
+								quantumCircuit.s(qNumArray[0]);
 							}
 							else if (keyword == 'sdg') {
-								quantumCircuit.sdg(argInt);
+								quantumCircuit.sdg(qNumArray[0]);
 							}
 							else if (keyword == 't') {
-								quantumCircuit.t(argInt);
+								quantumCircuit.t(qNumArray[0]);
 							}
 							else if (keyword == 'tdg') {
-								quantumCircuit.tdg(argInt);
+								quantumCircuit.tdg(qNumArray[0]);
+							}
+							else if (keyword == 'cx' && qNumArray.length == 2) {
+								quantumCircuit.cx(qNumArray[0], qNumArray[1]);
 							}
 
 							else if (keyword == 'rx(0)') {
-								quantumCircuit.rx(0, argInt);
+								quantumCircuit.rx(0, qNumArray[0]);
 							}
 							else if (keyword == 'rx(pi/4)') {
-								quantumCircuit.rx(Math.PI / 4, argInt);
+								quantumCircuit.rx(Math.PI / 4, qNumArray[0]);
 							}
 							else if (keyword == 'rx(pi/2)') {
-								quantumCircuit.rx(Math.PI / 2, argInt);
+								quantumCircuit.rx(Math.PI / 2, qNumArray[0]);
 							}
 							else if (keyword == 'rx(3*pi/4)') {
-								quantumCircuit.rx(3 * Math.PI / 4, argInt);
+								quantumCircuit.rx(3 * Math.PI / 4, qNumArray[0]);
 							}
 							else if (keyword == 'rx(pi)') {
-								quantumCircuit.rx(Math.PI, argInt);
+								quantumCircuit.rx(Math.PI, qNumArray[0]);
 							}
 							else if (keyword == 'rx(5*pi/4)') {
-								quantumCircuit.rx(5 * Math.PI / 4, argInt);
+								quantumCircuit.rx(5 * Math.PI / 4, qNumArray[0]);
 							}
 							else if (keyword == 'rx(3*pi/2)') {
-								quantumCircuit.rx(3 * Math.PI / 2, argInt);
+								quantumCircuit.rx(3 * Math.PI / 2, qNumArray[0]);
 							}
 							else if (keyword == 'rx(7*pi/4)') {
-								quantumCircuit.rx(7 * Math.PI / 4, argInt);
+								quantumCircuit.rx(7 * Math.PI / 4, qNumArray[0]);
 							}
 
 							else if (keyword == 'ry(0)') {
-								quantumCircuit.ry(0, argInt);
+								quantumCircuit.ry(0, qNumArray[0]);
 							}
 							else if (keyword == 'ry(pi/4)') {
-								quantumCircuit.ry(Math.PI / 4, argInt);
+								quantumCircuit.ry(Math.PI / 4, qNumArray[0]);
 							}
 							else if (keyword == 'ry(pi/2)') {
-								quantumCircuit.ry(Math.PI / 2, argInt);
+								quantumCircuit.ry(Math.PI / 2, qNumArray[0]);
 							}
 							else if (keyword == 'ry(3*pi/4)') {
-								quantumCircuit.ry(3 * Math.PI / 4, argInt);
+								quantumCircuit.ry(3 * Math.PI / 4, qNumArray[0]);
 							}
 							else if (keyword == 'ry(pi)') {
-								quantumCircuit.ry(Math.PI, argInt);
+								quantumCircuit.ry(Math.PI, qNumArray[0]);
 							}
 							else if (keyword == 'ry(5*pi/4)') {
-								quantumCircuit.ry(5 * Math.PI / 4, argInt);
+								quantumCircuit.ry(5 * Math.PI / 4, qNumArray[0]);
 							}
 							else if (keyword == 'ry(3*pi/2)') {
-								quantumCircuit.ry(3 * Math.PI / 2, argInt);
+								quantumCircuit.ry(3 * Math.PI / 2, qNumArray[0]);
 							}
 							else if (keyword == 'ry(7*pi/4)') {
-								quantumCircuit.ry(7 * Math.PI / 4, argInt);
+								quantumCircuit.ry(7 * Math.PI / 4, qNumArray[0]);
 							}
 
 
 							else if (keyword == 'rz(0)') {
-								quantumCircuit.rz(0, argInt);
+								quantumCircuit.rz(0, qNumArray[0]);
 							}
 							else if (keyword == 'rz(pi/4)') {
-								quantumCircuit.rz(Math.PI / 4, argInt);
+								quantumCircuit.rz(Math.PI / 4, qNumArray[0]);
 							}
 							else if (keyword == 'rz(pi/2)') {
-								quantumCircuit.rz(Math.PI / 2, argInt);
+								quantumCircuit.rz(Math.PI / 2, qNumArray[0]);
 							}
 							else if (keyword == 'rz(3*pi/4)') {
-								quantumCircuit.rz(3 * Math.PI / 4, argInt);
+								quantumCircuit.rz(3 * Math.PI / 4, qNumArray[0]);
 							}
 							else if (keyword == 'rz(pi)') {
-								quantumCircuit.rz(Math.PI, argInt);
+								quantumCircuit.rz(Math.PI, qNumArray[0]);
 							}
 							else if (keyword == 'rz(5*pi/4)') {
-								quantumCircuit.rz(5 * Math.PI / 4, argInt);
+								quantumCircuit.rz(5 * Math.PI / 4, qNumArray[0]);
 							}
 							else if (keyword == 'rz(3*pi/2)') {
-								quantumCircuit.rz(3 * Math.PI / 2, argInt);
+								quantumCircuit.rz(3 * Math.PI / 2, qNumArray[0]);
 							}
 							else if (keyword == 'rz(7*pi/4)') {
-								quantumCircuit.rz(7 * Math.PI / 4, argInt);
+								quantumCircuit.rz(7 * Math.PI / 4, qNumArray[0]);
 							}
 						}
 					}
@@ -361,6 +377,9 @@ var simulate = function (qc, shots, get) {
 			}
 		}
 		else if (gate[0] == 'cx') {
+			post('\ngate[0] ' + gate[0]);
+			post('\ngate[1] ' + gate[1]);
+			post('\ngate[2] ' + gate[2]);
 			var s = gate[1];
 			var t = gate[2];
 			var l = Math.min(s, t);

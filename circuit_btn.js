@@ -88,6 +88,10 @@ function draw()
 			moveto(-0.323, -0.4);
 			text("\u2022");
 		}
+		else if (curNodeType == CircuitNodeTypes.CTRL_X) {
+			moveto(-0.35, -0.4);
+			text("\u2295");
+		}
 		else if (curNodeType == CircuitNodeTypes.IDEN) {
 			moveto(-0.2, -0.4);
 			text("I");

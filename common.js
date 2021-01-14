@@ -73,6 +73,8 @@ var CircuitNodeTypes = {
   MEASURE_Z: 13,
   IDEN: 14,
 
+  CTRL_X: 21, // X gate that is associated with control qubit(s)
+
   RX_0: 30, // Rx
   RX_1: 31, // Rx pi/4
   RX_2: 32, // Rx pi/2

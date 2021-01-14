@@ -319,6 +319,7 @@ function createQasmFromGrid() {
 	}
 
 	qasm = qasmHeaderStr + qasmGatesStr;
+  post('\nqasm: ' + qasm);
 
 	// Send statevector simulator message with QASM to outlet
   outlet(0, 'svsim', qasm);
@@ -336,13 +337,25 @@ function createQasmFromGrid() {
  * @returns QASM string for the gate
  */
 function addGateFromGrid(qasmStr, gridRow, gridCol) {
+	post('\nIn addGateFromGrid, gridRow: ' + gridRow + ', gridCol: ' + gridCol);
 	var circNodeType = circGrid[gridRow][gridCol];
 
 	if (circNodeType == CircuitNodeTypes.H) {
 		qasmStr += ' h q[' + gridRow + '];';
 	}
-	else if (circNodeType == CircuitNodeTypes.X) {
-		qasmStr += ' x q[' + gridRow + '];';
+	else if (circNodeType == CircuitNodeTypes.X ||
+		circNodeType == CircuitNodeTypes.RX_4 ||
+		circNodeType == CircuitNodeTypes.CTRL_X) {
+		post('\nX or CTRL_X circNodeType: ' + circNodeType);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.X;
+			qasmStr += ' x q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.CTRL_X;
+			qasmStr += ' cx q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
 	}
 	else if (circNodeType == CircuitNodeTypes.Z) {
 		qasmStr += ' z q[' + gridRow + '];';
@@ -372,9 +385,9 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	else if (circNodeType == CircuitNodeTypes.RX_3) {
 		qasmStr += ' rx(3*pi/4) q[' + gridRow + '];';
 	}
-	else if (circNodeType == CircuitNodeTypes.RX_4) {
-		qasmStr += ' rx(pi) q[' + gridRow + '];';
-	}
+	// else if (circNodeType == CircuitNodeTypes.RX_4) {
+	// 	qasmStr += ' rx(pi) q[' + gridRow + '];';
+	// }
 	else if (circNodeType == CircuitNodeTypes.RX_5) {
 		qasmStr += ' rx(5*pi/4) q[' + gridRow + '];';
 	}
@@ -436,6 +449,25 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	}
 
 	return qasmStr;
+}
+
+
+/**
+ * Given a grid column, return the row in which a control exists.
+ *
+ * @return Zero-based row in which a control exists, -1 if not present.
+ * @param columnIndex
+ */
+function ctrlWireNumInColumn(colNum) {
+	post('\nIn ctrlWireNumInColumn, colNum: ' + colNum);
+	var ctrlRow = -1;
+	for (var rowNum = 0; rowNum < NUM_GRID_ROWS; rowNum++) {
+		if (circGrid[rowNum][colNum] == CircuitNodeTypes.CTRL) {
+			ctrlRow = rowNum;
+			break;
+		}
+	}
+	return ctrlRow;
 }
 
 
