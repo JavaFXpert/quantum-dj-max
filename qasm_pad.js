@@ -22,12 +22,14 @@ include('common.js');
 
 // Inlet 0 receives note messages that include velocity.
 // Inlet 1 receives bang message to update clips
-this.inlets = 2;
+// Inlet 2 receives gate rotation messages
+this.inlets = 3;
 
 // Outlet 0 sends message to a simulator with generated QASM
 // Outlet 1 sends messages to the midi clips list box
 // Outlet 2 sends messages the clip selector dial
-this.outlets = 3;
+// Outlet 3 sends messages the gate rotator dial
+this.outlets = 4;
 
 
 // Flag that indicates whether the currently displayed pads/notes
@@ -61,10 +63,9 @@ var circGrid = [
     [-1, -1, -1, -1]
 ];
 
-
-// Associates clip name to id
-//var clipsIds = [];
-
+// Currently selected row/column on grid
+var selCircGridRow = -1;
+var selCircGridCol = -1;
 
 // Associates clip name to path
 var clipsPaths = [];
@@ -76,6 +77,46 @@ function bang() {
 		populateMidiClipsList();
 	}
 }
+
+
+function msg_int(val) {
+	if (inlet == 2) {
+		var piOver4Rotation = val;
+		post('\npiOver4Rotation: ' + piOver4Rotation);
+
+		if (selCircGridRow >= 0 &&
+			selCircGridRow < NUM_GRID_ROWS &&
+			selCircGridCol >= 0 &&
+			selCircGridCol < NUM_GRID_COLS) {
+
+			var selNodeType = circGrid[selCircGridRow][selCircGridCol];
+			var newNodeType = CircuitNodeTypes.EMPTY;
+
+			if (selNodeType >= CircuitNodeTypes.RX_0 &&
+				selNodeType <= CircuitNodeTypes.RX_7) {
+
+				newNodeType = CircuitNodeTypes.RX_0 + piOver4Rotation;
+			}
+			else if (selNodeType >= CircuitNodeTypes.RY_0 &&
+				selNodeType <= CircuitNodeTypes.RY_7) {
+
+				newNodeType = CircuitNodeTypes.RY_0 + piOver4Rotation;
+			}
+			else if (selNodeType >= CircuitNodeTypes.RZ_0 &&
+				selNodeType <= CircuitNodeTypes.RZ_7) {
+
+				newNodeType = CircuitNodeTypes.RZ_0 + piOver4Rotation;
+			}
+
+			if (newNodeType != CircuitNodeTypes.EMPTY) {
+				circGrid[selCircGridRow][selCircGridCol] = newNodeType;
+				informCircuitBtn(selCircGridRow, selCircGridCol);
+				createQasmFromGrid();
+			}
+		}
+	}
+}
+
 
 
 function getPathByClipNameIdx(clipNameIdx) {
@@ -125,6 +166,9 @@ function resetCircGrid() {
 		for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
 			circGrid[rowIdx][colIdx] = CircuitNodeTypes.EMPTY;
 
+			selCircGridRow = -1;
+			selCircGridCol = -1;
+
 			informCircuitBtn(rowIdx, colIdx);
 		}
 	}
@@ -169,12 +213,38 @@ function setCircGridGate(notePitchVelocity) {
 				post('\nB gridCol: ' + gridCol);
 				// User is placing on the circuit
 				clearCircuitWhenEmptyKeyNextPressed = false;
-				circGrid[gridRow][gridCol] = curCircNodeType;
 
-				//var rowIdx = NUM_GRID_ROWS - gridRow - 1;
-				//var colIdx = gridCol;
+				if (circGrid[gridRow][gridCol] == CircuitNodeTypes.EMPTY ||
+					curCircNodeType == CircuitNodeTypes.EMPTY) {
+					circGrid[gridRow][gridCol] = curCircNodeType;
+				}
+				else {
+					post('\nGate already present');
+				}
+
+				selCircGridRow = gridRow;
+				selCircGridCol = gridCol;
+
+				var newPiOver4Rotation = 0;
+				if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.RX_0 &&
+					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RX_7) {
+
+					newPiOver4Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RX_0;
+				}
+				else if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.RY_0 &&
+					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RY_7) {
+
+					newPiOver4Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RY_0;
+				}
+				else if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.RZ_0 &&
+					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RZ_7) {
+
+					newPiOver4Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RZ_0;
+				}
+				// Set the current rotation on the gate rotator dial
+				outlet(3, 'int', newPiOver4Rotation);
+
 				informCircuitBtn(gridRow, gridCol);
-				// printCircGrid();
 				createQasmFromGrid();
 			}
 			else {
