@@ -41,7 +41,7 @@ var padNoteNamesDirty = true;
 // when the CircuitNodeTypes.EMPTY key is net pressed
 var clearCircuitWhenEmptyKeyNextPressed = false;
 
-var curCircNodeType = CircuitNodeTypes.EMPTY;
+var curCircNodeType = CircuitNodeTypes.H;
 
 var highMidiPitch = (NUM_GRID_ROWS - 1) * CONTR_MAT_COLS + NUM_GRID_COLS + LOW_MIDI_PITCH - 1;
 //post('highMidiPitch: ' + highMidiPitch);
@@ -400,7 +400,8 @@ function createQasmFromGrid() {
 /**
  * Creates a quantum gate from an element in the circuit grid
  * and adds it to the supplied QuantumCircuit instance
- * TODO: Support CNOT and some other gates
+ * TODO: Support additional CNOT-type gates, including with ANTI_CTRL,
+ *       and some other gates
  *
  * @param qasmStr Current QASM string
  * @param gridRow Zero-based row number on circuit grid
@@ -414,13 +415,12 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	if (circNodeType == CircuitNodeTypes.H) {
 		qasmStr += ' h q[' + gridRow + '];';
 	}
-	else if (circNodeType == CircuitNodeTypes.X ||
-		circNodeType == CircuitNodeTypes.RX_4 ||
+	else if (circNodeType == CircuitNodeTypes.RX_4 ||
 		circNodeType == CircuitNodeTypes.CTRL_X) {
 		post('\nX or CTRL_X circNodeType: ' + circNodeType);
 		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
 		if (ctrlWireNum == -1) {
-			circGrid[gridRow][gridCol] = CircuitNodeTypes.X;
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_4;
 			informCircuitBtn(gridRow, gridCol);
 			qasmStr += ' x q[' + gridRow + '];';
 		}
@@ -430,19 +430,19 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 			qasmStr += ' cx q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
-	else if (circNodeType == CircuitNodeTypes.Z) {
+	else if (circNodeType == CircuitNodeTypes.RZ_4) {
 		qasmStr += ' z q[' + gridRow + '];';
 	}
-	else if (circNodeType == CircuitNodeTypes.S) {
+	else if (circNodeType == CircuitNodeTypes.RZ_1) {
 		qasmStr += ' s q[' + gridRow + '];';
 	}
-	else if (circNodeType == CircuitNodeTypes.SDG) {
+	else if (circNodeType == CircuitNodeTypes.RZ_6) {
 		qasmStr += ' sdg q[' + gridRow + '];';
 	}
-	else if (circNodeType == CircuitNodeTypes.T) {
+	else if (circNodeType == CircuitNodeTypes.RZ_2) {
 		qasmStr += ' t q[' + gridRow + '];';
 	}
-	else if (circNodeType == CircuitNodeTypes.TDG) {
+	else if (circNodeType == CircuitNodeTypes.RZ_7) {
 		qasmStr += ' tdg q[' + gridRow + '];';
 	}
 

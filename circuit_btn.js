@@ -125,8 +125,7 @@ function draw()
 			moveto(-0.6, -0.4);
 			text("x3");
 		}
-		else if (curNodeType == CircuitNodeTypes.RX_4 ||
-			curNodeType == CircuitNodeTypes.X) {
+		else if (curNodeType == CircuitNodeTypes.RX_4) {
 			moveto(-0.25, -0.4);
 			text("X");
 		}
