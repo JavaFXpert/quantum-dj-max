@@ -131,7 +131,8 @@ function midi2NoteName(noteNum) {
  * @param transposeSemitones Number of semitones to transpose the outputted note (0 - 11)
  * @returns {number}
  */
-function pitchIdxToDiatonic(pitchIdx, octaveNum, transposeSemitones) {
+function pitchIdxToDiatonic(pitchIdx, octaveNumPlus2, transposeSemitones) {
+  var octaveNum = octaveNumPlus2 - 2;
   var diatonicMidiPitch = 0
   if (pitchIdx == 0) {
     diatonicMidiPitch = octaveNum * 12 + 24;
