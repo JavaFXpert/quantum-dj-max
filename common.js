@@ -38,7 +38,7 @@ var NUM_GATE_COLS = 4;
 
 // Number of values in addition to the circuit grid
 // stored as metadata in the clip
-var NUM_ADDITIONAL_METADATA_VALUES = 2;
+var NUM_ADDITIONAL_METADATA_VALUES = 3;
 
 // Resolution of calculation from phase to notes or sounds in a kit.
 // Also represents resolution of phase.
@@ -123,7 +123,15 @@ function midi2NoteName(noteNum) {
 }
 
 
-function pitchIdxToDiatonic(pitchIdx, octaveNum) {
+/**
+ * Compute a MIDI pitch given a diatonic pitch, octave number, and
+ * number of semitones to transpose.
+ * @param pitchIdx Diatonic pitch index (0 - 7)
+ * @param octaveNum MIDI octave number. 0 indicates that a kit should be used.
+ * @param transposeSemitones Number of semitones to transpose the outputted note (0 - 11)
+ * @returns {number}
+ */
+function pitchIdxToDiatonic(pitchIdx, octaveNum, transposeSemitones) {
   var diatonicMidiPitch = 0
   if (pitchIdx == 0) {
     diatonicMidiPitch = octaveNum * 12 + 24;
@@ -143,6 +151,7 @@ function pitchIdxToDiatonic(pitchIdx, octaveNum) {
     diatonicMidiPitch = octaveNum * 12 + 36;
   }
   //post('diatonicMidiPitch: ' + diatonicMidiPitch);
+  diatonicMidiPitch += transposeSemitones;
   return diatonicMidiPitch;
 }
 

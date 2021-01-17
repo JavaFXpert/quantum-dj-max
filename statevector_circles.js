@@ -31,12 +31,14 @@ var maxDisplayedSteps = 64
 //     4: diatonic octave 4
 // Inlet 3 receives name of current clip
 // Inlet 4 receives bang messages to shift global phase in such a way
-// that makes the first basis state have a 0 phase (if possible).
-this.inlets = 5;
+//   that makes the first basis state have a 0 phase (if possible).
+// Inlet 5 receives number of semitones to transpose
+this.inlets = 6;
 
 // Outlet 0 sends global phase shift
 // Outlet 1 sends pitch transform index
-this.outlets = 2;
+// Outlet 2 sends number of semitones transposition
+this.outlets = 3;
 
 sketch.default2d();
 var vbrgb = [1.,1.,1.,1.];
@@ -58,6 +60,9 @@ var preserveGlobalPhaseShift = false;
 // Instrument type selection
 // TODO: Find better name
 var pitchTransformIndex = 0;
+
+// Number of semitones to transpose
+var numTransposeSemitones = 0;
 
 
 var curClipPath = "";
@@ -86,6 +91,14 @@ function msg_int(val) {
 		qasmPadObj.js.padNoteNamesDirty = true;
 		populateCircGridFromClip();
 		//post('curClipPath: ' + curClipPath);
+	}
+	else if (inlet == 5) {
+		preserveGlobalPhaseShift = true;
+		numTransposeSemitones = val;
+		//post('\nnumTransposeSemitones: ' + numTransposeSemitones);
+		var qasmPadObj = this.patcher.getnamed("qasmpad");
+		qasmPadObj.js.padNoteNamesDirty = true;
+		computeProbsPhases();
 	}
 }
 
@@ -216,7 +229,8 @@ function computeProbsPhases() {
 				//post('\npitchNums[pnIdx] + 36: ' + pitchNums[pnIdx] + 36);
 			}
 			else {
-				clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex), time, ".25", 100, 0);
+				clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex,
+					numTransposeSemitones), time, ".25", 100, 0);
 				//post('\npitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex): ' +
 				//	pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex));
 			}
@@ -252,6 +266,12 @@ function computeProbsPhases() {
 	clip.call('note', pitchTransformIndex, pitchTransformIndexTime, ".25", 100, 0);
 	post('\npitchTransformIndexTime: ' + pitchTransformIndexTime);
 
+	// Encode number of semitones transposition
+	var numTransposeSemitonesTime = ((startIdx + NUM_GRID_CELLS + 2) / 4.0).toFixed(2);
+	post('\nEncoding numTransposeSemitones: ' + numTransposeSemitones);
+	clip.call('note', numTransposeSemitones, numTransposeSemitonesTime, ".25", 100, 0);
+	post('\nnumTransposeSemitonesTime: ' + numTransposeSemitonesTime);
+
 	clip.call('done');
 
 	// TODO: Refactor code below and its occurrence elsewhere into separate method
@@ -262,7 +282,7 @@ function computeProbsPhases() {
 	var trackPath = trackPathTokens.join(' ');
 	post('\ntrackPath: ' + trackPath);
 	// Display the pads/notes corresponding to each phase
-	qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex);
+	qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones);
 
 }
 
@@ -322,6 +342,16 @@ function populateCircGridFromClip() {
 					// Send pitch transform index
 					outlet(1, 'int', pitchTransformIndex);
 				}
+				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 2) {
+					numTransposeSemitones = noteMidi;
+					post('\nFound the numTransposeSemitones: ' + numTransposeSemitones);
+
+					// Send pitch transform index
+					outlet(1, 'int', pitchTransformIndex);
+
+					// Send number of semitones transposition
+					outlet(2, 'int', numTransposeSemitones);
+				}
 				else {
 					var noteCol = Math.floor(adjNoteStart * 4 / NUM_GRID_ROWS);
 					//post('\nnoteCol: ' + noteCol);
@@ -350,7 +380,7 @@ function populateCircGridFromClip() {
 		var trackPath = trackPathTokens.join(' ');
 		post('\ntrackPath: ' + trackPath);
 		// Display the pads/notes corresponding to each phase
-		qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex);
+		qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones);
 
 
 		qasmPadObj.js.createQasmFromGrid();

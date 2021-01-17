@@ -675,7 +675,7 @@ function populateMidiClipsList() {
  * Given a track path, pad/note names in display
  * @param trackPath
  */
-function populatePadNoteNames(trackPath, pitchTransformIdx) {
+function populatePadNoteNames(trackPath, pitchTransformIdx, transposeSemitones) {
 	if (padNoteNamesDirty) {
 		padNoteNamesDirty = false;
 		post('\nIn populatePadNoteNames, trackPath: ' + trackPath);
@@ -709,7 +709,7 @@ function populatePadNoteNames(trackPath, pitchTransformIdx) {
 					noteName = padNoteNames[midiPitchIdx];
 					post('\nPad noteName: ' + noteName);
 				} else {
-					noteName = padNoteNames[pitchIdxToDiatonic(midiPitchIdx, pitchTransformIdx)];
+					noteName = padNoteNames[pitchIdxToDiatonic(midiPitchIdx, pitchTransformIdx, transposeSemitones)];
 					post('\nDiatonic noteName: ' + noteName);
 				}
 
