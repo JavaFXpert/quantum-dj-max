@@ -434,13 +434,13 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		qasmStr += ' z q[' + gridRow + '];';
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_1) {
-		qasmStr += ' s q[' + gridRow + '];';
+		qasmStr += ' t q[' + gridRow + '];';
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_6) {
 		qasmStr += ' sdg q[' + gridRow + '];';
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_2) {
-		qasmStr += ' t q[' + gridRow + '];';
+		qasmStr += ' s q[' + gridRow + '];';
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_7) {
 		qasmStr += ' tdg q[' + gridRow + '];';
