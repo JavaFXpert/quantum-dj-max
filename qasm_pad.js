@@ -111,6 +111,7 @@ function msg_int(val) {
 			if (newNodeType != CircuitNodeTypes.EMPTY) {
 				circGrid[selCircGridRow][selCircGridCol] = newNodeType;
 				informCircuitBtn(selCircGridRow, selCircGridCol);
+				refreshControllerPads();
 				createQasmFromGrid();
 			}
 		}
@@ -184,6 +185,7 @@ function resetCircGrid() {
  * @param notePitchVelocity Array containing midi pitch and velocity
  */
 function setCircGridGate(notePitchVelocity) {
+	post('\nIn TEMP setCircGridGate');
 	post('\notePitchVelocity[0]: ' + notePitchVelocity[0]);
 	post('notePitchVelocity[1]: ' + notePitchVelocity[1]);
 	if (notePitchVelocity.length >= 2) {
@@ -199,6 +201,13 @@ function setCircGridGate(notePitchVelocity) {
 
 		post('\nB pitch: ' + pitch);
 
+		// var controlSurface = new LiveAPI('control_surfaces 1'); //TODO: Inquire surface number
+		// var controlNames = controlSurface.call('get_control_names');
+		// post('\ncontrolNames: ' + controlNames);
+		// controlSurface.call('grab_midi');
+		// controlSurface.call('send_midi', 144, pitch, 126);
+		// controlSurface.call('release_midi');
+
 		if (pitch >= LOW_MIDI_PITCH && pitch <= highMidiPitch + 4) {
 			var gridRow = Math.floor((highMidiPitch - pitch) / CONTR_MAT_COLS);
 			var gridCol = (highMidiPitch - pitch) % CONTR_MAT_COLS;
@@ -208,6 +217,7 @@ function setCircGridGate(notePitchVelocity) {
 			post('\ngridCol: ' + gridCol);
 
 			if (gridCol >= 0 && gridCol < NUM_GRID_COLS) {
+
 				gridCol = NUM_GRID_COLS - gridCol - 1;
 				post('\nB gridRow: ' + gridRow);
 				post('\nB gridCol: ' + gridCol);
@@ -217,6 +227,8 @@ function setCircGridGate(notePitchVelocity) {
 				if (circGrid[gridRow][gridCol] == CircuitNodeTypes.EMPTY ||
 					curCircNodeType == CircuitNodeTypes.EMPTY) {
 					circGrid[gridRow][gridCol] = curCircNodeType;
+
+					//controlSurface.call('send_midi', 144, 36, 127);
 				}
 				else {
 					post('\nGate already present');
@@ -245,6 +257,7 @@ function setCircGridGate(notePitchVelocity) {
 				outlet(3, 'int', newPiOver4Rotation);
 
 				informCircuitBtn(gridRow, gridCol);
+				refreshControllerPads();
 				createQasmFromGrid();
 			}
 			else {
@@ -254,6 +267,7 @@ function setCircGridGate(notePitchVelocity) {
 					curCircNodeType = CircuitNodeTypes.EMPTY;
 					if (clearCircuitWhenEmptyKeyNextPressed){
 						resetCircGrid();
+						refreshControllerPads();
 						createQasmFromGrid();
 						clearCircuitWhenEmptyKeyNextPressed = false;
 					}
@@ -726,4 +740,19 @@ function refreshPadNoteNames() {
 	for (var midiNum = 0; midiNum <= 127; midiNum++) {
 		padNoteNames.push(midi2NoteName(midiNum));
 	}
+}
+
+
+function refreshControllerPads() {
+	var controlSurface = new LiveAPI('control_surfaces 1'); //TODO: Inquire surface number
+	//var controlNames = controlSurface.call('get_control_names');
+	controlSurface.call('grab_midi');
+	for (rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
+		for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+			var midiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - rowIdx - 1) * CONTR_MAT_COLS) + colIdx;
+			var padColor = circNodeType2Color(circGrid[rowIdx][colIdx]);
+			controlSurface.call('send_midi', 144, midiPitch, padColor);
+		}
+	}
+	controlSurface.call('release_midi');
 }

@@ -167,3 +167,19 @@ function removeQuotes(str) {
   return unquotedStr;
 }
 
+
+function circNodeType2Color(circNodeTypeNum) {
+  var colorNum = 0;
+  // if (circNodeTypeNum >= CircuitNodeTypes.RZ_0 &&
+  //   circNodeTypeNum <= CircuitNodeTypes.RZ_7) {
+  // }
+  if (circNodeTypeNum > 0 &&
+    circNodeTypeNum <= 127) {
+    colorNum = circNodeTypeNum;
+  }
+  else {
+    colorNum = 0;
+  }
+  return colorNum;
+}
+
