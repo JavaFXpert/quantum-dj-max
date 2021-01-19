@@ -230,8 +230,6 @@ function setCircGridGate(notePitchVelocity) {
 				if (circGrid[gridRow][gridCol] == CircuitNodeTypes.EMPTY ||
 					curCircNodeType == CircuitNodeTypes.EMPTY) {
 					circGrid[gridRow][gridCol] = curCircNodeType;
-
-					//controlSurface.call('send_midi', 144, 36, 127);
 				}
 				else {
 					post('\nGate already present');
@@ -640,7 +638,6 @@ function draw()
 
 
 function populateMidiClipsList() {
-	var live_set = new LiveAPI('live_set');
 
 	// Send midi clips names to outlet
 	outlet(1, 'clear');
