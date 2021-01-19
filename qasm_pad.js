@@ -754,5 +754,10 @@ function refreshControllerPads() {
 			controlSurface.call('send_midi', 144, midiPitch, padColor);
 		}
 	}
+	// for (var midiNum = 36; midiNum < 100; midiNum++) {
+	// 	var padColor = midiNum - 36;
+	// 	//controlSurface.call('send_midi', 144, midiNum, padColor + 64);
+	// 	//controlSurface.call('send_midi', 144, midiNum, padColor);
+	// }
 	controlSurface.call('release_midi');
 }

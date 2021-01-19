@@ -170,16 +170,82 @@ function removeQuotes(str) {
 
 function circNodeType2Color(circNodeTypeNum) {
   var colorNum = 0;
-  // if (circNodeTypeNum >= CircuitNodeTypes.RZ_0 &&
-  //   circNodeTypeNum <= CircuitNodeTypes.RZ_7) {
-  // }
-  if (circNodeTypeNum > 0 &&
-    circNodeTypeNum <= 127) {
-    colorNum = circNodeTypeNum;
+
+  if (circNodeTypeNum == CircuitNodeTypes.RX_0) {
+    colorNum = 25;
   }
-  else {
-    colorNum = 0;
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_1) {
+    colorNum = 127;
   }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_2) {
+    colorNum = 68;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_3) {
+    colorNum = 67;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_4) {
+    colorNum = 2;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_5) {
+    colorNum = 4;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_6) {
+    colorNum = 3;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_7) {
+    colorNum = 29;
+  }
+
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_0) {
+    colorNum = 8;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_1) {
+    colorNum = 10;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_2) {
+    colorNum = 11;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_3) {
+    colorNum = 31;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_4) {
+    colorNum = 32;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_5) {
+    colorNum = 89;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_6) {
+    colorNum = 93;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_7) {
+    colorNum = 97;
+  }
+
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_0) {
+    colorNum = 95;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_1) {
+    colorNum = 103;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_2) {
+    colorNum = 99;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_3) {
+    colorNum = 125;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_4) {
+    colorNum = 18;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_5) {
+    colorNum = 19;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_6) {
+    colorNum = 24;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_7) {
+    colorNum = 113;
+  }
+
   return colorNum;
 }
 
