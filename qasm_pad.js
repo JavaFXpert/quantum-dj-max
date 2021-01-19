@@ -63,6 +63,19 @@ var circGrid = [
     [-1, -1, -1, -1]
 ];
 
+
+var gateGrid = [
+	[-1, 30, 40, 50],
+	[ 8, 31, 41, 51],
+	[11, 32, 42, 52],
+	[-1, 33, 43, 53],
+	[14, 34, 44, 54],
+	[-1, 35, 45, 55],
+	[-1, 36, 46, 56],
+	[-1, 37, 47, 57]
+];
+
+
 // Currently selected row/column on grid
 var selCircGridRow = -1;
 var selCircGridCol = -1;
@@ -76,6 +89,7 @@ function bang() {
 		// bang received to refresh list of clips
 		populateMidiClipsList();
 		refreshControllerPads();
+		refreshGatePads();
 	}
 }
 
@@ -202,13 +216,6 @@ function setCircGridGate(notePitchVelocity) {
 		}
 
 		post('\nB pitch: ' + pitch);
-
-		// var controlSurface = new LiveAPI('control_surfaces 1'); //TODO: Inquire surface number
-		// var controlNames = controlSurface.call('get_control_names');
-		// post('\ncontrolNames: ' + controlNames);
-		// controlSurface.call('grab_midi');
-		// controlSurface.call('send_midi', 144, pitch, 126);
-		// controlSurface.call('release_midi');
 
 		if (pitch >= LOW_MIDI_PITCH && pitch <= highMidiPitch + 4) {
 			var gridRow = Math.floor((highMidiPitch - pitch) / CONTR_MAT_COLS);
@@ -753,6 +760,26 @@ function refreshControllerPads() {
 		for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
 			var midiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - rowIdx - 1) * CONTR_MAT_COLS) + colIdx;
 			var padColor = circNodeType2Color(circGrid[rowIdx][colIdx]);
+			controlSurface.call('send_midi', 144, midiPitch, padColor);
+		}
+	}
+
+	// for (var midiNum = 36; midiNum < 100; midiNum++) {
+	// 	var padColor = midiNum - 36;
+	// 	controlSurface.call('send_midi', 144, midiNum, padColor + 64);
+	// 	//controlSurface.call('send_midi', 144, midiNum, padColor);
+	// }
+	controlSurface.call('release_midi');
+}
+
+
+function refreshGatePads() {
+	var controlSurface = new LiveAPI('control_surfaces 1'); //TODO: Inquire surface number
+	controlSurface.call('grab_midi');
+	for (rowIdx = 0; rowIdx < CONTR_MAT_ROWS; rowIdx++) {
+		for (colIdx = 0; colIdx < CONTR_MAT_COLS - NUM_GRID_COLS; colIdx++) {
+			var midiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - rowIdx - 1) * CONTR_MAT_COLS) + NUM_GRID_COLS + colIdx;
+			var padColor = circNodeType2Color(gateGrid[rowIdx][colIdx]);
 			controlSurface.call('send_midi', 144, midiPitch, padColor);
 		}
 	}
