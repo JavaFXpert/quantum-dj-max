@@ -88,8 +88,6 @@ function bang() {
 	if (inlet == 1) {
 		// bang received to refresh list of clips
 		populateMidiClipsList();
-		refreshControllerPads();
-		refreshGatePads();
 	}
 }
 
@@ -126,7 +124,6 @@ function msg_int(val) {
 			if (newNodeType != CircuitNodeTypes.EMPTY) {
 				circGrid[selCircGridRow][selCircGridCol] = newNodeType;
 				informCircuitBtn(selCircGridRow, selCircGridCol);
-				refreshControllerPads();
 				createQasmFromGrid();
 			}
 		}
@@ -188,9 +185,6 @@ function resetCircGrid() {
 			informCircuitBtn(rowIdx, colIdx);
 		}
 	}
-	refreshControllerPads();
-	//createQasmFromGrid();
-	//printCircGrid();
 }
 
 
@@ -266,7 +260,6 @@ function setCircGridGate(notePitchVelocity) {
 				outlet(3, 'int', newPiOver4Rotation);
 
 				informCircuitBtn(gridRow, gridCol);
-				refreshControllerPads();
 				createQasmFromGrid();
 			}
 			else {
@@ -276,7 +269,6 @@ function setCircGridGate(notePitchVelocity) {
 					curCircNodeType = CircuitNodeTypes.EMPTY;
 					if (clearCircuitWhenEmptyKeyNextPressed){
 						resetCircGrid();
-						refreshControllerPads();
 						createQasmFromGrid();
 						clearCircuitWhenEmptyKeyNextPressed = false;
 					}
@@ -397,6 +389,8 @@ function setCircGridGate(notePitchVelocity) {
  * a statevector simulator message to an outlet.
  */
 function createQasmFromGrid() {
+	refreshControllerPads();
+
 	var numCircuitWires = computeNumWires();
 	var qasmHeaderStr = 'qreg q[' + numCircuitWires + '];' + ' creg c[' + numCircuitWires + '];';
 	var qasmGatesStr = '';
@@ -764,18 +758,7 @@ function refreshControllerPads() {
 		}
 	}
 
-	// for (var midiNum = 36; midiNum < 100; midiNum++) {
-	// 	var padColor = midiNum - 36;
-	// 	controlSurface.call('send_midi', 144, midiNum, padColor + 64);
-	// 	//controlSurface.call('send_midi', 144, midiNum, padColor);
-	// }
-	controlSurface.call('release_midi');
-}
-
-
-function refreshGatePads() {
-	var controlSurface = new LiveAPI('control_surfaces 1'); //TODO: Inquire surface number
-	controlSurface.call('grab_midi');
+	// Refresh gate pads
 	for (rowIdx = 0; rowIdx < CONTR_MAT_ROWS; rowIdx++) {
 		for (colIdx = 0; colIdx < CONTR_MAT_COLS - NUM_GRID_COLS; colIdx++) {
 			var midiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - rowIdx - 1) * CONTR_MAT_COLS) + NUM_GRID_COLS + colIdx;
