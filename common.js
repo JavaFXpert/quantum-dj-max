@@ -28,13 +28,13 @@ var CONTR_MAT_COLS = 8;
 
 // Controller pad rows and columns reserved for circuit
 var NUM_GRID_ROWS = 8;
-var NUM_GRID_COLS = 4;
+var NUM_GRID_COLS = 6;
 
 //  Number of controller pads reserved for the circuit
 var NUM_GRID_CELLS = NUM_GRID_ROWS * NUM_GRID_COLS;
 
 // Controller pad columns reserved for gates
-var NUM_GATE_COLS = 4;
+var NUM_GATE_COLS = 2;
 
 // Number of values in addition to the circuit grid
 // stored as metadata in the clip

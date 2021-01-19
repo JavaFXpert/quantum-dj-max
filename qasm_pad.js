@@ -53,26 +53,26 @@ refreshPadNoteNames();
 
 // TODO: Dynamically initialize this array
 var circGrid = [
-    [-1, -1, -1, -1],
-    [-1, -1, -1, -1],
-    [-1, -1, -1, -1],
-    [-1, -1, -1, -1],
-    [-1, -1, -1, -1],
-    [-1, -1, -1, -1],
-    [-1, -1, -1, -1],
-    [-1, -1, -1, -1]
+    [-1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1]
 ];
 
 
 var gateGrid = [
-	[-1, 30, 40, 50],
-	[ 8, 31, 41, 51],
-	[11, 32, 42, 52],
-	[-1, 33, 43, 53],
-	[14, 34, 44, 54],
-	[-1, 35, 45, 55],
-	[-1, 36, 46, 56],
-	[-1, 37, 47, 57]
+	[ 8, 51],
+	[11, 52],
+	[30, 53],
+	[40, 54],
+	[-1, 55],
+	[-1, 56],
+	[60, 57],
+	[14, -1]
 ];
 
 
@@ -263,7 +263,7 @@ function setCircGridGate(notePitchVelocity) {
 			else {
 				post('\nin else, pitch: ' + pitch);
 				// User is choosing a gate
-			  if (pitch == 96) {
+			  if (pitch == 43) {
 					curCircNodeType = CircuitNodeTypes.EMPTY;
 					if (clearCircuitWhenEmptyKeyNextPressed){
 						resetCircGrid();
@@ -277,101 +277,56 @@ function setCircGridGate(notePitchVelocity) {
 				else {
 					clearCircuitWhenEmptyKeyNextPressed = false;
 
-					if (pitch == 97) {
-						curCircNodeType = CircuitNodeTypes.RX_0;
-					}
-					else if (pitch == 98) {
-						curCircNodeType = CircuitNodeTypes.RY_0;
-					}
-					else if (pitch == 99) {
-						curCircNodeType = CircuitNodeTypes.RZ_0;
-					}
-
-					else if (pitch == 88) {
+					if (pitch == 98) {
 						curCircNodeType = CircuitNodeTypes.H;
 					}
-					else if (pitch == 89) {
-						curCircNodeType = CircuitNodeTypes.RX_1;
-					}
-					else if (pitch == 90) {
-						curCircNodeType = CircuitNodeTypes.RY_1;
-					}
-					else if (pitch == 91) {
+					else if (pitch == 99) {
 						curCircNodeType = CircuitNodeTypes.RZ_1;
 					}
 
-					else if (pitch == 80) {
+					else if (pitch == 90) {
 						curCircNodeType = CircuitNodeTypes.CTRL;
 					}
-					else if (pitch == 81) {
-						curCircNodeType = CircuitNodeTypes.RX_2;
-					}
-					else if (pitch == 82) {
-						curCircNodeType = CircuitNodeTypes.RY_2;
-					}
-					else if (pitch == 83) {
+					else if (pitch == 91) {
 						curCircNodeType = CircuitNodeTypes.RZ_2;
 					}
 
-					else if (pitch == 73) {
-						curCircNodeType = CircuitNodeTypes.RX_3;
-					}
-					else if (pitch == 74) {
-						curCircNodeType = CircuitNodeTypes.RY_3;
-					}
-					else if (pitch == 75) {
+					else if (pitch == 83) {
 						curCircNodeType = CircuitNodeTypes.RZ_3;
 					}
 
-					else if (pitch == 64) {
+					else if (pitch == 42) {
 						curCircNodeType = CircuitNodeTypes.IDEN;
 					}
-					else if (pitch == 65) {
+					else if (pitch == 82) {
 						curCircNodeType = CircuitNodeTypes.RX_4;
 					}
-					else if (pitch == 66) {
+					else if (pitch == 74) {
 						curCircNodeType = CircuitNodeTypes.RY_4;
 					}
-					else if (pitch == 67) {
+					else if (pitch == 75) {
 						curCircNodeType = CircuitNodeTypes.RZ_4;
 					}
 
-					else if (pitch == 57) {
-						curCircNodeType = CircuitNodeTypes.RX_5;
-					}
-					else if (pitch == 58) {
-						curCircNodeType = CircuitNodeTypes.RY_5;
-					}
-					else if (pitch == 59) {
+					else if (pitch == 67) {
 						curCircNodeType = CircuitNodeTypes.RZ_5;
 					}
 
-					else if (pitch == 48) {
+					else if (pitch == 58) {
 						curCircNodeType = CircuitNodeTypes.SWAP;
 					}
-					else if (pitch == 49) {
-						curCircNodeType = CircuitNodeTypes.RX_6;
-					}
-					else if (pitch == 50) {
-						curCircNodeType = CircuitNodeTypes.RY_6;
-					}
-					else if (pitch == 51) {
+					else if (pitch == 59) {
 						curCircNodeType = CircuitNodeTypes.RZ_6;
 					}
 
-					else if (pitch == 40) {
+					else if (pitch == 50) {
 						curCircNodeType = CircuitNodeTypes.QFT;
 					}
-					else if (pitch == 41) {
-						curCircNodeType = CircuitNodeTypes.RX_7;
-					}
-					else if (pitch == 42) {
-						curCircNodeType = CircuitNodeTypes.RY_7;
-					}
-					else if (pitch == 43) {
+					else if (pitch == 51) {
 						curCircNodeType = CircuitNodeTypes.RZ_7;
 					}
 				}
+				refreshControllerPads();
 				post('\nIn setCircGridGate, curCircNodeType is now ' + curCircNodeType);
 			}
 		}
@@ -387,8 +342,6 @@ function setCircGridGate(notePitchVelocity) {
  * a statevector simulator message to an outlet.
  */
 function createQasmFromGrid() {
-	refreshControllerPads();
-
 	var numCircuitWires = computeNumWires();
 	var qasmHeaderStr = 'qreg q[' + numCircuitWires + '];' + ' creg c[' + numCircuitWires + '];';
 	var qasmGatesStr = '';
@@ -406,6 +359,8 @@ function createQasmFromGrid() {
 
 	qasm = qasmHeaderStr + qasmGatesStr;
   post('\nqasm: ' + qasm);
+
+	refreshControllerPads();
 
 	// Send statevector simulator message with QASM to outlet
   outlet(0, 'svsim', qasm);
@@ -757,7 +712,7 @@ function refreshControllerPads() {
 
 	// Refresh gate pads
 	for (rowIdx = 0; rowIdx < CONTR_MAT_ROWS; rowIdx++) {
-		for (colIdx = 0; colIdx < CONTR_MAT_COLS - NUM_GRID_COLS; colIdx++) {
+		for (colIdx = 0; colIdx < NUM_GATE_COLS; colIdx++) {
 			var midiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - rowIdx - 1) * CONTR_MAT_COLS) + NUM_GRID_COLS + colIdx;
 			var padColor = circNodeType2Color(gateGrid[rowIdx][colIdx]);
 			controlSurface.call('send_midi', 144, midiPitch, padColor);
