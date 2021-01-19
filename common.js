@@ -171,7 +171,23 @@ function removeQuotes(str) {
 function circNodeType2Color(circNodeTypeNum) {
   var colorNum = 0;
 
-  if (circNodeTypeNum == CircuitNodeTypes.RX_0) {
+  if (circNodeTypeNum == CircuitNodeTypes.EMPTY) {
+    colorNum = 0;
+  }
+  if (circNodeTypeNum == CircuitNodeTypes.H) {
+    colorNum = 122;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.CTRL) {
+    colorNum = 123;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.CTRL_X) {
+    colorNum = 1;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.IDEN) {
+    colorNum = 124;
+  }
+
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_0) {
     colorNum = 25;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RX_1) {
