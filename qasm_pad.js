@@ -75,6 +75,7 @@ function bang() {
 	if (inlet == 1) {
 		// bang received to refresh list of clips
 		populateMidiClipsList();
+		refreshControllerPads();
 	}
 }
 
@@ -173,6 +174,7 @@ function resetCircGrid() {
 			informCircuitBtn(rowIdx, colIdx);
 		}
 	}
+	refreshControllerPads();
 	//createQasmFromGrid();
 	//printCircGrid();
 }

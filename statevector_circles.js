@@ -283,7 +283,6 @@ function computeProbsPhases() {
 	post('\ntrackPath: ' + trackPath);
 	// Display the pads/notes corresponding to each phase
 	qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones);
-
 }
 
 
