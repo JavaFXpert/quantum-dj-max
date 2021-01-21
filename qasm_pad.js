@@ -593,10 +593,10 @@ function draw()
 
 
 function populateMidiClipsList() {
-
 	// Send midi clips names to outlet
 	outlet(1, 'clear');
 	clipsPaths = [];
+	var clipsNames = [];
 
 	var live_set = new LiveAPI('live_set');
 	var numTracks = live_set.getcount('tracks');
@@ -626,6 +626,7 @@ function populateMidiClipsList() {
 
 						outlet(1, 'append', clipName);
 						clipsPaths.push(clipName + '^' + clip.unquotedpath);
+						clipsNames.push(clipName);
 
 						//post('\nclipsIds: ' + clipsId[0]);
 						//post('\nSecond slot path: ' + getPathByClipNameIdx(1));
@@ -634,6 +635,12 @@ function populateMidiClipsList() {
 			}
 		}
 	}
+
+	// TODO: Move
+	var clipSelectDial = this.patcher.getnamed('clip_select');
+	//clipSelectDial.setattr('_parameter_steps', clipsNames.length);
+	clipSelectDial.setattr('_parameter_range', clipsNames);
+	//post('\nclipSelectDial: ' + clipSelectDial.getattrnames());
 
 	// Zero the clip selector dial
 	outlet(2, 'int', 0);
