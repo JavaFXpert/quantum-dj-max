@@ -73,27 +73,32 @@ refresh();
 
 function msg_int(val) {
 	if (inlet == 1) {
-		preserveGlobalPhaseShift = true;
+		//preserveGlobalPhaseShift = (val > 0);
 		globalPhaseShiftMidi = val;
 		setGlobalPhaseShift(val);
 	}
 	else if (inlet == 2) {
-		preserveGlobalPhaseShift = true;
+		//preserveGlobalPhaseShift = true;
 		pitchTransformIndex = val;
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		qasmPadObj.js.padNoteNamesDirty = true;
 		computeProbsPhases();
 	}
 	else if (inlet == 3) {
-		preserveGlobalPhaseShift = true;
+		//preserveGlobalPhaseShift = true;
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		curClipPath = qasmPadObj.js.getPathByClipNameIdx(val);
 		qasmPadObj.js.padNoteNamesDirty = true;
 		populateCircGridFromClip();
 		//post('curClipPath: ' + curClipPath);
 	}
+	if (inlet == 4) {
+		// Preserve either global phase, or first pitch with above threshold probability
+		preserveGlobalPhaseShift = (val > 0);
+		post('\npreserveGlobalPhaseShift: ' + preserveGlobalPhaseShift);
+	}
 	else if (inlet == 5) {
-		preserveGlobalPhaseShift = true;
+		//preserveGlobalPhaseShift = true;
 		numTransposeSemitones = val;
 		//post('\nnumTransposeSemitones: ' + numTransposeSemitones);
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
@@ -104,16 +109,16 @@ function msg_int(val) {
 
 
 function bang() {
-	if (inlet == 4) {
-		// bang received to let global phase shift in such a way
-    // that makes the first basis state have a 0 phase (if possible).
-		// TODO: Make dial move appropriately
-
-		preserveGlobalPhaseShift = false;
-		globalPhaseShiftMidi = 0;
-		setGlobalPhaseShift(0);
-		computeProbsPhases();
-	}
+	// if (inlet == 4) {
+	// 	// bang received to let global phase shift in such a way
+  //   // that makes the first basis state have a 0 phase (if possible).
+	// 	// TODO: Make dial move appropriately
+	//
+	// 	preserveGlobalPhaseShift = false;
+	// 	globalPhaseShiftMidi = 0;
+	// 	setGlobalPhaseShift(0);
+	// 	computeProbsPhases();
+	// }
 }
 
 
@@ -125,13 +130,6 @@ function bang() {
  *               that symbolizes an imaginary component.
  */
 function viz(svlist) {
-	//post("\nsvlist: " + svlist);
-
-	//if (!preserveGlobalPhaseShift) {
-		//outlet(0, 'int', 0);
-	//}
-
-
 	svArray = svlist.toString().split(' ');
 	//post("\nsvArray: " + svArray);
 	var numStates = svArray.length / 2;
@@ -152,6 +150,8 @@ function computeProbsPhases() {
 	var numNotes = 0;
 	var numBasisStates = svArray.length / 2;
 	var numBasisStatesWithNonZeroProbability = 0;
+
+	var globalPhaseShifted = false;
 
 	for (var svIdx = 0; svIdx < svArray.length; svIdx += 2) {
 		var real = svArray[svIdx];
@@ -177,8 +177,9 @@ function computeProbsPhases() {
 
 			// If first basis state with significant probability has non-zero phase,
 			// shift global phase by its phase
-			if (!preserveGlobalPhaseShift) {
-				preserveGlobalPhaseShift = true;
+			if (!preserveGlobalPhaseShift && !globalPhaseShifted) {
+				globalPhaseShifted = true;
+				//preserveGlobalPhaseShift = true;
 				if (polar.theta < 0) {
 					polar.theta += 2 * Math.PI;
 				}
@@ -329,7 +330,7 @@ function populateCircGridFromClip() {
 					globalPhaseShiftMidi = noteMidi;
 					post('\nFound the globalPhaseShiftMidi: ' + globalPhaseShiftMidi);
 
-						preserveGlobalPhaseShift = true;
+						//preserveGlobalPhaseShift = true;
 
 					// Send globalPhaseShift
 					outlet(0, 'int', globalPhaseShiftMidi);
@@ -383,7 +384,7 @@ function populateCircGridFromClip() {
 
 
 		qasmPadObj.js.createQasmFromGrid();
-		preserveGlobalPhaseShift = false;
+		//preserveGlobalPhaseShift = false;
 		//qasmPadObj.js.printCircGrid();
 	}
 }
