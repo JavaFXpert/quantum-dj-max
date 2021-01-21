@@ -98,7 +98,7 @@ function createQuantumCircuitFromQasm(qasm) {
 		var instruction = qasmArray[tokenIdx].trim();
 
 		if (instruction.length > 0) {
-			post('\ninstruction: ' + instruction);
+			//post('\ninstruction: ' + instruction);
 			var keywordArgumentArray = instruction.split(' ');
 			if (keywordArgumentArray.length == 2) {
 				var keyword = keywordArgumentArray[0];
@@ -377,9 +377,9 @@ var simulate = function (qc, shots, get) {
 			}
 		}
 		else if (gate[0] == 'cx') {
-			post('\ngate[0] ' + gate[0]);
-			post('\ngate[1] ' + gate[1]);
-			post('\ngate[2] ' + gate[2]);
+			//post('\ngate[0] ' + gate[0]);
+			//post('\ngate[1] ' + gate[1]);
+			//post('\ngate[2] ' + gate[2]);
 			var s = gate[1];
 			var t = gate[2];
 			var l = Math.min(s, t);

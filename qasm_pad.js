@@ -133,7 +133,7 @@ function msg_int(val) {
 
 
 function getPathByClipNameIdx(clipNameIdx) {
-	post('In getPathByClipNameIdx, clipNameIdx: ' + clipNameIdx);
+	//post('In getPathByClipNameIdx, clipNameIdx: ' + clipNameIdx);
 	if (clipNameIdx < clipsPaths.length) {
 		var caratPos = clipsPaths[clipNameIdx].indexOf('^');
 		if (caratPos > 0) {
@@ -196,34 +196,34 @@ function resetCircGrid() {
  */
 function setCircGridGate(notePitchVelocity) {
 	post('\nIn TEMP setCircGridGate');
-	post('\notePitchVelocity[0]: ' + notePitchVelocity[0]);
-	post('notePitchVelocity[1]: ' + notePitchVelocity[1]);
+	//post('\notePitchVelocity[0]: ' + notePitchVelocity[0]);
+	//post('notePitchVelocity[1]: ' + notePitchVelocity[1]);
 	if (notePitchVelocity.length >= 2) {
 		var pitch = notePitchVelocity[0];
 		var velocity = notePitchVelocity[1];
 
-		post('\nA pitch: ' + pitch);
+		//post('\nA pitch: ' + pitch);
 
 		// Only process noteup events (when user releases controller button)
 		if (velocity > 0 ) {
 			return;
 		}
 
-		post('\nB pitch: ' + pitch);
+		//post('\nB pitch: ' + pitch);
 
 		if (pitch >= LOW_MIDI_PITCH && pitch <= highMidiPitch + 4) {
 			var gridRow = Math.floor((highMidiPitch - pitch) / CONTR_MAT_COLS);
 			var gridCol = (highMidiPitch - pitch) % CONTR_MAT_COLS;
 
-			post('\npitch: ' + pitch);
-			post('\ngridRow: ' + gridRow);
-			post('\ngridCol: ' + gridCol);
+			//post('\npitch: ' + pitch);
+			//post('\ngridRow: ' + gridRow);
+			//post('\ngridCol: ' + gridCol);
 
 			if (gridCol >= 0 && gridCol < NUM_GRID_COLS) {
 
 				gridCol = NUM_GRID_COLS - gridCol - 1;
-				post('\nB gridRow: ' + gridRow);
-				post('\nB gridCol: ' + gridCol);
+				//post('\nB gridRow: ' + gridRow);
+				//post('\nB gridCol: ' + gridCol);
 				// User is placing on the circuit
 				clearCircuitWhenEmptyKeyNextPressed = false;
 
@@ -261,7 +261,7 @@ function setCircGridGate(notePitchVelocity) {
 				createQasmFromGrid();
 			}
 			else {
-				post('\nin else, pitch: ' + pitch);
+				//post('\nin else, pitch: ' + pitch);
 				// User is choosing a gate
 			  if (pitch == 43) {
 					curCircNodeType = CircuitNodeTypes.EMPTY;
@@ -327,7 +327,7 @@ function setCircGridGate(notePitchVelocity) {
 					}
 				}
 				refreshControllerPads();
-				post('\nIn setCircGridGate, curCircNodeType is now ' + curCircNodeType);
+				//post('\nIn setCircGridGate, curCircNodeType is now ' + curCircNodeType);
 			}
 		}
 	}
@@ -358,7 +358,7 @@ function createQasmFromGrid() {
 	}
 
 	qasm = qasmHeaderStr + qasmGatesStr;
-  post('\nqasm: ' + qasm);
+  //post('\nqasm: ' + qasm);
 
 	refreshControllerPads();
 
@@ -379,7 +379,7 @@ function createQasmFromGrid() {
  * @returns QASM string for the gate
  */
 function addGateFromGrid(qasmStr, gridRow, gridCol) {
-	post('\nIn addGateFromGrid, gridRow: ' + gridRow + ', gridCol: ' + gridCol);
+	//post('\nIn addGateFromGrid, gridRow: ' + gridRow + ', gridCol: ' + gridCol);
 	var circNodeType = circGrid[gridRow][gridCol];
 
 	if (circNodeType == CircuitNodeTypes.H) {
@@ -387,7 +387,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_4 ||
 		circNodeType == CircuitNodeTypes.CTRL_X) {
-		post('\nX or CTRL_X circNodeType: ' + circNodeType);
+		//post('\nX or CTRL_X circNodeType: ' + circNodeType);
 		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_4;
@@ -502,7 +502,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
  * @param columnIndex
  */
 function ctrlWireNumInColumn(colNum) {
-	post('\nIn ctrlWireNumInColumn, colNum: ' + colNum);
+	//post('\nIn ctrlWireNumInColumn, colNum: ' + colNum);
 	var ctrlRow = -1;
 	for (var rowNum = 0; rowNum < NUM_GRID_ROWS; rowNum++) {
 		if (circGrid[rowNum][colNum] == CircuitNodeTypes.CTRL) {
@@ -556,12 +556,12 @@ function informCircuitBtn(gridRowIdx, gridColIdx) {
  * Output the circuit grid to the console for debug purposes
  */
 function printCircGrid() {
-	post('\n');
+	//post('\n');
 	for (rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
 		for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
-			post(circGrid[rowIdx][colIdx] + ' ');
+			//post(circGrid[rowIdx][colIdx] + ' ');
 		}
-		post('\n');
+		//post('\n');
 	}
 }
 
@@ -603,32 +603,32 @@ function populateMidiClipsList() {
 
 	for (var trackIdx = 0; trackIdx < numTracks; trackIdx++ ) {
 		var track = new LiveAPI('live_set tracks ' + trackIdx);
-		post('\ntrack ' + trackIdx + ' id: ' + track.id);
+		//post('\ntrack ' + trackIdx + ' id: ' + track.id);
 
 		if (track.get('has_midi_input')) {
 			var numClipSlots = track.getcount('clip_slots');
 
 			for (var clipSlotIdx = 0; clipSlotIdx < numClipSlots; clipSlotIdx++) {
 				var clipSlot = new LiveAPI('live_set tracks ' + trackIdx + ' clip_slots ' + clipSlotIdx);
-				post('\nclipSlot ' + clipSlotIdx + ' id: ' + clipSlot.id);
+				//post('\nclipSlot ' + clipSlotIdx + ' id: ' + clipSlot.id);
 
 				if (clipSlot.get('has_clip') != 0) {
 					var clip = new LiveAPI('live_set tracks ' + trackIdx + ' clip_slots ' + clipSlotIdx + ' clip');
-					post('\nclip id: ' + clip.id);
+					//post('\nclip id: ' + clip.id);
 
 					var clipName = clip.getstring('name');
 					if (clipName.length > 2) {
 						if (clipName.substring(0, 1) == '\"') {
 							clipName = clipName.substring(1, clipName.length - 1);
 						}
-						post('\nclipName: ' + clipName);
-						post('\nclip path: ' + clip.unquotedpath);
+						//post('\nclipName: ' + clipName);
+						//post('\nclip path: ' + clip.unquotedpath);
 
 						outlet(1, 'append', clipName);
 						clipsPaths.push(clipName + '^' + clip.unquotedpath);
 
 						//post('\nclipsIds: ' + clipsId[0]);
-						post('\nSecond slot path: ' + getPathByClipNameIdx(1));
+						//post('\nSecond slot path: ' + getPathByClipNameIdx(1));
 					}
 				}
 			}
@@ -647,18 +647,18 @@ function populateMidiClipsList() {
 function populatePadNoteNames(trackPath, pitchTransformIdx, transposeSemitones) {
 	if (padNoteNamesDirty) {
 		padNoteNamesDirty = false;
-		post('\nIn populatePadNoteNames, trackPath: ' + trackPath);
+		//post('\nIn populatePadNoteNames, trackPath: ' + trackPath);
 		var track = new LiveAPI(trackPath);
 
 		if (track.get('has_midi_input')) {
 			var textbox = this.patcher.getnamed('pad_note[0]');
-			post('\ntextbox: ' + textbox.getattr('text'));
+			//post('\ntextbox: ' + textbox.getattr('text'));
 
 			var device = new LiveAPI(trackPath + ' devices ' + 0);
-			post("\ndevice name: " + device.get('name'));
+			//post("\ndevice name: " + device.get('name'));
 
 			var canHaveDrumPads = device.get('can_have_drum_pads') == 1;
-			post("\ndevice can_have_drum_pads: " + canHaveDrumPads);
+			//post("\ndevice can_have_drum_pads: " + canHaveDrumPads);
 
 			refreshPadNoteNames();
 
@@ -666,20 +666,20 @@ function populatePadNoteNames(trackPath, pitchTransformIdx, transposeSemitones) 
 				for (var drumPadIdx = 0; drumPadIdx < MAX_DRUMPADS; drumPadIdx++) {
 					var drumPad =
 						new LiveAPI(trackPath + ' devices ' + 0 + ' drum_pads ' + (LOW_DRUMPAD_MIDI + drumPadIdx));
-					post("\ndrumPad name: " + drumPad.getstring('name'));
+					//post("\ndrumPad name: " + drumPad.getstring('name'));
 					padNoteNames[drumPadIdx] = drumPad.getstring('name');
 				}
 			}
-			post('\npadNoteNames: ' + padNoteNames);
+			//post('\npadNoteNames: ' + padNoteNames);
 
 			for (var midiPitchIdx = 0; midiPitchIdx < NUM_PITCHES; midiPitchIdx++) {
 				var noteName = '';
 				if (pitchTransformIdx == 0) {
 					noteName = padNoteNames[midiPitchIdx];
-					post('\nPad noteName: ' + noteName);
+					//post('\nPad noteName: ' + noteName);
 				} else {
 					noteName = padNoteNames[pitchIdxToDiatonic(midiPitchIdx, pitchTransformIdx, transposeSemitones)];
-					post('\nDiatonic noteName: ' + noteName);
+					//post('\nDiatonic noteName: ' + noteName);
 				}
 
 				// Update textbox

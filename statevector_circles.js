@@ -189,7 +189,7 @@ function computeProbsPhases() {
 				//var tempPrevPiOver4Phase = prevPiOver4Phase;
 				//prevPiOver4Phase = piOver4Phase;
 
-				piOver4Phase += prevPiOver4Phase;
+				piOver4Phase += NUM_PITCHES - prevPiOver4Phase;
 
 				//piOver4Phase += tempPrevPiOver4Phase;
 
@@ -217,7 +217,7 @@ function computeProbsPhases() {
 	// Set the notes into the clip
 	//var clip = new LiveAPI('live_set tracks 0 clip_slots 1 clip');
 	var clip = new LiveAPI(curClipPath);
-	post('\nclip.path: ' + clip.unquotedpath);
+	//post('\nclip.path: ' + clip.unquotedpath);
 	clip.call('remove_notes', 0, 0, 256, 128);
 
 	clip.set('loop_end', svArray.length / 8);
@@ -229,8 +229,15 @@ function computeProbsPhases() {
 
 	clip.call('notes', numNotes + NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES);
 
+	var foundFirstPitch = false;
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
 		if (pitchNums[pnIdx] > -1) {
+			if (!foundFirstPitch) {
+				prevPiOver4Phase = pitchNums[pnIdx];
+				foundFirstPitch = true;
+				post('\n***** prevPiOver4Phase: ' + prevPiOver4Phase);
+			}
+
 			var time = (pnIdx / 4.0).toFixed(2);
 
 			//post('\npnIdx: ' + pnIdx);
@@ -268,21 +275,21 @@ function computeProbsPhases() {
 
 	// Encode global phase shift
 	var globalPhaseShiftTime = ((startIdx + NUM_GRID_CELLS) / 4.0).toFixed(2);
-	post('\nEncoding globalPhaseShiftMidi: ' + globalPhaseShiftMidi);
+	//post('\nEncoding globalPhaseShiftMidi: ' + globalPhaseShiftMidi);
 	clip.call('note', globalPhaseShiftMidi, globalPhaseShiftTime, ".25", 100, 0);
-	post('\nglobalPhaseShiftTime: ' + globalPhaseShiftTime);
+	//post('\nglobalPhaseShiftTime: ' + globalPhaseShiftTime);
 
 	// Encode pitch transformation index
 	var pitchTransformIndexTime = ((startIdx + NUM_GRID_CELLS + 1) / 4.0).toFixed(2);
-	post('\nEncoding pitchTransformIndex: ' + pitchTransformIndex);
+	//post('\nEncoding pitchTransformIndex: ' + pitchTransformIndex);
 	clip.call('note', pitchTransformIndex, pitchTransformIndexTime, ".25", 100, 0);
-	post('\npitchTransformIndexTime: ' + pitchTransformIndexTime);
+	//post('\npitchTransformIndexTime: ' + pitchTransformIndexTime);
 
 	// Encode number of semitones transposition
 	var numTransposeSemitonesTime = ((startIdx + NUM_GRID_CELLS + 2) / 4.0).toFixed(2);
-	post('\nEncoding numTransposeSemitones: ' + numTransposeSemitones);
+	//post('\nEncoding numTransposeSemitones: ' + numTransposeSemitones);
 	clip.call('note', numTransposeSemitones, numTransposeSemitonesTime, ".25", 100, 0);
-	post('\nnumTransposeSemitonesTime: ' + numTransposeSemitonesTime);
+	//post('\nnumTransposeSemitonesTime: ' + numTransposeSemitonesTime);
 
 	clip.call('done');
 
@@ -292,7 +299,7 @@ function computeProbsPhases() {
 	var trackPathTokens = curClipPath.split(' ');
 	trackPathTokens.length = 3;
 	var trackPath = trackPathTokens.join(' ');
-	post('\ntrackPath: ' + trackPath);
+	//post('\ntrackPath: ' + trackPath);
 	// Display the pads/notes corresponding to each phase
 	qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones);
 }
@@ -303,14 +310,14 @@ function computeProbsPhases() {
  * @param clipPath
  */
 function populateCircGridFromClip() {
-	post("\nIn populateCircGridFromClip, curClipPath: " + curClipPath);
+	//post("\nIn populateCircGridFromClip, curClipPath: " + curClipPath);
 
 	var notesArrayPeriod = 6;
 	//var numGridCells = NUM_GRID_ROWS * NUM_GRID_COLS;
 	var qasmPadObj = this.patcher.getnamed("qasmpad");
 	var clip = new LiveAPI(curClipPath);
 	var loopEnd = clip.get('loop_end');
-	post('\nloopEnd: ' + loopEnd);
+	//post('\nloopEnd: ' + loopEnd);
 
 	qasmPadObj.js.resetCircGrid();
 
@@ -328,18 +335,18 @@ function populateCircGridFromClip() {
 			//messnamed('bob', noteMidi, 127);
 
 			if (noteMidi < 127) {
-				post('\n----- noteMidi: ' + noteMidi);
-				post('\nnoteStart: ' + noteStart);
+				//post('\n----- noteMidi: ' + noteMidi);
+				//post('\nnoteStart: ' + noteStart);
 
 				// Use the start time for each note for ascertaining
 				// proper place in grid
 				// TODO: Create class(es) to abstract Clip and notes?
 				var adjNoteStart = noteStart - loopEnd;
-				post('\nadjNoteStart: ' + adjNoteStart);
+				//post('\nadjNoteStart: ' + adjNoteStart);
 
 				if (adjNoteStart * 4 == NUM_GRID_CELLS) {
 					globalPhaseShiftMidi = noteMidi;
-					post('\nFound the globalPhaseShiftMidi: ' + globalPhaseShiftMidi);
+					//post('\nFound the globalPhaseShiftMidi: ' + globalPhaseShiftMidi);
 
 						//preserveGlobalPhaseShift = true;
 
@@ -348,14 +355,14 @@ function populateCircGridFromClip() {
 				}
 				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 1) {
 					pitchTransformIndex = noteMidi;
-					post('\nFound the pitchTransformIndex: ' + pitchTransformIndex);
+					//post('\nFound the pitchTransformIndex: ' + pitchTransformIndex);
 
 					// Send pitch transform index
 					outlet(1, 'int', pitchTransformIndex);
 				}
 				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 2) {
 					numTransposeSemitones = noteMidi;
-					post('\nFound the numTransposeSemitones: ' + numTransposeSemitones);
+					//post('\nFound the numTransposeSemitones: ' + numTransposeSemitones);
 
 					// Send pitch transform index
 					outlet(1, 'int', pitchTransformIndex);
@@ -389,7 +396,7 @@ function populateCircGridFromClip() {
 		var trackPathTokens = curClipPath.split(' ');
 		trackPathTokens.length = 3;
 		var trackPath = trackPathTokens.join(' ');
-		post('\ntrackPath: ' + trackPath);
+		//post('\ntrackPath: ' + trackPath);
 		// Display the pads/notes corresponding to each phase
 		qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones);
 
