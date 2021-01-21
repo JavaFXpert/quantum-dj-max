@@ -64,6 +64,7 @@ var pitchTransformIndex = 0;
 // Number of semitones to transpose
 var numTransposeSemitones = 0;
 
+var prevPiOver4Phase = 0;
 
 var curClipPath = "";
 
@@ -179,12 +180,22 @@ function computeProbsPhases() {
 			// shift global phase by its phase
 			if (!preserveGlobalPhaseShift && !globalPhaseShifted) {
 				globalPhaseShifted = true;
-				//preserveGlobalPhaseShift = true;
 				if (polar.theta < 0) {
 					polar.theta += 2 * Math.PI;
 				}
 
 				var piOver4Phase = Math.round(polar.theta / (Math.PI / 4));
+
+				//var tempPrevPiOver4Phase = prevPiOver4Phase;
+				//prevPiOver4Phase = piOver4Phase;
+
+				piOver4Phase += prevPiOver4Phase;
+
+				//piOver4Phase += tempPrevPiOver4Phase;
+
+				piOver4Phase = piOver4Phase % NUM_PITCHES;
+
+
 				globalPhaseShiftMidi = (NUM_PITCHES - piOver4Phase) % NUM_PITCHES;
 				outlet(0, 'int', globalPhaseShiftMidi);
 			}
