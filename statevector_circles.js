@@ -86,11 +86,14 @@ function msg_int(val) {
 		computeProbsPhases();
 	}
 	else if (inlet == 3) {
-		//preserveGlobalPhaseShift = true;
+		var tempPreserveGlobalPhaseShift = preserveGlobalPhaseShift;
+		preserveGlobalPhaseShift = true;
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		curClipPath = qasmPadObj.js.getPathByClipNameIdx(val);
 		qasmPadObj.js.padNoteNamesDirty = true;
 		populateCircGridFromClip();
+
+		preserveGlobalPhaseShift = tempPreserveGlobalPhaseShift;
 		//post('curClipPath: ' + curClipPath);
 	}
 	if (inlet == 4) {
@@ -176,6 +179,9 @@ function computeProbsPhases() {
 		if (probability > PROBABILITY_THRESHOLD / numBasisStatesWithNonZeroProbability) {
 			var polar = cartesianToPolar(real, imag);
 
+			// Adjust slightly for rounding TODO: remove
+			polar.theta += 0.1;
+
 			// If first basis state with significant probability has non-zero phase,
 			// shift global phase by its phase
 			if (!preserveGlobalPhaseShift && !globalPhaseShifted) {
@@ -184,19 +190,27 @@ function computeProbsPhases() {
 					polar.theta += 2 * Math.PI;
 				}
 
+				//post('\npolar.theta: ' + polar.theta);
+
 				var piOver4Phase = Math.round(polar.theta / (Math.PI / 4));
+				//post('\nInitial piOver4Phase: ' + piOver4Phase);
+				//post('\nprevPiOver4Phase: ' + prevPiOver4Phase);
 
 				//var tempPrevPiOver4Phase = prevPiOver4Phase;
 				//prevPiOver4Phase = piOver4Phase;
 
 				piOver4Phase += NUM_PITCHES - prevPiOver4Phase;
+				//post('\nSubsequent piOver4Phase: ' + piOver4Phase);
 
 				//piOver4Phase += tempPrevPiOver4Phase;
 
 				piOver4Phase = piOver4Phase % NUM_PITCHES;
+				//post('\nThen piOver4Phase: ' + piOver4Phase);
 
 
 				globalPhaseShiftMidi = (NUM_PITCHES - piOver4Phase) % NUM_PITCHES;
+				//post('\nglobalPhaseShiftMidi: ' + globalPhaseShiftMidi);
+
 				outlet(0, 'int', globalPhaseShiftMidi);
 			}
 
