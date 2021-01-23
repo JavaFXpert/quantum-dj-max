@@ -66,7 +66,7 @@ onresize.local = 1; //private
  */
 function svsim(qasm) {
 	//post('svsim: ' + arguments.length);
-	//post('qasm: ' + qasm);
+	post('qasm: ' + qasm);
 	var qc = createQuantumCircuitFromQasm(qasm);
 	if (qc != null) {
 		var statevector = simulate(qc, 0, 'statevector');
