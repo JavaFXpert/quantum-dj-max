@@ -70,7 +70,7 @@ function svsim(qasm) {
 	var qc = createQuantumCircuitFromQasm(qasm);
 	if (qc != null) {
 		var statevector = simulate(qc, 0, 'statevector');
-		//post('\nstatevector: ' + statevector);
+		post('\nstatevector: ' + statevector);
 
 		var svSpaceDelim = statevector.toString().replace(/,/g, ' ');
 		//post('\nsvSpaceDelim: ' + svSpaceDelim);
@@ -161,6 +161,31 @@ function createQuantumCircuitFromQasm(qasm) {
 							}
 							else if (keyword == 'cx' && qNumArray.length == 2) {
 								quantumCircuit.cx(qNumArray[0], qNumArray[1]);
+							}
+
+							else if (keyword == 'crx(0)' && qNumArray.length == 2) {
+								quantumCircuit.crx(0, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crx(pi/4)' && qNumArray.length == 2) {
+								quantumCircuit.crx(Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crx(pi/2)' && qNumArray.length == 2) {
+								quantumCircuit.crx(Math.PI / 2, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crx(3*pi/4)' && qNumArray.length == 2) {
+								quantumCircuit.crx(3 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crx(pi)' && qNumArray.length == 2) {
+								quantumCircuit.crx(Math.PI, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crx(5*pi/4)' && qNumArray.length == 2) {
+								quantumCircuit.crx(5 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crx(3*pi/2)' && qNumArray.length == 2) {
+								quantumCircuit.crx(3 * Math.PI / 2, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crx(7*pi/4)' && qNumArray.length == 2) {
+								quantumCircuit.crx(7 * Math.PI / 4, qNumArray[0], qNumArray[1]);
 							}
 
 							else if (keyword == 'rx(0)') {
@@ -274,6 +299,10 @@ function QuantumCircuit(n, m) {
 	this.data.push(['cx', s, t]);
 	return this;
 };
+(QuantumCircuit.prototype).crx = function(theta, s, t) {
+	this.data.push(['crx', theta, s, t]);
+	return this;
+};
 (QuantumCircuit.prototype).rz = function(theta, q) {
 	this.h(q);
 	this.rx(theta, q);
@@ -376,12 +405,18 @@ var simulate = function (qc, shots, get) {
 				}
 			}
 		}
-		else if (gate[0] == 'cx') {
-			//post('\ngate[0] ' + gate[0]);
-			//post('\ngate[1] ' + gate[1]);
-			//post('\ngate[2] ' + gate[2]);
-			var s = gate[1];
-			var t = gate[2];
+		else if (gate[0] == 'cx' || gate[0] == 'crx') {
+			var s, t, theta;
+			if (gate[0] == 'cx') {
+				s = gate[1];
+				t = gate[2];
+			}
+			else {
+				theta = gate[1];
+				s = gate[2];
+				t = gate[3];
+			}
+
 			var l = Math.min(s, t);
 			var h = Math.max(s, t);
 			for (var i0 = 0; i0 < Math.pow(2, l); i0++) {
@@ -389,10 +424,18 @@ var simulate = function (qc, shots, get) {
 					for (var i2 = 0; i2 < Math.pow(2, (qc.numQubits - h - 1)); i2++) {
 						var b0 = i0 + Math.pow(2, l + 1) * i1 + Math.pow(2, h + 1) * i2 + Math.pow(2, s);
 						var b1 = b0 + Math.pow(2, t);
-						var tmp0 = k[b0];
-						var tmp1 = k[b1];
-						k[b0] = tmp1;
-						k[b1] = tmp0;
+						if (gate[0] == 'cx') {
+							var tmp0 = k[b0];
+							var tmp1 = k[b1];
+							k[b0] = tmp1;
+							k[b1] = tmp0;
+						}
+						else {
+							theta = gate[1];
+							var trn = turn(k[b0], k[b1], theta);
+							k[b0] = trn[0];
+							k[b1] = trn[1];
+						}
 					}
 				}
 			}
