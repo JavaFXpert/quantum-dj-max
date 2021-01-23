@@ -263,6 +263,31 @@ function createQuantumCircuitFromQasm(qasm) {
 							else if (keyword == 'rz(7*pi/4)') {
 								quantumCircuit.rz(7 * Math.PI / 4, qNumArray[0]);
 							}
+
+							else if (keyword == 'crz(0)' && qNumArray.length == 2) {
+								quantumCircuit.crz(0, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crz(pi/4)' && qNumArray.length == 2) {
+								quantumCircuit.crz(Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crz(pi/2)' && qNumArray.length == 2) {
+								quantumCircuit.crz(Math.PI / 2, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crz(3*pi/4)' && qNumArray.length == 2) {
+								quantumCircuit.crz(3 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crz(pi)' && qNumArray.length == 2) {
+								quantumCircuit.crz(Math.PI, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crz(5*pi/4)' && qNumArray.length == 2) {
+								quantumCircuit.crz(5 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crz(3*pi/2)' && qNumArray.length == 2) {
+								quantumCircuit.crz(3 * Math.PI / 2, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crz(7*pi/4)' && qNumArray.length == 2) {
+								quantumCircuit.crz(7 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
 						}
 					}
 				}
@@ -301,6 +326,12 @@ function QuantumCircuit(n, m) {
 };
 (QuantumCircuit.prototype).crx = function(theta, s, t) {
 	this.data.push(['crx', theta, s, t]);
+	return this;
+};
+(QuantumCircuit.prototype).crz = function(theta, s, t) {
+	this.h(t);
+	this.crx(theta, s, t);
+	this.h(t);
 	return this;
 };
 (QuantumCircuit.prototype).rz = function(theta, q) {
