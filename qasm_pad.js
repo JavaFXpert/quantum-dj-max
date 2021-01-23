@@ -639,8 +639,11 @@ function populateMidiClipsList() {
 	// TODO: Move
 	var clipSelectDial = this.patcher.getnamed('clip_select');
 	//clipSelectDial.setattr('_parameter_steps', clipsNames.length);
+
 	clipSelectDial.setattr('_parameter_range', clipsNames);
+
 	//post('\nclipSelectDial: ' + clipSelectDial.getattrnames());
+	//post('\n_parameter_range: ' + clipSelectDial.getattr('_parameter_range'));
 
 	// Zero the clip selector dial
 	outlet(2, 'int', 0);
