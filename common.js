@@ -186,6 +186,12 @@ function circNodeType2Color(circNodeTypeNum) {
   else if (circNodeTypeNum == CircuitNodeTypes.IDEN) {
     colorNum = 124;
   }
+  else if (circNodeTypeNum == CircuitNodeTypes.SWAP) {
+    colorNum = 51;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.QFT) {
+    colorNum = 43;
+  }
 
   else if (circNodeTypeNum == CircuitNodeTypes.RX_0) {
     colorNum = 25;

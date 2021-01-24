@@ -70,7 +70,7 @@ var gateGrid = [
 	[30, 53],
 	[40, 54],
 	[-1, 55],
-	[-1, 56],
+	[9, 56],
 	[60, 57],
 	[14, -1]
 ];
@@ -906,10 +906,12 @@ function refreshControllerPads() {
 		}
 	}
 
+	// For development, display all colors on pads
 	// for (var midiNum = 36; midiNum < 100; midiNum++) {
 	// 	var padColor = midiNum - 36;
-	// 	controlSurface.call('send_midi', 144, midiNum, padColor + 64);
-	// 	//controlSurface.call('send_midi', 144, midiNum, padColor);
+	// 	//controlSurface.call('send_midi', 144, midiNum, padColor + 64);
+	// 	controlSurface.call('send_midi', 144, midiNum, padColor);
 	// }
+
 	controlSurface.call('release_midi');
 }
