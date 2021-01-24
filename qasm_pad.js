@@ -84,6 +84,10 @@ var selCircGridCol = -1;
 var clipsPaths = [];
 
 
+// Tracks number of consecutive QFT gates in a column
+var numConsecutiveQftRowsInCol = 0;
+
+
 function bang() {
 	if (inlet == 1) {
 		// bang received to refresh list of clips
@@ -347,6 +351,7 @@ function createQasmFromGrid() {
 	var qasmGatesStr = '';
 
 	for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+		numConsecutiveQftRowsInCol = 0;
 		for (var rowIdx = 0; rowIdx < numCircuitWires; rowIdx++) {
 			qasmGatesStr = addGateFromGrid(qasmGatesStr, rowIdx, colIdx);
 		}
@@ -381,6 +386,28 @@ function createQasmFromGrid() {
 function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	//post('\nIn addGateFromGrid, gridRow: ' + gridRow + ', gridCol: ' + gridCol);
 	var circNodeType = circGrid[gridRow][gridCol];
+
+	//post('\n  circNodeType: ' + circNodeType);
+	//post('\n  numConsecutiveQftRowsInCol: ' + numConsecutiveQftRowsInCol);
+
+	// TODO: DRY
+  if (circNodeType == CircuitNodeTypes.QFT) {
+		numConsecutiveQftRowsInCol++;
+		//post('\n      numConsecutiveQftRowsInCol now: ' + numConsecutiveQftRowsInCol);
+
+		if (gridRow + 1 == computeNumWires()) {
+			qasmStr += constructQftCircuit(gridRow + 1 - numConsecutiveQftRowsInCol,
+				numConsecutiveQftRowsInCol);
+		}
+	}
+  else {
+  	if (numConsecutiveQftRowsInCol > 0) {
+			// One or more previous rows had consecutive QFT gates
+			qasmStr += constructQftCircuit(gridRow - numConsecutiveQftRowsInCol, numConsecutiveQftRowsInCol);
+
+			numConsecutiveQftRowsInCol = 0;
+		}
+	}
 
 	if (circNodeType == CircuitNodeTypes.H) {
 		qasmStr += ' h q[' + gridRow + '];';
@@ -647,6 +674,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 			qasmStr += ' swap q[' + otherSwapGateWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
+
 	return qasmStr;
 }
 
@@ -688,6 +716,32 @@ function swapGateRowInColumn(colNum, excludingRow) {
 		}
 	}
 	return swapGateRow;
+}
+
+
+/**
+ * Construct a QFT circuit
+ * TODO: Create better algorithm
+ *
+ * @param wireNum Wire on which first QFT gate was encountered
+ * @param numWires Number of wires that QFT will occupy
+ * @returns QASM string for QFT gate
+ */
+function constructQftCircuit(wireNum, numWires) {
+	post('\nIn constructQftCircuit, wireNum: ' + wireNum + ', numWires: ' + numWires);
+	var qftQasm = '';
+
+	if (numWires == 1) {
+		qftQasm += ' h q[' + wireNum + '];';
+	}
+	else if (numWires == 2) {
+		qftQasm += ' swap q[' + wireNum + '],' + 'q[' + (wireNum + 1) + '];';
+		qftQasm += ' h q[' + wireNum + '];';
+		qftQasm += ' crz(pi/2) q[' + wireNum + '],' + 'q[' + (wireNum + 1) + '];';
+		qftQasm += ' h q[' + (wireNum + 1) + '];';
+	}
+
+	return qftQasm;
 }
 
 
