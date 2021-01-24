@@ -162,6 +162,9 @@ function createQuantumCircuitFromQasm(qasm) {
 							else if (keyword == 'cx' && qNumArray.length == 2) {
 								quantumCircuit.cx(qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == 'swap' && qNumArray.length == 2) {
+								quantumCircuit.swap(qNumArray[0], qNumArray[1]);
+							}
 
 							else if (keyword == 'crx(0)' && qNumArray.length == 2) {
 								quantumCircuit.crx(0, qNumArray[0], qNumArray[1]);
@@ -334,6 +337,10 @@ function QuantumCircuit(n, m) {
 	this.h(t);
 	return this;
 };
+(QuantumCircuit.prototype).swap = function(s, t) {
+	this.data.push(['swap', s, t]);
+	return this;
+};
 (QuantumCircuit.prototype).rz = function(theta, q) {
 	this.h(q);
 	this.rx(theta, q);
@@ -436,13 +443,13 @@ var simulate = function (qc, shots, get) {
 				}
 			}
 		}
-		else if (gate[0] == 'cx' || gate[0] == 'crx') {
+		else if (gate[0] == 'cx' || gate[0] == 'crx' || gate[0] == 'swap' ) {
 			var s, t, theta;
-			if (gate[0] == 'cx') {
+			if (gate[0] == 'cx' || gate[0] == 'swap') {
 				s = gate[1];
 				t = gate[2];
 			}
-			else {
+			else if (gate[0] == 'crx') {
 				theta = gate[1];
 				s = gate[2];
 				t = gate[3];
@@ -453,20 +460,30 @@ var simulate = function (qc, shots, get) {
 			for (var i0 = 0; i0 < Math.pow(2, l); i0++) {
 				for (var i1 = 0; i1 < Math.pow(2, (h - l - 1)); i1++) {
 					for (var i2 = 0; i2 < Math.pow(2, (qc.numQubits - h - 1)); i2++) {
-						var b0 = i0 + Math.pow(2, l + 1) * i1 + Math.pow(2, h + 1) * i2 + Math.pow(2, s);
-						var b1 = b0 + Math.pow(2, t);
+						var b00 = i0 + Math.pow(2, l + 1) * i1 + Math.pow(2, h + 1) * i2;
+						var b01 = i0 + Math.pow(2, t);
+						var b10 = i0 + Math.pow(2, s);
+						var b11 = b00 + Math.pow(2, s) + Math.pow(2, t);
+
 						if (gate[0] == 'cx') {
-							var tmp0 = k[b0];
-							var tmp1 = k[b1];
-							k[b0] = tmp1;
-							k[b1] = tmp0;
+							var tmp10 = k[b10];
+							var tmp11 = k[b11];
+							k[b10] = tmp11;
+							k[b11] = tmp10;
 						}
-						else {
+						else if (gate[0] == 'crx') {
 							theta = gate[1];
-							var trn = turn(k[b0], k[b1], theta);
-							k[b0] = trn[0];
-							k[b1] = trn[1];
+							var trn = turn(k[b10], k[b11], theta);
+							k[b10] = trn[0];
+							k[b11] = trn[1];
 						}
+						else if (gate[0] == 'swap') {
+							var tmp10 = k[b10];
+							var tmp01 = k[b01];
+							k[b01] = tmp10;
+							k[b10] = tmp01;
+						}
+
 					}
 				}
 			}

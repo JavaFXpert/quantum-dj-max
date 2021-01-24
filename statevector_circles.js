@@ -135,7 +135,7 @@ function bang() {
  */
 function viz(svlist) {
 	svArray = svlist.toString().split(' ');
-	//post("\nsvArray: " + svArray);
+	post("\nsvArray: " + svArray);
 	var numStates = svArray.length / 2;
 	//post('\nnumStates: ' + numStates);
 

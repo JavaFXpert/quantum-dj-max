@@ -385,21 +385,6 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	if (circNodeType == CircuitNodeTypes.H) {
 		qasmStr += ' h q[' + gridRow + '];';
 	}
-	else if (circNodeType == CircuitNodeTypes.RX_4 ||
-		circNodeType == CircuitNodeTypes.CTRL_X) {
-		//post('\nX or CTRL_X circNodeType: ' + circNodeType);
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
-		if (ctrlWireNum == -1) {
-			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_4;
-			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' x q[' + gridRow + '];';
-		}
-		else {
-			circGrid[gridRow][gridCol] = CircuitNodeTypes.CTRL_X;
-			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' cx q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
-		}
-	}
 
 	// else if (circNodeType == CircuitNodeTypes.RZ_4) {
 	// 	qasmStr += ' z q[' + gridRow + '];';
@@ -469,9 +454,21 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 			qasmStr += ' crx(3*pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
-	// else if (circNodeType == CircuitNodeTypes.RX_4) {
-	// 	qasmStr += ' rx(pi) q[' + gridRow + '];';
-	// }
+	else if (circNodeType == CircuitNodeTypes.RX_4 ||
+		circNodeType == CircuitNodeTypes.CTRL_X) {
+		//post('\nX or CTRL_X circNodeType: ' + circNodeType);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_4;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' x q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.CTRL_X;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' cx q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
 	else if (circNodeType == CircuitNodeTypes.RX_5) {
 		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
 		if (ctrlWireNum == -1) {
@@ -642,6 +639,14 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 
+	else if (circNodeType == CircuitNodeTypes.SWAP) {
+		var otherSwapGateWireNum = swapGateRowInColumn(gridCol, gridRow);
+		if (otherSwapGateWireNum != -1 && otherSwapGateWireNum < gridRow) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.SWAP;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' swap q[' + otherSwapGateWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
 	return qasmStr;
 }
 
@@ -662,6 +667,27 @@ function ctrlWireNumInColumn(colNum) {
 		}
 	}
 	return ctrlRow;
+}
+
+
+/**
+ * Given a grid column, return the row, excluding the current row,
+ * in which a swap gate exists.
+ *
+ * @param colNum
+ * @param excludingRow
+ * @returns Zero-based row in which a swap gate exists, -1 if not present.
+ */
+function swapGateRowInColumn(colNum, excludingRow) {
+	post('\nIn swapGateRowInColumn, colNum: ' + colNum + ', excludingRow: ' + excludingRow);
+	var swapGateRow = -1;
+	for (var rowNum = 0; rowNum < NUM_GRID_ROWS; rowNum++) {
+		if (rowNum != excludingRow && circGrid[rowNum][colNum] == CircuitNodeTypes.SWAP) {
+			swapGateRow = rowNum;
+			break;
+		}
+	}
+	return swapGateRow;
 }
 
 
