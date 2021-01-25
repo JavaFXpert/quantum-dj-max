@@ -165,6 +165,9 @@ function createQuantumCircuitFromQasm(qasm) {
 							else if (keyword == 'swap' && qNumArray.length == 2) {
 								quantumCircuit.swap(qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == 'cp' && qNumArray.length == 2) {
+								quantumCircuit.cp(qNumArray[0], qNumArray[1]);
+							}
 
 							else if (keyword == 'crx(0)' && qNumArray.length == 2) {
 								quantumCircuit.crx(0, qNumArray[0], qNumArray[1]);
@@ -291,12 +294,43 @@ function createQuantumCircuitFromQasm(qasm) {
 							else if (keyword == 'crz(7*pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.crz(7 * Math.PI / 4, qNumArray[0], qNumArray[1]);
 							}
-
 							else if (keyword == 'crz(pi/8)' && qNumArray.length == 2) {
 								quantumCircuit.crz(Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword == 'crz(pi/16)' && qNumArray.length == 2) {
 								quantumCircuit.crz(Math.PI / 16, qNumArray[0], qNumArray[1]);
+							}
+
+							else if (keyword == 'cp(0)' && qNumArray.length == 2) {
+								quantumCircuit.cp(0, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'cp(pi/4)' && qNumArray.length == 2) {
+								quantumCircuit.cp(Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'cp(pi/2)' && qNumArray.length == 2) {
+								quantumCircuit.cp(Math.PI / 2, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'cp(3*pi/4)' && qNumArray.length == 2) {
+								quantumCircuit.cp(3 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'cp(pi)' && qNumArray.length == 2) {
+								quantumCircuit.cp(Math.PI, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'cp(5*pi/4)' && qNumArray.length == 2) {
+								quantumCircuit.cp(5 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'cp(3*pi/2)' && qNumArray.length == 2) {
+								quantumCircuit.cp(3 * Math.PI / 2, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'cp(7*pi/4)' && qNumArray.length == 2) {
+								quantumCircuit.cp(7 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+
+							else if (keyword == 'cp(pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.cp(Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'cp(pi/16)' && qNumArray.length == 2) {
+								quantumCircuit.cp(Math.PI / 16, qNumArray[0], qNumArray[1]);
 							}
 						}
 					}
@@ -339,9 +373,7 @@ function QuantumCircuit(n, m) {
 	return this;
 };
 (QuantumCircuit.prototype).cp = function(theta, s, t) {
-	this.h(t);
-	this.crx(theta, s, t);
-	this.h(t);
+	this.data.push(['cp', theta, s, t]);
 	return this;
 };
 (QuantumCircuit.prototype).crz = function(theta, s, t) {
@@ -422,6 +454,19 @@ var simulate = function (qc, shots, get) {
 		];
 		return trn;
 	};
+	var phaseTurn = function(x, y, theta) {
+		var phsTrn = [
+			[
+				x[0] - y[1],
+				x[1] + y[0]
+			],
+			[
+				y[0] * Math.cos(theta) - x[1] * Math.sin(theta),
+				y[1] * Math.cos(theta) + x[0] * Math.sin(theta)
+			]
+		];
+		return phsTrn;
+	};
 	var k = [];
 	for (j = 0; j < Math.pow(2, qc.numQubits); j++) {
 		k.push([0, 0]);
@@ -456,13 +501,18 @@ var simulate = function (qc, shots, get) {
 				}
 			}
 		}
-		else if (gate[0] == 'cx' || gate[0] == 'crx' || gate[0] == 'swap' ) {
+		else if (gate[0] == 'cx' || gate[0] == 'swap' || gate[0] == 'crx' || gate[0] == 'cp' ) {
 			var s, t, theta;
 			if (gate[0] == 'cx' || gate[0] == 'swap') {
 				s = gate[1];
 				t = gate[2];
 			}
 			else if (gate[0] == 'crx') {
+				theta = gate[1];
+				s = gate[2];
+				t = gate[3];
+			}
+			else if (gate[0] == 'cp') {
 				theta = gate[1];
 				s = gate[2];
 				t = gate[3];
@@ -484,17 +534,23 @@ var simulate = function (qc, shots, get) {
 							k[b10] = tmp11;
 							k[b11] = tmp10;
 						}
+						else if (gate[0] == 'swap') {
+							var tmp10 = k[b10];
+							var tmp01 = k[b01];
+							k[b01] = tmp10;
+							k[b10] = tmp01;
+						}
 						else if (gate[0] == 'crx') {
 							theta = gate[1];
 							var trn = turn(k[b10], k[b11], theta);
 							k[b10] = trn[0];
 							k[b11] = trn[1];
 						}
-						else if (gate[0] == 'swap') {
-							var tmp10 = k[b10];
-							var tmp01 = k[b01];
-							k[b01] = tmp10;
-							k[b10] = tmp01;
+						else if (gate[0] == 'cp') {
+							theta = gate[1];
+							var phsTrn = phaseTurn(k[b10], k[b11], theta);
+							k[b10] = phsTrn[0];
+							k[b11] = phsTrn[1];
 						}
 
 					}

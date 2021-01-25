@@ -737,49 +737,49 @@ function constructQftCircuit(wireNum, numWires) {
 	else if (numWires == 2) {
 		qftQasm += ' swap q[' + wireNum + '],' + 'q[' + (wireNum + 1) + '];';
 		qftQasm += ' h q[' + wireNum + '];';
-		qftQasm += ' crz(pi/2) q[' + wireNum + '],' + 'q[' + (wireNum + 1) + '];';
+		qftQasm += ' cp(pi/2) q[' + wireNum + '],' + 'q[' + (wireNum + 1) + '];';
 		qftQasm += ' h q[' + (wireNum + 1) + '];';
 	}
 	else if (numWires == 3) {
 		qftQasm += ' swap q[' + wireNum + '],' + 'q[' + (wireNum + 2) + '];';
 		qftQasm += ' h q[' + wireNum + '];';
-		qftQasm += ' crz(pi/2) q[' + wireNum + '],' + 'q[' + (wireNum + 1) + '];';
-		qftQasm += ' crz(pi/4) q[' + wireNum + '],' + 'q[' + (wireNum + 2) + '];';
+		qftQasm += ' cp(pi/2) q[' + wireNum + '],' + 'q[' + (wireNum + 1) + '];';
+		qftQasm += ' cp(pi/4) q[' + wireNum + '],' + 'q[' + (wireNum + 2) + '];';
 		qftQasm += ' h q[' + (wireNum + 1) + '];';
-		qftQasm += ' crz(pi/2) q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 2) + '];';
+		qftQasm += ' cp(pi/2) q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 2) + '];';
 		qftQasm += ' h q[' + (wireNum + 2) + '];';
 	}
 	else if (numWires == 4) {
 		qftQasm += ' swap q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 2) + '];';
 		qftQasm += ' swap q[' + wireNum + '],' + 'q[' + (wireNum + 3) + '];';
 		qftQasm += ' h q[' + wireNum + '];';
-		qftQasm += ' crz(pi/2) q[' + wireNum + '],' + 'q[' + (wireNum + 1) + '];';
-		qftQasm += ' crz(pi/4) q[' + wireNum + '],' + 'q[' + (wireNum + 2) + '];';
+		qftQasm += ' cp(pi/2) q[' + wireNum + '],' + 'q[' + (wireNum + 1) + '];';
+		qftQasm += ' cp(pi/4) q[' + wireNum + '],' + 'q[' + (wireNum + 2) + '];';
 		qftQasm += ' h q[' + (wireNum + 1) + '];';
-		qftQasm += ' crz(pi/8) q[' + (wireNum) + '],' + 'q[' + (wireNum + 3) + '];';
-		qftQasm += ' crz(pi/2) q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 2) + '];';
-		qftQasm += ' crz(pi/4) q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 3) + '];';
+		qftQasm += ' cp(pi/8) q[' + (wireNum) + '],' + 'q[' + (wireNum + 3) + '];';
+		qftQasm += ' cp(pi/2) q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 2) + '];';
+		qftQasm += ' cp(pi/4) q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 3) + '];';
 		qftQasm += ' h q[' + (wireNum + 2) + '];';
-		qftQasm += ' crz(pi/2) q[' + (wireNum + 2) + '],' + 'q[' + (wireNum + 3) + '];';
+		qftQasm += ' cp(pi/2) q[' + (wireNum + 2) + '],' + 'q[' + (wireNum + 3) + '];';
 		qftQasm += ' h q[' + (wireNum + 3) + '];';
 	}
 	else if (numWires == 5) {
 		qftQasm += ' swap q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 3) + '];';
 		qftQasm += ' swap q[' + wireNum + '],' + 'q[' + (wireNum + 4) + '];';
 		qftQasm += ' h q[' + wireNum + '];';
-		qftQasm += ' crz(pi/2) q[' + wireNum + '],' + 'q[' + (wireNum + 1) + '];';
-		qftQasm += ' crz(pi/4) q[' + wireNum + '],' + 'q[' + (wireNum + 2) + '];';
+		qftQasm += ' cp(pi/2) q[' + wireNum + '],' + 'q[' + (wireNum + 1) + '];';
+		qftQasm += ' cp(pi/4) q[' + wireNum + '],' + 'q[' + (wireNum + 2) + '];';
 		qftQasm += ' h q[' + (wireNum + 1) + '];';
-		qftQasm += ' crz(pi/8) q[' + (wireNum) + '],' + 'q[' + (wireNum + 3) + '];';
-		qftQasm += ' crz(pi/2) q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 2) + '];';
-		qftQasm += ' crz(pi/16) q[' + (wireNum) + '],' + 'q[' + (wireNum + 4) + '];';
-		qftQasm += ' crz(pi/4) q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 3) + '];';
+		qftQasm += ' cp(pi/8) q[' + (wireNum) + '],' + 'q[' + (wireNum + 3) + '];';
+		qftQasm += ' cp(pi/2) q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 2) + '];';
+		qftQasm += ' cp(pi/16) q[' + (wireNum) + '],' + 'q[' + (wireNum + 4) + '];';
+		qftQasm += ' cp(pi/4) q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 3) + '];';
 		qftQasm += ' h q[' + (wireNum + 2) + '];';
-		qftQasm += ' crz(pi/8) q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 4) + '];';
-		qftQasm += ' crz(pi/2) q[' + (wireNum + 2) + '],' + 'q[' + (wireNum + 3) + '];';
-		qftQasm += ' crz(pi/4) q[' + (wireNum + 2) + '],' + 'q[' + (wireNum + 4) + '];';
+		qftQasm += ' cp(pi/8) q[' + (wireNum + 1) + '],' + 'q[' + (wireNum + 4) + '];';
+		qftQasm += ' cp(pi/2) q[' + (wireNum + 2) + '],' + 'q[' + (wireNum + 3) + '];';
+		qftQasm += ' cp(pi/4) q[' + (wireNum + 2) + '],' + 'q[' + (wireNum + 4) + '];';
 		qftQasm += ' h q[' + (wireNum + 3) + '];';
-		qftQasm += ' crz(pi/2) q[' + (wireNum + 3) + '],' + 'q[' + (wireNum + 4) + '];';
+		qftQasm += ' cp(pi/2) q[' + (wireNum + 3) + '],' + 'q[' + (wireNum + 4) + '];';
 		qftQasm += ' h q[' + (wireNum + 4) + '];';
 	}
 
