@@ -178,9 +178,10 @@ function computeProbsPhases() {
 
 		if (probability > PROBABILITY_THRESHOLD / numBasisStatesWithNonZeroProbability) {
 			var polar = cartesianToPolar(real, imag);
+			post('\noriginal polar.theta: ' + polar.theta);
 
 			// Adjust slightly for rounding TODO: remove
-			polar.theta += 0.1;
+			polar.theta += Math.PI / 32;
 
 			// If first basis state with significant probability has non-zero phase,
 			// shift global phase by its phase
@@ -337,7 +338,7 @@ function populateCircGridFromClip() {
 
 	var notes = clip.call('get_notes', loopEnd, 0, NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES, 128);
 
-	post('\nnotes: ' + notes);
+	//post('\nnotes: ' + notes);
 
 	if (notes[0] == 'notes' && notes[1] == NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES) {
 		//for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
