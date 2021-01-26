@@ -300,6 +300,12 @@ function createQuantumCircuitFromQasm(qasm) {
 							else if (keyword == 'crz(pi/16)' && qNumArray.length == 2) {
 								quantumCircuit.crz(Math.PI / 16, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == 'crz(pi/32)' && qNumArray.length == 2) {
+								quantumCircuit.crz(Math.PI / 32, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crz(pi/64)' && qNumArray.length == 2) {
+								quantumCircuit.crz(Math.PI / 64, qNumArray[0], qNumArray[1]);
+							}
 
 							else if (keyword == 'cp(0)' && qNumArray.length == 2) {
 								quantumCircuit.cp(0, qNumArray[0], qNumArray[1]);
