@@ -515,6 +515,9 @@ var simulate = function (qc, shots, get) {
 			var l = Math.min(s, t);
 			var h = Math.max(s, t);
 			for (var i0 = 0; i0 < Math.pow(2, l); i0++) {
+				// Prevent a swap from executing twice
+				var swapExecuted = false;
+
 				for (var i1 = 0; i1 < Math.pow(2, (h - l - 1)); i1++) {
 					for (var i2 = 0; i2 < Math.pow(2, (qc.numQubits - h - 1)); i2++) {
 						var b00 = i0 + Math.pow(2, l + 1) * i1 + Math.pow(2, h + 1) * i2;
@@ -528,11 +531,12 @@ var simulate = function (qc, shots, get) {
 							k[b10] = tmp11;
 							k[b11] = tmp10;
 						}
-						else if (gate[0] == 'swap') {
+						else if (gate[0] == 'swap' && !swapExecuted) {
 							var tmp10 = k[b10];
 							var tmp01 = k[b01];
 							k[b01] = tmp10;
 							k[b10] = tmp01;
+							swapExecuted = true;
 						}
 						else if (gate[0] == 'crx') {
 							theta = gate[1];
