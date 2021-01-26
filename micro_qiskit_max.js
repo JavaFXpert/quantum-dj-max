@@ -456,14 +456,8 @@ var simulate = function (qc, shots, get) {
 	};
 	var phaseTurn = function(x, y, theta) {
 		var phsTrn = [
-			[
-				x[0] - y[1],
-				x[1] + y[0]
-			],
-			[
-				y[0] * Math.cos(theta) - x[1] * Math.sin(theta),
-				y[1] * Math.cos(theta) + x[0] * Math.sin(theta)
-			]
+			y[0] * Math.cos(theta) - y[1] * Math.sin(theta),
+			y[1] * Math.cos(theta) + y[0] * Math.sin(theta)
 		];
 		return phsTrn;
 	};
@@ -492,7 +486,7 @@ var simulate = function (qc, shots, get) {
 						var sup = superpose(k[b0], k[b1]);
 						k[b0] = sup[0];
 						k[b1] = sup[1];
-					} else {
+					} else if (gate[0] == 'rx') {
 						var theta = gate[1];
 						var trn = turn(k[b0], k[b1], theta);
 						k[b0] = trn[0];
@@ -549,10 +543,8 @@ var simulate = function (qc, shots, get) {
 						else if (gate[0] == 'cp') {
 							theta = gate[1];
 							var phsTrn = phaseTurn(k[b10], k[b11], theta);
-							k[b10] = phsTrn[0];
-							k[b11] = phsTrn[1];
+							k[b11] = phsTrn;
 						}
-
 					}
 				}
 			}
