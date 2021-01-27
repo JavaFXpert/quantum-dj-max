@@ -99,7 +99,7 @@ function msg_int(val) {
 	if (inlet == 4) {
 		// Preserve either global phase, or first pitch with above threshold probability
 		preserveGlobalPhaseShift = (val > 0);
-		post('\npreserveGlobalPhaseShift: ' + preserveGlobalPhaseShift);
+		//post('\npreserveGlobalPhaseShift: ' + preserveGlobalPhaseShift);
 	}
 	else if (inlet == 5) {
 		//preserveGlobalPhaseShift = true;
@@ -135,7 +135,7 @@ function bang() {
  */
 function viz(svlist) {
 	svArray = svlist.toString().split(' ');
-	post("\nsvArray: " + svArray);
+	//post("\nsvArray: " + svArray);
 	var numStates = svArray.length / 2;
 	//post('\nnumStates: ' + numStates);
 
@@ -178,7 +178,7 @@ function computeProbsPhases() {
 
 		if (probability > PROBABILITY_THRESHOLD / numBasisStatesWithNonZeroProbability) {
 			var polar = cartesianToPolar(real, imag);
-			post('\noriginal polar.theta: ' + polar.theta);
+			//post('\noriginal polar.theta: ' + polar.theta);
 
 			// Adjust slightly for rounding TODO: remove
 			polar.theta += -Math.PI / 32;
