@@ -294,18 +294,21 @@ function createQuantumCircuitFromQasm(qasm) {
 							else if (keyword == 'crz(7*pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.crz(7 * Math.PI / 4, qNumArray[0], qNumArray[1]);
 							}
-							else if (keyword == 'crz(pi/8)' && qNumArray.length == 2) {
-								quantumCircuit.crz(Math.PI / 8, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(pi/16)' && qNumArray.length == 2) {
-								quantumCircuit.crz(Math.PI / 16, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(pi/32)' && qNumArray.length == 2) {
-								quantumCircuit.crz(Math.PI / 32, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(pi/64)' && qNumArray.length == 2) {
-								quantumCircuit.crz(Math.PI / 64, qNumArray[0], qNumArray[1]);
-							}
+							// else if (keyword == 'crz(pi/8)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(Math.PI / 8, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(pi/16)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(Math.PI / 16, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(pi/32)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(Math.PI / 32, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(pi/64)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(Math.PI / 64, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(pi/128)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(Math.PI / 128, qNumArray[0], qNumArray[1]);
+							// }
 
 							else if (keyword == 'cp(0)' && qNumArray.length == 2) {
 								quantumCircuit.cp(0, qNumArray[0], qNumArray[1]);
@@ -337,6 +340,15 @@ function createQuantumCircuitFromQasm(qasm) {
 							}
 							else if (keyword == 'cp(pi/16)' && qNumArray.length == 2) {
 								quantumCircuit.cp(Math.PI / 16, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'cp(pi/32)' && qNumArray.length == 2) {
+								quantumCircuit.cp(Math.PI / 32, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'cp(pi/64)' && qNumArray.length == 2) {
+								quantumCircuit.cp(Math.PI / 64, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'cp(pi/128)' && qNumArray.length == 2) {
+								quantumCircuit.cp(Math.PI / 128, qNumArray[0], qNumArray[1]);
 							}
 						}
 					}

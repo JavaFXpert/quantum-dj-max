@@ -181,7 +181,7 @@ function computeProbsPhases() {
 			post('\noriginal polar.theta: ' + polar.theta);
 
 			// Adjust slightly for rounding TODO: remove
-			polar.theta += Math.PI / 32;
+			polar.theta += -Math.PI / 32;
 
 			// If first basis state with significant probability has non-zero phase,
 			// shift global phase by its phase
