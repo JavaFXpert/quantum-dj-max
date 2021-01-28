@@ -100,7 +100,7 @@ var CircuitNodeTypes = {
   RY_5: 55, // Ry 5pi/8
   RY_6: 56, // Ry 3pi/4
   RY_7: 57, // Ry 7pi/8
-  RY_8: 58, // Ry pi (X)
+  RY_8: 58, // Ry pi (Y)
   RY_9: 59, // Ry 9pi/8
   RY_10: 60, // Ry 5pi/4
   RY_11: 61, // Ry 11pi/8
@@ -111,19 +111,19 @@ var CircuitNodeTypes = {
 
   RZ_0: 70, // Rz
   RZ_1: 71, // Rz pi/8
-  RZ_2: 72, // Rz pi/4
+  RZ_2: 72, // Rz pi/4 (T)
   RZ_3: 73, // Rz 3pi/8
-  RZ_4: 74, // Rz pi/2
+  RZ_4: 74, // Rz pi/2 (S)
   RZ_5: 75, // Rz 5pi/8
   RZ_6: 76, // Rz 3pi/4
   RZ_7: 77, // Rz 7pi/8
-  RZ_8: 78, // Rz pi (X)
+  RZ_8: 78, // Rz pi (Z)
   RZ_9: 79, // Rz 9pi/8
   RZ_10: 80, // Rz 5pi/4
   RZ_11: 81, // Rz 11pi/8
-  RZ_12: 82, // Rz 3pi/2
+  RZ_12: 82, // Rz 3pi/2 (Sdg)
   RZ_13: 83, // Rz 13pi/8
-  RZ_14: 84, // Rz 7pi/4
+  RZ_14: 84, // Rz 7pi/4 (Tdg)
   RZ_15: 85, // Rz 15pi/8
 
   QFT: 90 // QFT
