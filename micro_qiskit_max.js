@@ -670,8 +670,8 @@ var simulate = function (qc, shots, get) {
 					for (var i2 = 0; i2 < Math.pow(2, (qc.numQubits - h - 1)); i2++) {
 						var b00 = i0 + Math.pow(2, l + 1) * i1 + Math.pow(2, h + 1) * i2;
 						var b01 = i0 + Math.pow(2, t);
-						var b10 = i0 + Math.pow(2, s);
-						var b11 = b00 + Math.pow(2, s) + Math.pow(2, t);
+						var b10 = b00 + Math.pow(2, s);
+						var b11 = b10 + Math.pow(2, t);
 
 						if (gate[0] == 'cx') {
 							var tmp10 = k[b10];
