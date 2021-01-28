@@ -127,7 +127,7 @@ function draw()
 		}
 		else if (curNodeType == CircuitNodeTypes.RX_4) {
 			moveto(-0.25, -0.4);
-			text("X");
+			text("x4");
 		}
 		else if (curNodeType == CircuitNodeTypes.RX_5) {
 			moveto(-0.6, -0.4);
@@ -140,6 +140,38 @@ function draw()
 		else if (curNodeType == CircuitNodeTypes.RX_7) {
 			moveto(-0.6, -0.4);
 			text("x7");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_8) {
+			moveto(-0.6, -0.4);
+			text("X");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_9) {
+			moveto(-0.6, -0.4);
+			text("x9");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_10) {
+			moveto(-0.6, -0.4);
+			text("x10");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_11) {
+			moveto(-0.6, -0.4);
+			text("x11");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_12) {
+			moveto(-0.25, -0.4);
+			text("x12");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_13) {
+			moveto(-0.6, -0.4);
+			text("x13");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_14) {
+			moveto(-0.6, -0.4);
+			text("x14");
+		}
+		else if (curNodeType == CircuitNodeTypes.RX_15) {
+			moveto(-0.6, -0.4);
+			text("x15");
 		}
 
 		else if (curNodeType == CircuitNodeTypes.RY_0) {
@@ -160,7 +192,7 @@ function draw()
 		}
 		else if (curNodeType == CircuitNodeTypes.RY_4) {
 			moveto(-0.25, -0.4);
-			text("Y");
+			text("y4");
 		}
 		else if (curNodeType == CircuitNodeTypes.RY_5) {
 			moveto(-0.6, -0.4);
@@ -174,6 +206,38 @@ function draw()
 			moveto(-0.6, -0.4);
 			text("y7");
 		}
+		else if (curNodeType == CircuitNodeTypes.RY_8) {
+			moveto(-0.6, -0.4);
+			text("Y");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_9) {
+			moveto(-0.6, -0.4);
+			text("y9");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_10) {
+			moveto(-0.6, -0.4);
+			text("y10");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_11) {
+			moveto(-0.6, -0.4);
+			text("y11");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_12) {
+			moveto(-0.25, -0.4);
+			text("y12");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_13) {
+			moveto(-0.6, -0.4);
+			text("y13");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_14) {
+			moveto(-0.6, -0.4);
+			text("y14");
+		}
+		else if (curNodeType == CircuitNodeTypes.RY_15) {
+			moveto(-0.6, -0.4);
+			text("y15");
+		}
 
 		else if (curNodeType == CircuitNodeTypes.RZ_0) {
 			moveto(-0.6, -0.4);
@@ -181,11 +245,11 @@ function draw()
 		}
 		else if (curNodeType == CircuitNodeTypes.RZ_1) {
 			moveto(-0.30, -0.4);
-			text("T");
+			text("z1");
 		}
 		else if (curNodeType == CircuitNodeTypes.RZ_2) {
 			moveto(-0.30, -0.4);
-			text("S");
+			text("T");
 		}
 		else if (curNodeType == CircuitNodeTypes.RZ_3) {
 			moveto(-0.6, -0.4);
@@ -193,7 +257,7 @@ function draw()
 		}
 		else if (curNodeType == CircuitNodeTypes.RZ_4) {
 			moveto(-0.25, -0.4);
-			text("Z");
+			text("S");
 		}
 		else if (curNodeType == CircuitNodeTypes.RZ_5) {
 			moveto(-0.6, -0.4);
@@ -201,11 +265,43 @@ function draw()
 		}
 		else if (curNodeType == CircuitNodeTypes.RZ_6) {
 			moveto(-0.6, -0.35);
-			text("S\u2020");
+			text("z6");
 		}
 		else if (curNodeType == CircuitNodeTypes.RZ_7) {
 			moveto(-0.6, -0.35);
+			text("z7");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_8) {
+			moveto(-0.6, -0.4);
+			text("Z");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_9) {
+			moveto(-0.30, -0.4);
+			text("z9");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_10) {
+			moveto(-0.30, -0.4);
+			text("z10");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_11) {
+			moveto(-0.6, -0.4);
+			text("z1");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_12) {
+			moveto(-0.25, -0.4);
+			text("S\u2020");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_13) {
+			moveto(-0.6, -0.4);
+			text("z13");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_14) {
+			moveto(-0.6, -0.35);
 			text("T\u2020");
+		}
+		else if (curNodeType == CircuitNodeTypes.RZ_15) {
+			moveto(-0.6, -0.35);
+			text("z15");
 		}
 	}
 }

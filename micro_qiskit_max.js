@@ -16,6 +16,8 @@
 
 /*
  * MicroQiskit implementation in Max
+ *
+ * TODO: Let qasm accept numeric parameters (not just things like 'pi/2')
  */
 include('common.js');
 
@@ -172,167 +174,295 @@ function createQuantumCircuitFromQasm(qasm) {
 							else if (keyword == 'crx(0)' && qNumArray.length == 2) {
 								quantumCircuit.crx(0, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == 'crx(pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crx(Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 							else if (keyword == 'crx(pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.crx(Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crx(3*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crx(3 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword == 'crx(pi/2)' && qNumArray.length == 2) {
 								quantumCircuit.crx(Math.PI / 2, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == 'crx(5*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crx(5 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 							else if (keyword == 'crx(3*pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.crx(3 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crx(7*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crx(7 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword == 'crx(pi)' && qNumArray.length == 2) {
 								quantumCircuit.crx(Math.PI, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == 'crx(9*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crx(9 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 							else if (keyword == 'crx(5*pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.crx(5 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crx(11*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crx(11 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword == 'crx(3*pi/2)' && qNumArray.length == 2) {
 								quantumCircuit.crx(3 * Math.PI / 2, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == 'crx(13*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crx(13 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 							else if (keyword == 'crx(7*pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.crx(7 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crx(15*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crx(15 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 
 							else if (keyword == 'rx(0)') {
 								quantumCircuit.rx(0, qNumArray[0]);
 							}
+							else if (keyword == 'rx(pi/8)') {
+								quantumCircuit.rx(Math.PI / 8, qNumArray[0]);
+							}
 							else if (keyword == 'rx(pi/4)') {
 								quantumCircuit.rx(Math.PI / 4, qNumArray[0]);
+							}
+							else if (keyword == '3*rx(pi/8)') {
+								quantumCircuit.rx(3 * Math.PI / 8, qNumArray[0]);
 							}
 							else if (keyword == 'rx(pi/2)') {
 								quantumCircuit.rx(Math.PI / 2, qNumArray[0]);
 							}
+							else if (keyword == '5*rx(pi/8)') {
+								quantumCircuit.rx(5 * Math.PI / 8, qNumArray[0]);
+							}
 							else if (keyword == 'rx(3*pi/4)') {
 								quantumCircuit.rx(3 * Math.PI / 4, qNumArray[0]);
+							}
+							else if (keyword == '7*rx(pi/8)') {
+								quantumCircuit.rx(7 * Math.PI / 8, qNumArray[0]);
 							}
 							else if (keyword == 'rx(pi)') {
 								quantumCircuit.rx(Math.PI, qNumArray[0]);
 							}
+							else if (keyword == '9*rx(pi/8)') {
+								quantumCircuit.rx(9 * Math.PI / 8, qNumArray[0]);
+							}
 							else if (keyword == 'rx(5*pi/4)') {
 								quantumCircuit.rx(5 * Math.PI / 4, qNumArray[0]);
+							}
+							else if (keyword == '11*rx(pi/8)') {
+								quantumCircuit.rx(11 * Math.PI / 8, qNumArray[0]);
 							}
 							else if (keyword == 'rx(3*pi/2)') {
 								quantumCircuit.rx(3 * Math.PI / 2, qNumArray[0]);
 							}
+							else if (keyword == '13*rx(pi/8)') {
+								quantumCircuit.rx(13 * Math.PI / 8, qNumArray[0]);
+							}
 							else if (keyword == 'rx(7*pi/4)') {
 								quantumCircuit.rx(7 * Math.PI / 4, qNumArray[0]);
+							}
+							else if (keyword == '15*rx(pi/8)') {
+								quantumCircuit.rx(15 * Math.PI / 8, qNumArray[0]);
 							}
 
 							else if (keyword == 'ry(0)') {
 								quantumCircuit.ry(0, qNumArray[0]);
 							}
+							else if (keyword == 'ry(pi/8)') {
+								quantumCircuit.ry(Math.PI / 8, qNumArray[0]);
+							}
 							else if (keyword == 'ry(pi/4)') {
 								quantumCircuit.ry(Math.PI / 4, qNumArray[0]);
+							}
+							else if (keyword == 'ry(3*pi/8)') {
+								quantumCircuit.ry(3 * Math.PI / 8, qNumArray[0]);
 							}
 							else if (keyword == 'ry(pi/2)') {
 								quantumCircuit.ry(Math.PI / 2, qNumArray[0]);
 							}
+							else if (keyword == 'ry(5*pi/8)') {
+								quantumCircuit.ry(5 * Math.PI / 8, qNumArray[0]);
+							}
 							else if (keyword == 'ry(3*pi/4)') {
 								quantumCircuit.ry(3 * Math.PI / 4, qNumArray[0]);
+							}
+							else if (keyword == 'ry(7*pi/8)') {
+								quantumCircuit.ry(7 * Math.PI / 8, qNumArray[0]);
 							}
 							else if (keyword == 'ry(pi)') {
 								quantumCircuit.ry(Math.PI, qNumArray[0]);
 							}
+							else if (keyword == 'ry(9*pi/8)') {
+								quantumCircuit.ry(9 * Math.PI / 8, qNumArray[0]);
+							}
 							else if (keyword == 'ry(5*pi/4)') {
 								quantumCircuit.ry(5 * Math.PI / 4, qNumArray[0]);
+							}
+							else if (keyword == 'ry(11*pi/8)') {
+								quantumCircuit.ry(11 * Math.PI / 8, qNumArray[0]);
 							}
 							else if (keyword == 'ry(3*pi/2)') {
 								quantumCircuit.ry(3 * Math.PI / 2, qNumArray[0]);
 							}
+							else if (keyword == 'ry(13*pi/8)') {
+								quantumCircuit.ry(13 * Math.PI / 8, qNumArray[0]);
+							}
 							else if (keyword == 'ry(7*pi/4)') {
 								quantumCircuit.ry(7 * Math.PI / 4, qNumArray[0]);
 							}
-
+							else if (keyword == 'ry(15*pi/8)') {
+								quantumCircuit.ry(15 * Math.PI / 8, qNumArray[0]);
+							}
 
 							else if (keyword == 'rz(0)') {
 								quantumCircuit.rz(0, qNumArray[0]);
 							}
+							else if (keyword == 'rz(pi/8)') {
+								quantumCircuit.rz(Math.PI / 8, qNumArray[0]);
+							}
 							else if (keyword == 'rz(pi/4)') {
 								quantumCircuit.rz(Math.PI / 4, qNumArray[0]);
+							}
+							else if (keyword == 'rz(3*pi/8)') {
+								quantumCircuit.rz(3 * Math.PI / 8, qNumArray[0]);
 							}
 							else if (keyword == 'rz(pi/2)') {
 								quantumCircuit.rz(Math.PI / 2, qNumArray[0]);
 							}
+							else if (keyword == 'rz(5*pi/8)') {
+								quantumCircuit.rz(5 * Math.PI / 8, qNumArray[0]);
+							}
 							else if (keyword == 'rz(3*pi/4)') {
 								quantumCircuit.rz(3 * Math.PI / 4, qNumArray[0]);
+							}
+							else if (keyword == 'rz(7*pi/8)') {
+								quantumCircuit.rz(7 * Math.PI / 8, qNumArray[0]);
 							}
 							else if (keyword == 'rz(pi)') {
 								quantumCircuit.rz(Math.PI, qNumArray[0]);
 							}
+							else if (keyword == 'rz(9*pi/8)') {
+								quantumCircuit.rz(9 * Math.PI / 8, qNumArray[0]);
+							}
 							else if (keyword == 'rz(5*pi/4)') {
 								quantumCircuit.rz(5 * Math.PI / 4, qNumArray[0]);
+							}
+							else if (keyword == 'rz(11*pi/8)') {
+								quantumCircuit.rz(11 * Math.PI / 8, qNumArray[0]);
 							}
 							else if (keyword == 'rz(3*pi/2)') {
 								quantumCircuit.rz(3 * Math.PI / 2, qNumArray[0]);
 							}
+							else if (keyword == 'rz(13*pi/8)') {
+								quantumCircuit.rz(13 * Math.PI / 8, qNumArray[0]);
+							}
 							else if (keyword == 'rz(7*pi/4)') {
 								quantumCircuit.rz(7 * Math.PI / 4, qNumArray[0]);
+							}
+							else if (keyword == 'rz(15*pi/8)') {
+								quantumCircuit.rz(15 * Math.PI / 8, qNumArray[0]);
 							}
 
 							else if (keyword == 'crz(0)' && qNumArray.length == 2) {
 								quantumCircuit.crz(0, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == 'crz(pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crz(Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 							else if (keyword == 'crz(pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.crz(Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crz(3*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crz(3 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword == 'crz(pi/2)' && qNumArray.length == 2) {
 								quantumCircuit.crz(Math.PI / 2, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == 'crz(5*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crz(5 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 							else if (keyword == 'crz(3*pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.crz(3 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crz(7*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crz(7 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword == 'crz(pi)' && qNumArray.length == 2) {
 								quantumCircuit.crz(Math.PI, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == 'crz(9*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crz(9 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 							else if (keyword == 'crz(5*pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.crz(5 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == 'crz(11*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crz(11 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword == 'crz(3*pi/2)' && qNumArray.length == 2) {
 								quantumCircuit.crz(3 * Math.PI / 2, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == 'crz(13*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crz(13 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 							else if (keyword == 'crz(7*pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.crz(7 * Math.PI / 4, qNumArray[0], qNumArray[1]);
 							}
-							// else if (keyword == 'crz(pi/8)' && qNumArray.length == 2) {
-							// 	quantumCircuit.crz(Math.PI / 8, qNumArray[0], qNumArray[1]);
-							// }
-							// else if (keyword == 'crz(pi/16)' && qNumArray.length == 2) {
-							// 	quantumCircuit.crz(Math.PI / 16, qNumArray[0], qNumArray[1]);
-							// }
-							// else if (keyword == 'crz(pi/32)' && qNumArray.length == 2) {
-							// 	quantumCircuit.crz(Math.PI / 32, qNumArray[0], qNumArray[1]);
-							// }
-							// else if (keyword == 'crz(pi/64)' && qNumArray.length == 2) {
-							// 	quantumCircuit.crz(Math.PI / 64, qNumArray[0], qNumArray[1]);
-							// }
-							// else if (keyword == 'crz(pi/128)' && qNumArray.length == 2) {
-							// 	quantumCircuit.crz(Math.PI / 128, qNumArray[0], qNumArray[1]);
-							// }
+							else if (keyword == 'crz(15*pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.crz(15 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 
 							else if (keyword == 'cp(0)' && qNumArray.length == 2) {
 								quantumCircuit.cp(0, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == 'cp(pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.cp(Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 							else if (keyword == 'cp(pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.cp(Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == '3*cp(pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.cp(3 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword == 'cp(pi/2)' && qNumArray.length == 2) {
 								quantumCircuit.cp(Math.PI / 2, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == '5*cp(pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.cp(5 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 							else if (keyword == 'cp(3*pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.cp(3 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == '7*cp(pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.cp(7 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword == 'cp(pi)' && qNumArray.length == 2) {
 								quantumCircuit.cp(Math.PI, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == '9*cp(pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.cp(9 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 							else if (keyword == 'cp(5*pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.cp(5 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == '11*cp(pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.cp(11 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword == 'cp(3*pi/2)' && qNumArray.length == 2) {
 								quantumCircuit.cp(3 * Math.PI / 2, qNumArray[0], qNumArray[1]);
 							}
+							else if (keyword == '13*cp(pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.cp(13 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							}
 							else if (keyword == 'cp(7*pi/4)' && qNumArray.length == 2) {
 								quantumCircuit.cp(7 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							}
+							else if (keyword == '15*cp(pi/8)' && qNumArray.length == 2) {
+								quantumCircuit.cp(15 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 
 							else if (keyword == 'cp(pi/8)' && qNumArray.length == 2) {

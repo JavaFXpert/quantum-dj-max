@@ -16,6 +16,8 @@
 
 /*
  * Component that renders a statevector as circles with phases and amplitudes
+ *
+ * TODO: Replace "4.0" occurrences with constant
  */
 include('common.js');
 
@@ -24,7 +26,7 @@ var maxDisplayedSteps = 64
 // Inlet 0 receives "viz" messages with a statevector to display
 // Inlet 1 receives global phase shift integer from 0 - 7
 // Inlet 2 receives instrument type selection:
-//     0: kit (midi is chromatic, from 36 - 43
+//     0: kit (midi is chromatic, from 36 - 51
 //     1: diatonic octave 1,
 //     2: diatonic octave 2
 //     3: diatonic octave 3
@@ -64,7 +66,7 @@ var pitchTransformIndex = 0;
 // Number of semitones to transpose
 var numTransposeSemitones = 0;
 
-var prevPiOver4Phase = 0;
+var prevPiOver8Phase = 0;
 
 var curClipPath = "";
 
@@ -181,7 +183,7 @@ function computeProbsPhases() {
 			//post('\noriginal polar.theta: ' + polar.theta);
 
 			// Adjust slightly for rounding TODO: remove
-			polar.theta += -Math.PI / 32;
+			polar.theta += -Math.PI / (NUM_PITCHES * 4);
 
 			// If first basis state with significant probability has non-zero phase,
 			// shift global phase by its phase
@@ -193,23 +195,18 @@ function computeProbsPhases() {
 
 				//post('\npolar.theta: ' + polar.theta);
 
-				var piOver4Phase = Math.round(polar.theta / (Math.PI / 4));
-				//post('\nInitial piOver4Phase: ' + piOver4Phase);
-				//post('\nprevPiOver4Phase: ' + prevPiOver4Phase);
+				var piOver8Phase = Math.round(polar.theta / (Math.PI / NUM_PITCHES));
+				//post('\nInitial piOver8Phase: ' + piOver8Phase);
+				//post('\nprevPiOver8Phase: ' + prevPiOver8Phase);
 
-				//var tempPrevPiOver4Phase = prevPiOver4Phase;
-				//prevPiOver4Phase = piOver4Phase;
+				piOver8Phase += NUM_PITCHES - prevPiOver8Phase;
+				//post('\nSubsequent piOver8Phase: ' + piOver8Phase);
 
-				piOver4Phase += NUM_PITCHES - prevPiOver4Phase;
-				//post('\nSubsequent piOver4Phase: ' + piOver4Phase);
-
-				//piOver4Phase += tempPrevPiOver4Phase;
-
-				piOver4Phase = piOver4Phase % NUM_PITCHES;
-				//post('\nThen piOver4Phase: ' + piOver4Phase);
+				piOver8Phase = piOver8Phase % NUM_PITCHES;
+				//post('\nThen piOver8Phase: ' + piOver8Phase);
 
 
-				globalPhaseShiftMidi = (NUM_PITCHES - piOver4Phase) % NUM_PITCHES;
+				globalPhaseShiftMidi = (NUM_PITCHES - piOver8Phase) % NUM_PITCHES;
 				//post('\nglobalPhaseShiftMidi: ' + globalPhaseShiftMidi);
 
 				outlet(0, 'int', globalPhaseShiftMidi);
@@ -248,9 +245,9 @@ function computeProbsPhases() {
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
 		if (pitchNums[pnIdx] > -1) {
 			if (!foundFirstPitch) {
-				prevPiOver4Phase = pitchNums[pnIdx];
+				prevPiOver8Phase = pitchNums[pnIdx];
 				foundFirstPitch = true;
-				post('\n***** prevPiOver4Phase: ' + prevPiOver4Phase);
+				post('\n***** prevPiOver8Phase: ' + prevPiOver8Phase);
 			}
 
 			var time = (pnIdx / 4.0).toFixed(2);
@@ -434,11 +431,11 @@ function populateCircGridFromClip() {
  */
 function setGlobalPhaseShift(phaseShiftDialVal) {
 	//globalPhaseShift = phaseShiftDialVal / 128.0 * (2 * Math.PI);
-	// var piOver4PhaseShift = Math.min(phaseShiftDialVal, NUM_PITCHES - 1);
-	// piOver4PhaseShift = Math.max(piOver4PhaseShift, 0);
+	// var piOver8PhaseShift = Math.min(phaseShiftDialVal, NUM_PITCHES - 1);
+	// piOver8PhaseShift = Math.max(piOver8PhaseShift, 0);
 
-	var piOver4PhaseShift = phaseShiftDialVal;
-	globalPhaseShift = piOver4PhaseShift * (2 * Math.PI / NUM_PITCHES);
+	var piOver8PhaseShift = phaseShiftDialVal;
+	globalPhaseShift = piOver8PhaseShift * (2 * Math.PI / NUM_PITCHES);
 	post('\nglobalPhaseShift: ' + globalPhaseShift);
 	computeProbsPhases();
 }

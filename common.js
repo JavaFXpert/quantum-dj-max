@@ -42,7 +42,7 @@ var NUM_ADDITIONAL_METADATA_VALUES = 3;
 
 // Resolution of calculation from phase to notes or sounds in a kit.
 // Also represents resolution of phase.
-var NUM_PITCHES = 8;
+var NUM_PITCHES = 16;
 
 // Lowest MIDI value of drum pad
 var LOW_DRUMPAD_MIDI = 36;
@@ -76,33 +76,57 @@ var CircuitNodeTypes = {
   CTRL_X: 21, // X gate that is associated with control qubit(s)
 
   RX_0: 30, // Rx
-  RX_1: 31, // Rx pi/4
-  RX_2: 32, // Rx pi/2
-  RX_3: 33, // Rx 3pi/4
-  RX_4: 34, // Rx pi (X)
-  RX_5: 35, // Rx 5pi/4
-  RX_6: 36, // Rx 3pi/2
-  RX_7: 37, // Rx 7pi/4
+  RX_1: 31, // Rx pi/8
+  RX_2: 32, // Rx pi/4
+  RX_3: 33, // Rx 3pi/8
+  RX_4: 34, // Rx pi/2
+  RX_5: 35, // Rx 5pi/8
+  RX_6: 36, // Rx 3pi/4
+  RX_7: 37, // Rx 7pi/8
+  RX_8: 38, // Rx pi (X)
+  RX_9: 39, // Rx 9pi/8
+  RX_10: 40, // Rx 5pi/4
+  RX_11: 41, // Rx 11pi/8
+  RX_12: 42, // Rx 3pi/2
+  RX_13: 43, // Rx 13pi/8
+  RX_14: 44, // Rx 7pi/4
+  RX_15: 45, // Rx 15pi/8
 
-  RY_0: 40, // Ry
-  RY_1: 41, // Ry pi/4
-  RY_2: 42, // Ry pi/2
-  RY_3: 43, // Ry 3pi/4
-  RY_4: 44, // Ry pi (Y)
-  RY_5: 45, // Ry 5pi/4
-  RY_6: 46, // Ry 3pi/2
-  RY_7: 47, // Ry 7pi/4
+  RY_0: 50, // Ry
+  RY_1: 51, // Ry pi/8
+  RY_2: 52, // Ry pi/4
+  RY_3: 53, // Ry 3pi/8
+  RY_4: 54, // Ry pi/2
+  RY_5: 55, // Ry 5pi/8
+  RY_6: 56, // Ry 3pi/4
+  RY_7: 57, // Ry 7pi/8
+  RY_8: 58, // Ry pi (X)
+  RY_9: 59, // Ry 9pi/8
+  RY_10: 60, // Ry 5pi/4
+  RY_11: 61, // Ry 11pi/8
+  RY_12: 62, // Ry 3pi/2
+  RY_13: 63, // Ry 13pi/8
+  RY_14: 64, // Ry 7pi/4
+  RY_15: 65, // Ry 15pi/8
 
-  RZ_0: 50, // Rz
-  RZ_1: 51, // Rz pi/4 (T)
-  RZ_2: 52, // Rz pi/2 (S)
-  RZ_3: 53, // Rz 3pi/4
-  RZ_4: 54, // Rz pi (Z)
-  RZ_5: 55, // Rz 5pi/4
-  RZ_6: 56, // Rz 3pi/2 (S†)
-  RZ_7: 57, // Rz 7pi/4 (T†)
+  RZ_0: 70, // Rz
+  RZ_1: 71, // Rz pi/8
+  RZ_2: 72, // Rz pi/4
+  RZ_3: 73, // Rz 3pi/8
+  RZ_4: 74, // Rz pi/2
+  RZ_5: 75, // Rz 5pi/8
+  RZ_6: 76, // Rz 3pi/4
+  RZ_7: 77, // Rz 7pi/8
+  RZ_8: 78, // Rz pi (X)
+  RZ_9: 79, // Rz 9pi/8
+  RZ_10: 80, // Rz 5pi/4
+  RZ_11: 81, // Rz 11pi/8
+  RZ_12: 82, // Rz 3pi/2
+  RZ_13: 83, // Rz 13pi/8
+  RZ_14: 84, // Rz 7pi/4
+  RZ_15: 85, // Rz 15pi/8
 
-  QFT: 60 // QFT
+  QFT: 90 // QFT
 }
 
 /**
@@ -126,7 +150,7 @@ function midi2NoteName(noteNum) {
 /**
  * Compute a MIDI pitch given a diatonic pitch, octave number, and
  * number of semitones to transpose.
- * @param pitchIdx Diatonic pitch index (0 - 7)
+ * @param pitchIdx Diatonic pitch index (0 - NUM_PITCHES-1)
  * @param octaveNum MIDI octave number. 0 indicates that a kit should be used.
  * @param transposeSemitones Number of semitones to transpose the outputted note (0 - 11)
  * @returns {number}
@@ -150,6 +174,22 @@ function pitchIdxToDiatonic(pitchIdx, octaveNumPlus2, transposeSemitones) {
     diatonicMidiPitch = octaveNum * 12 + 35;
   } else if (pitchIdx == 7) {
     diatonicMidiPitch = octaveNum * 12 + 36;
+  } else if (pitchIdx == 8) {
+    diatonicMidiPitch = octaveNum * 12 + 38;
+  } else if (pitchIdx == 9) {
+    diatonicMidiPitch = octaveNum * 12 + 40;
+  } else if (pitchIdx == 10) {
+    diatonicMidiPitch = octaveNum * 12 + 41;
+  } else if (pitchIdx == 11) {
+    diatonicMidiPitch = octaveNum * 12 + 43;
+  } else if (pitchIdx == 12) {
+    diatonicMidiPitch = octaveNum * 12 + 45;
+  } else if (pitchIdx == 13) {
+    diatonicMidiPitch = octaveNum * 12 + 47;
+  } else if (pitchIdx == 14) {
+    diatonicMidiPitch = octaveNum * 12 + 48;
+  } else if (pitchIdx == 15) {
+    diatonicMidiPitch = octaveNum * 12 + 50;
   }
   //post('diatonicMidiPitch: ' + diatonicMidiPitch);
   diatonicMidiPitch += transposeSemitones;
@@ -197,24 +237,48 @@ function circNodeType2Color(circNodeTypeNum) {
     colorNum = 25;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RX_1) {
-    colorNum = 127;
+    colorNum = 25;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RX_2) {
-    colorNum = 68;
+    colorNum = 127;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RX_3) {
-    colorNum = 67;
+    colorNum = 127;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RX_4) {
-    colorNum = 2;
+    colorNum = 68;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RX_5) {
-    colorNum = 4;
+    colorNum = 68;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RX_6) {
-    colorNum = 3;
+    colorNum = 67;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RX_7) {
+    colorNum = 67;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_8) {
+    colorNum = 2;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_9) {
+    colorNum = 2;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_10) {
+    colorNum = 4;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_11) {
+    colorNum = 4;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_12) {
+    colorNum = 3;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_13) {
+    colorNum = 3;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_14) {
+    colorNum = 29;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RX_15) {
     colorNum = 29;
   }
 
@@ -222,24 +286,48 @@ function circNodeType2Color(circNodeTypeNum) {
     colorNum = 8;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RY_1) {
-    colorNum = 10;
+    colorNum = 8;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RY_2) {
-    colorNum = 11;
+    colorNum = 10;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RY_3) {
-    colorNum = 31;
+    colorNum = 10;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RY_4) {
-    colorNum = 32;
+    colorNum = 11;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RY_5) {
-    colorNum = 89;
+    colorNum = 11;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RY_6) {
-    colorNum = 93;
+    colorNum = 31;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RY_7) {
+    colorNum = 31;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_8) {
+    colorNum = 32;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_9) {
+    colorNum = 32;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_10) {
+    colorNum = 89;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_11) {
+    colorNum = 89;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_12) {
+    colorNum = 93;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_13) {
+    colorNum = 93;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_14) {
+    colorNum = 97;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RY_15) {
     colorNum = 97;
   }
 
@@ -247,24 +335,48 @@ function circNodeType2Color(circNodeTypeNum) {
     colorNum = 95;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RZ_1) {
-    colorNum = 103;
+    colorNum = 95;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RZ_2) {
-    colorNum = 99;
+    colorNum = 103;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RZ_3) {
-    colorNum = 125;
+    colorNum = 103;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RZ_4) {
-    colorNum = 18;
+    colorNum = 99;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RZ_5) {
-    colorNum = 19;
+    colorNum = 99;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RZ_6) {
-    colorNum = 24;
+    colorNum = 125;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.RZ_7) {
+    colorNum = 125;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_8) {
+    colorNum = 18;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_9) {
+    colorNum = 18;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_10) {
+    colorNum = 19;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_11) {
+    colorNum = 19;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_12) {
+    colorNum = 24;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_13) {
+    colorNum = 24;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_14) {
+    colorNum = 113;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.RZ_15) {
     colorNum = 113;
   }
 

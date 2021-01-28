@@ -17,6 +17,14 @@
 /*
  * Quantum DJ device circuit pad that may be used even when
  * a Push 2 device is not connected.
+ *
+ * TODO: Modify resolution everywhere to pi/8
+ *  - Change NUM_PITCHES to 16
+ *  - Add constants and rotations
+ *  - Identify color scheme that accommodate pi/8
+ *
+ * TODO: Inquire surface number for Push
+ * TODO: Replace rx and crx with p and cp
  */
 include('common.js');
 
@@ -98,8 +106,8 @@ function bang() {
 
 function msg_int(val) {
 	if (inlet == 2) {
-		var piOver4Rotation = val;
-		post('\npiOver4Rotation: ' + piOver4Rotation);
+		var piOver8Rotation = val;
+		post('\npiOver8Rotation: ' + piOver8Rotation);
 
 		if (selCircGridRow >= 0 &&
 			selCircGridRow < NUM_GRID_ROWS &&
@@ -109,20 +117,20 @@ function msg_int(val) {
 			var selNodeType = circGrid[selCircGridRow][selCircGridCol];
 			var newNodeType = CircuitNodeTypes.EMPTY;
 
-			if ((selNodeType >= CircuitNodeTypes.RX_0 && selNodeType <= CircuitNodeTypes.RX_7) ||
+			if ((selNodeType >= CircuitNodeTypes.RX_0 && selNodeType <= CircuitNodeTypes.RX_15) ||
 				selNodeType == CircuitNodeTypes.CTRL_X) {
 
-				newNodeType = CircuitNodeTypes.RX_0 + piOver4Rotation;
+				newNodeType = CircuitNodeTypes.RX_0 + piOver8Rotation;
 			}
 			else if (selNodeType >= CircuitNodeTypes.RY_0 &&
-				selNodeType <= CircuitNodeTypes.RY_7) {
+				selNodeType <= CircuitNodeTypes.RY_15) {
 
-				newNodeType = CircuitNodeTypes.RY_0 + piOver4Rotation;
+				newNodeType = CircuitNodeTypes.RY_0 + piOver8Rotation;
 			}
 			else if (selNodeType >= CircuitNodeTypes.RZ_0 &&
-				selNodeType <= CircuitNodeTypes.RZ_7) {
+				selNodeType <= CircuitNodeTypes.RZ_15) {
 
-				newNodeType = CircuitNodeTypes.RZ_0 + piOver4Rotation;
+				newNodeType = CircuitNodeTypes.RZ_0 + piOver8Rotation;
 			}
 
 			if (newNodeType != CircuitNodeTypes.EMPTY) {
@@ -244,17 +252,17 @@ function setCircGridGate(notePitchVelocity) {
 
 				var newPiOver4Rotation = 0;
 				if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.RX_0 &&
-					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RX_7) {
+					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RX_15) {
 
 					newPiOver4Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RX_0;
 				}
 				else if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.RY_0 &&
-					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RY_7) {
+					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RY_15) {
 
 					newPiOver4Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RY_0;
 				}
 				else if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.RZ_0 &&
-					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RZ_7) {
+					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RZ_15) {
 
 					newPiOver4Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RZ_0;
 				}
@@ -447,12 +455,12 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_1;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' rx(pi/4) q[' + gridRow + '];';
+			qasmStr += ' rx(pi/8) q[' + gridRow + '];';
 		}
 		else {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_1;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' crx(pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' crx(pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_2) {
@@ -460,12 +468,12 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_2;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' rx(pi/2) q[' + gridRow + '];';
+			qasmStr += ' rx(pi/4) q[' + gridRow + '];';
 		}
 		else {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_2;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' crx(pi/2) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' crx(pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_3) {
@@ -473,20 +481,72 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_3;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' rx(3*pi/4) q[' + gridRow + '];';
+			qasmStr += ' rx(3*pi/8) q[' + gridRow + '];';
 		}
 		else {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_3;
 			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crx(3*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_4) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_4;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rx(pi/2) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_4;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crx(pi/2) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_5) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_5;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rx(5*pi/8) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_5;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crx(5*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_6) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_6;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rx(3*pi/4) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_6;
+			informCircuitBtn(gridRow, gridCol);
 			qasmStr += ' crx(3*pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
-	else if (circNodeType == CircuitNodeTypes.RX_4 ||
+	else if (circNodeType == CircuitNodeTypes.RX_7) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_7;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rx(7*pi/8) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_7;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crx(7*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_8 ||
 		circNodeType == CircuitNodeTypes.CTRL_X) {
 		//post('\nX or CTRL_X circNodeType: ' + circNodeType);
 		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
 		if (ctrlWireNum == -1) {
-			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_4;
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_8;
 			informCircuitBtn(gridRow, gridCol);
 			qasmStr += ' x q[' + gridRow + '];';
 		}
@@ -496,43 +556,95 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 			qasmStr += ' cx q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
-	else if (circNodeType == CircuitNodeTypes.RX_5) {
+	else if (circNodeType == CircuitNodeTypes.RX_9) {
 		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
 		if (ctrlWireNum == -1) {
-			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_5;
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_9;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rx(9*pi/8) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_9;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crx(9*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_10) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_10;
 			informCircuitBtn(gridRow, gridCol);
 			qasmStr += ' rx(5*pi/4) q[' + gridRow + '];';
 		}
 		else {
-			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_5;
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_10;
 			informCircuitBtn(gridRow, gridCol);
 			qasmStr += ' crx(5*pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
-	else if (circNodeType == CircuitNodeTypes.RX_6) {
+	else if (circNodeType == CircuitNodeTypes.RX_11) {
 		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
 		if (ctrlWireNum == -1) {
-			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_6;
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_11;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rx(11*pi/8) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_11;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crx(11*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_12) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_12;
 			informCircuitBtn(gridRow, gridCol);
 			qasmStr += ' rx(3*pi/2) q[' + gridRow + '];';
 		}
 		else {
-			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_6;
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_12;
 			informCircuitBtn(gridRow, gridCol);
 			qasmStr += ' crx(3*pi/2) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
-	else if (circNodeType == CircuitNodeTypes.RX_7) {
+	else if (circNodeType == CircuitNodeTypes.RX_13) {
 		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
 		if (ctrlWireNum == -1) {
-			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_7;
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_13;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rx(13*pi/8) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_13;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crx(13*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_14) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_14;
 			informCircuitBtn(gridRow, gridCol);
 			qasmStr += ' rx(7*pi/4) q[' + gridRow + '];';
 		}
 		else {
-			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_7;
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_14;
 			informCircuitBtn(gridRow, gridCol);
 			qasmStr += ' crx(7*pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RX_15) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_15;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rx(15*pi/8) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_15;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crx(15*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
 
@@ -540,25 +652,49 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		qasmStr += ' ry(0) q[' + gridRow + '];';
 	}
 	else if (circNodeType == CircuitNodeTypes.RY_1) {
-		qasmStr += ' ry(pi/4) q[' + gridRow + '];';
+		qasmStr += ' ry(pi/8) q[' + gridRow + '];';
 	}
 	else if (circNodeType == CircuitNodeTypes.RY_2) {
-		qasmStr += ' ry(pi/2) q[' + gridRow + '];';
+		qasmStr += ' ry(pi/4) q[' + gridRow + '];';
 	}
 	else if (circNodeType == CircuitNodeTypes.RY_3) {
-		qasmStr += ' ry(3*pi/4) q[' + gridRow + '];';
+		qasmStr += ' ry(3*pi/8) q[' + gridRow + '];';
 	}
 	else if (circNodeType == CircuitNodeTypes.RY_4) {
-		qasmStr += ' ry(pi) q[' + gridRow + '];';
+		qasmStr += ' ry(pi/2) q[' + gridRow + '];';
 	}
 	else if (circNodeType == CircuitNodeTypes.RY_5) {
-		qasmStr += ' ry(5*pi/4) q[' + gridRow + '];';
+		qasmStr += ' ry(5*pi/8) q[' + gridRow + '];';
 	}
 	else if (circNodeType == CircuitNodeTypes.RY_6) {
-		qasmStr += ' ry(3*pi/2) q[' + gridRow + '];';
+		qasmStr += ' ry(3*pi/4) q[' + gridRow + '];';
 	}
 	else if (circNodeType == CircuitNodeTypes.RY_7) {
+		qasmStr += ' ry(7*pi/8) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_8) {
+		qasmStr += ' ry(pi) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_9) {
+		qasmStr += ' ry(9*pi/8) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_10) {
+		qasmStr += ' ry(5*pi/4) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_11) {
+		qasmStr += ' ry(11*pi/8) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_12) {
+		qasmStr += ' ry(3*pi/2) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_13) {
+		qasmStr += ' ry(13*pi/8) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_14) {
 		qasmStr += ' ry(7*pi/4) q[' + gridRow + '];';
+	}
+	else if (circNodeType == CircuitNodeTypes.RY_15) {
+		qasmStr += ' ry(15*pi/8) q[' + gridRow + '];';
 	}
 
 	else if (circNodeType == CircuitNodeTypes.RZ_0) {
@@ -579,12 +715,12 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_1;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' rz(pi/4) q[' + gridRow + '];';
+			qasmStr += ' rz(pi/8) q[' + gridRow + '];';
 		}
 		else {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_1;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' crz(pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' crz(pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_2) {
@@ -592,12 +728,12 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_2;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' rz(pi/2) q[' + gridRow + '];';
+			qasmStr += ' rz(pi/4) q[' + gridRow + '];';
 		}
 		else {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_2;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' crz(pi/2) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' crz(pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_3) {
@@ -605,12 +741,12 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_3;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' rz(3*pi/4) q[' + gridRow + '];';
+			qasmStr += ' rz(3*pi/8) q[' + gridRow + '];';
 		}
 		else {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_3;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' crz(3*pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' crz(3*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_4) {
@@ -618,12 +754,12 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_4;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' rz(pi) q[' + gridRow + '];';
+			qasmStr += ' rz(pi/2) q[' + gridRow + '];';
 		}
 		else {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_4;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' crz(pi) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' crz(pi/2) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_5) {
@@ -631,12 +767,12 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_5;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' rz(5*pi/4) q[' + gridRow + '];';
+			qasmStr += ' rz(5*pi/8) q[' + gridRow + '];';
 		}
 		else {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_5;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' crz(5*pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' crz(5*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_6) {
@@ -644,12 +780,12 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_6;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' rz(3*pi/2) q[' + gridRow + '];';
+			qasmStr += ' rz(3*pi/4) q[' + gridRow + '];';
 		}
 		else {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_6;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' crz(3*pi/2) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' crz(3*pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_7) {
@@ -657,12 +793,116 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_7;
 			informCircuitBtn(gridRow, gridCol);
-			qasmStr += ' rz(7*pi/4) q[' + gridRow + '];';
+			qasmStr += ' rz(7*pi/8) q[' + gridRow + '];';
 		}
 		else {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_7;
 			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crz(7*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_8) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_8;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rz(pi) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_8;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crz(pi) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_9) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_9;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rz(9*pi/8) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_9;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crz(9*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_10) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_10;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rz(5*pi/4) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_10;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crz(5*pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_11) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_11;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rz(11*pi/8) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_11;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crz(11*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_12) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_12;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rz(3*pi/2) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_12;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crz(3*pi/2) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_13) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_13;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rz(13*pi/8) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_13;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crz(13*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_14) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_14;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rz(7*pi/4) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_14;
+			informCircuitBtn(gridRow, gridCol);
 			qasmStr += ' crz(7*pi/4) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+		}
+	}
+	else if (circNodeType == CircuitNodeTypes.RZ_15) {
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		if (ctrlWireNum == -1) {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_15;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' rz(15*pi/8) q[' + gridRow + '];';
+		}
+		else {
+			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_15;
+			informCircuitBtn(gridRow, gridCol);
+			qasmStr += ' crz(15*pi/8) q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 		}
 	}
 
