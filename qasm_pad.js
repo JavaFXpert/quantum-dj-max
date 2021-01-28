@@ -250,24 +250,24 @@ function setCircGridGate(notePitchVelocity) {
 				selCircGridRow = gridRow;
 				selCircGridCol = gridCol;
 
-				var newPiOver4Rotation = 0;
+				var newPiOver8Rotation = 0;
 				if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.RX_0 &&
 					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RX_15) {
 
-					newPiOver4Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RX_0;
+					newPiOver8Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RX_0;
 				}
 				else if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.RY_0 &&
 					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RY_15) {
 
-					newPiOver4Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RY_0;
+					newPiOver8Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RY_0;
 				}
 				else if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.RZ_0 &&
 					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RZ_15) {
 
-					newPiOver4Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RZ_0;
+					newPiOver8Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RZ_0;
 				}
 				// Set the current rotation on the gate rotator dial
-				outlet(3, 'int', newPiOver4Rotation);
+				outlet(3, 'int', newPiOver8Rotation);
 
 				informCircuitBtn(gridRow, gridCol);
 				createQasmFromGrid();
@@ -293,49 +293,44 @@ function setCircGridGate(notePitchVelocity) {
 						curCircNodeType = CircuitNodeTypes.H;
 					}
 					else if (pitch == 99) {
-						curCircNodeType = CircuitNodeTypes.RZ_1;
+						curCircNodeType = CircuitNodeTypes.RZ_2;
 					}
 
 					else if (pitch == 90) {
 						curCircNodeType = CircuitNodeTypes.CTRL;
 					}
 					else if (pitch == 91) {
-						curCircNodeType = CircuitNodeTypes.RZ_2;
-					}
-
-					else if (pitch == 83) {
-						curCircNodeType = CircuitNodeTypes.RZ_3;
-					}
-
-					else if (pitch == 42) {
-						curCircNodeType = CircuitNodeTypes.IDEN;
-					}
-					else if (pitch == 82) {
-						curCircNodeType = CircuitNodeTypes.RX_4;
-					}
-					else if (pitch == 74) {
-						curCircNodeType = CircuitNodeTypes.RY_4;
-					}
-					else if (pitch == 75) {
 						curCircNodeType = CircuitNodeTypes.RZ_4;
 					}
 
+					else if (pitch == 82) {
+						curCircNodeType = CircuitNodeTypes.RX_8;
+					}
+					else if (pitch == 83) {
+						curCircNodeType = CircuitNodeTypes.RZ_8;
+					}
+
+					else if (pitch == 74) {
+						curCircNodeType = CircuitNodeTypes.RY_8;
+					}
+					else if (pitch == 75) {
+						curCircNodeType = CircuitNodeTypes.RZ_12;
+					}
+
 					else if (pitch == 67) {
-						curCircNodeType = CircuitNodeTypes.RZ_5;
+						curCircNodeType = CircuitNodeTypes.RZ_14;
 					}
 
 					else if (pitch == 58) {
 						curCircNodeType = CircuitNodeTypes.SWAP;
 					}
-					else if (pitch == 59) {
-						curCircNodeType = CircuitNodeTypes.RZ_6;
-					}
 
 					else if (pitch == 50) {
 						curCircNodeType = CircuitNodeTypes.QFT;
 					}
-					else if (pitch == 51) {
-						curCircNodeType = CircuitNodeTypes.RZ_7;
+
+					else if (pitch == 42) {
+						curCircNodeType = CircuitNodeTypes.IDEN;
 					}
 				}
 				refreshControllerPads();
