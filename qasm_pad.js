@@ -297,21 +297,21 @@ function setCircGridGate(notePitchVelocity) {
 					}
 
 					else if (pitch == 90) {
-						curCircNodeType = CircuitNodeTypes.CTRL;
+						curCircNodeType = CircuitNodeTypes.RX_8;
 					}
 					else if (pitch == 91) {
 						curCircNodeType = CircuitNodeTypes.RZ_4;
 					}
 
 					else if (pitch == 82) {
-						curCircNodeType = CircuitNodeTypes.RX_8;
+						curCircNodeType = CircuitNodeTypes.RY_8;
 					}
 					else if (pitch == 83) {
 						curCircNodeType = CircuitNodeTypes.RZ_8;
 					}
 
 					else if (pitch == 74) {
-						curCircNodeType = CircuitNodeTypes.RY_8;
+						curCircNodeType = CircuitNodeTypes.CTRL;
 					}
 					else if (pitch == 75) {
 						curCircNodeType = CircuitNodeTypes.RZ_12;

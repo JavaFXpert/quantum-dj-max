@@ -195,7 +195,7 @@ function computeProbsPhases() {
 
 				//post('\npolar.theta: ' + polar.theta);
 
-				var piOver8Phase = Math.round(polar.theta / (Math.PI / NUM_PITCHES));
+				var piOver8Phase = Math.round(polar.theta / (Math.PI / (NUM_PITCHES / 2)));
 				//post('\nInitial piOver8Phase: ' + piOver8Phase);
 				//post('\nprevPiOver8Phase: ' + prevPiOver8Phase);
 
