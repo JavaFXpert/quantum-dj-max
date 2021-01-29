@@ -522,21 +522,37 @@ function QuantumCircuit(n, m) {
 	return this;
 };
 (QuantumCircuit.prototype).crz = function(theta, s, t) {
-	this.h(t);
-	this.crx(theta, s, t);
-	this.h(t);
+	// this.h(t);
+	// this.crx(theta, s, t);
+	// this.h(t);
+
+	// TODO: Uncomment above and remove below, after modifying
+	// 			 calls from crz to cp
+	this.data.push(['cp', theta, s, t]);
+
 	return this;
 };
 (QuantumCircuit.prototype).swap = function(s, t) {
 	this.data.push(['swap', s, t]);
 	return this;
 };
+
 (QuantumCircuit.prototype).rz = function(theta, q) {
-	this.h(q);
-	this.rx(theta, q);
-	this.h(q);
+	// this.h(q);
+	// this.rx(theta, q);
+	// this.h(q);
+
+	// TODO: Uncomment above and remove below, after modifying
+	// 			 calls from rz to p
+	this.data.push(['p', theta, q]);
+
 	return this;
 };
+(QuantumCircuit.prototype).p = function(theta, q) {
+	this.data.push(['p', theta, q]);
+	return this;
+};
+
 (QuantumCircuit.prototype).ry = function(theta, q) {
 	this.rx(Math.PI / 2, q);
 	this.rz(theta, q);
@@ -616,7 +632,7 @@ var simulate = function (qc, shots, get) {
 		var gate = qc.data[idx];
 		if (gate[0] == 'm') {
 			outputMap[gate[2]] = gate[1];
-		} else if (gate[0] == "x" || gate[0] == "h" || gate[0] == "rx") {
+		} else if (gate[0] == "x" || gate[0] == "h" || gate[0] == "rx" || gate[0] == "p") {
 			var j = gate.slice(-1)[0];
 			for (var i0 = 0; i0 < Math.pow(2, j); i0++) {
 				for (var i1 = 0; i1 < Math.pow(2, qc.numQubits - j - 1); i1++) {
@@ -636,6 +652,10 @@ var simulate = function (qc, shots, get) {
 						var trn = turn(k[b0], k[b1], theta);
 						k[b0] = trn[0];
 						k[b1] = trn[1];
+					} else if (gate[0] == 'p') {
+						var theta = gate[1];
+						var phsTrn = phaseTurn(k[b0], k[b1], theta);
+						k[b1] = phsTrn;
 					}
 				}
 			}
