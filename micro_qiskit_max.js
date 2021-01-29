@@ -465,9 +465,6 @@ function createQuantumCircuitFromQasm(qasm) {
 								quantumCircuit.cp(15 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 
-							else if (keyword == 'cp(pi/8)' && qNumArray.length == 2) {
-								quantumCircuit.cp(Math.PI / 8, qNumArray[0], qNumArray[1]);
-							}
 							else if (keyword == 'cp(pi/16)' && qNumArray.length == 2) {
 								quantumCircuit.cp(Math.PI / 16, qNumArray[0], qNumArray[1]);
 							}
