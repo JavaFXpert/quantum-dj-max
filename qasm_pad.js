@@ -91,6 +91,8 @@ var selCircGridCol = -1;
 // Associates clip name to path
 var clipsPaths = [];
 
+// Array contain midi values of pads to blink
+var padsToBlink = [];
 
 // Tracks number of consecutive QFT gates in a column
 var numConsecutiveQftRowsInCol = 0;
@@ -349,6 +351,8 @@ function setCircGridGate(notePitchVelocity) {
  * a statevector simulator message to an outlet.
  */
 function createQasmFromGrid() {
+	padsToBlink = [];
+
 	var numCircuitWires = computeNumWires();
 	var qasmHeaderStr = 'qreg q[' + numCircuitWires + '];' + ' creg c[' + numCircuitWires + '];';
 	var qasmGatesStr = '';
@@ -433,7 +437,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	// }
 
 	else if (circNodeType == CircuitNodeTypes.RX_0) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_0;
 			informCircuitBtn(gridRow, gridCol);
@@ -446,7 +450,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_1) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_1;
 			informCircuitBtn(gridRow, gridCol);
@@ -459,7 +463,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_2) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_2;
 			informCircuitBtn(gridRow, gridCol);
@@ -472,7 +476,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_3) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_3;
 			informCircuitBtn(gridRow, gridCol);
@@ -485,7 +489,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_4) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_4;
 			informCircuitBtn(gridRow, gridCol);
@@ -498,7 +502,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_5) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_5;
 			informCircuitBtn(gridRow, gridCol);
@@ -511,7 +515,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_6) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_6;
 			informCircuitBtn(gridRow, gridCol);
@@ -524,7 +528,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_7) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_7;
 			informCircuitBtn(gridRow, gridCol);
@@ -539,7 +543,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	else if (circNodeType == CircuitNodeTypes.RX_8 ||
 		circNodeType == CircuitNodeTypes.CTRL_X) {
 		//post('\nX or CTRL_X circNodeType: ' + circNodeType);
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_8;
 			informCircuitBtn(gridRow, gridCol);
@@ -552,7 +556,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_9) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_9;
 			informCircuitBtn(gridRow, gridCol);
@@ -565,7 +569,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_10) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_10;
 			informCircuitBtn(gridRow, gridCol);
@@ -578,7 +582,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_11) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_11;
 			informCircuitBtn(gridRow, gridCol);
@@ -591,7 +595,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_12) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_12;
 			informCircuitBtn(gridRow, gridCol);
@@ -604,7 +608,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_13) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_13;
 			informCircuitBtn(gridRow, gridCol);
@@ -617,7 +621,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_14) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_14;
 			informCircuitBtn(gridRow, gridCol);
@@ -630,7 +634,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RX_15) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RX_15;
 			informCircuitBtn(gridRow, gridCol);
@@ -693,7 +697,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	}
 
 	else if (circNodeType == CircuitNodeTypes.RZ_0) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_0;
 			informCircuitBtn(gridRow, gridCol);
@@ -706,7 +710,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_1) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_1;
 			informCircuitBtn(gridRow, gridCol);
@@ -719,7 +723,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_2) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_2;
 			informCircuitBtn(gridRow, gridCol);
@@ -732,7 +736,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_3) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_3;
 			informCircuitBtn(gridRow, gridCol);
@@ -745,7 +749,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_4) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_4;
 			informCircuitBtn(gridRow, gridCol);
@@ -758,7 +762,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_5) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_5;
 			informCircuitBtn(gridRow, gridCol);
@@ -771,7 +775,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_6) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_6;
 			informCircuitBtn(gridRow, gridCol);
@@ -784,7 +788,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_7) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_7;
 			informCircuitBtn(gridRow, gridCol);
@@ -797,7 +801,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_8) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_8;
 			informCircuitBtn(gridRow, gridCol);
@@ -810,7 +814,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_9) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_9;
 			informCircuitBtn(gridRow, gridCol);
@@ -823,7 +827,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_10) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_10;
 			informCircuitBtn(gridRow, gridCol);
@@ -836,7 +840,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_11) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_11;
 			informCircuitBtn(gridRow, gridCol);
@@ -849,7 +853,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_12) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_12;
 			informCircuitBtn(gridRow, gridCol);
@@ -862,7 +866,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_13) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_13;
 			informCircuitBtn(gridRow, gridCol);
@@ -875,7 +879,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_14) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_14;
 			informCircuitBtn(gridRow, gridCol);
@@ -888,7 +892,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		}
 	}
 	else if (circNodeType == CircuitNodeTypes.RZ_15) {
-		var ctrlWireNum = ctrlWireNumInColumn(gridCol);
+		var ctrlWireNum = ctrlWireNumInColumn(gridCol, gridRow);
 		if (ctrlWireNum == -1) {
 			circGrid[gridRow][gridCol] = CircuitNodeTypes.RZ_15;
 			informCircuitBtn(gridRow, gridCol);
@@ -918,14 +922,27 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
  * Given a grid column, return the row in which a control exists.
  *
  * @return Zero-based row in which a control exists, -1 if not present.
- * @param columnIndex
+ * @param colNum Zero-based grid column to check for control
+ * @param gateRowNum Row that contains gate for which control is sought
  */
-function ctrlWireNumInColumn(colNum) {
+function ctrlWireNumInColumn(colNum, gateRowNum) {
 	//post('\nIn ctrlWireNumInColumn, colNum: ' + colNum);
 	var ctrlRow = -1;
 	for (var rowNum = 0; rowNum < NUM_GRID_ROWS; rowNum++) {
 		if (circGrid[rowNum][colNum] == CircuitNodeTypes.CTRL) {
 			ctrlRow = rowNum;
+
+			// TODO Make function from next line
+			var ctrlMidiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - rowNum - 1) * CONTR_MAT_COLS) + colNum;
+			if (padsToBlink.indexOf(ctrlMidiPitch) == -1) {
+				padsToBlink.push(ctrlMidiPitch);
+			}
+
+			var gateMidiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - gateRowNum - 1) * CONTR_MAT_COLS) + colNum;
+			if (padsToBlink.indexOf(gateMidiPitch) == -1) {
+				padsToBlink.push(gateMidiPitch);
+			}
+
 			break;
 		}
 	}
@@ -947,6 +964,18 @@ function swapGateRowInColumn(colNum, excludingRow) {
 	for (var rowNum = 0; rowNum < NUM_GRID_ROWS; rowNum++) {
 		if (rowNum != excludingRow && circGrid[rowNum][colNum] == CircuitNodeTypes.SWAP) {
 			swapGateRow = rowNum;
+
+			// TODO Make function from next line
+			var swapMidiPitchA = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - excludingRow - 1) * CONTR_MAT_COLS) + colNum;
+			if (padsToBlink.indexOf(swapMidiPitchA) == -1) {
+				padsToBlink.push(swapMidiPitchA);
+			}
+
+			var swapMidiPitchB = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - swapGateRow - 1) * CONTR_MAT_COLS) + colNum;
+			if (padsToBlink.indexOf(swapMidiPitchB) == -1) {
+				padsToBlink.push(swapMidiPitchB);
+			}
+
 			break;
 		}
 	}
@@ -1318,6 +1347,8 @@ function refreshPadNoteNames() {
 
 
 function refreshControllerPads() {
+
+
 	var controlSurface = new LiveAPI('control_surfaces 1'); //TODO: Inquire surface number
 	//var controlNames = controlSurface.call('get_control_names');
 	controlSurface.call('grab_midi');
@@ -1325,7 +1356,15 @@ function refreshControllerPads() {
 		for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
 			var midiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - rowIdx - 1) * CONTR_MAT_COLS) + colIdx;
 			var padColor = circNodeType2Color(circGrid[rowIdx][colIdx]);
-			controlSurface.call('send_midi', 144, midiPitch, padColor);
+
+			//post('\npadsToBlink: ' + padsToBlink);
+			controlSurface.call('send_midi', 144, midiPitch, 0);
+			if (padsToBlink.indexOf(midiPitch) != -1) {
+				controlSurface.call('send_midi', 147, midiPitch, padColor);
+			}
+			else {
+				controlSurface.call('send_midi', 144, midiPitch, padColor);
+			}
 		}
 	}
 
