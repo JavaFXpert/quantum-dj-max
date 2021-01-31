@@ -73,14 +73,14 @@ var circGrid = [
 
 
 var gateGrid = [
-	[ 8, 72],
-	[38, 74],
-	[58, 78],
-	[11, 82],
-	[-1, 84],
-	[9, -1],
-	[60, -1],
-	[14, -1]
+	[CircuitNodeTypes.H, CircuitNodeTypes.RZ_2],
+	[CircuitNodeTypes.RX_8, CircuitNodeTypes.RZ_4],
+	[CircuitNodeTypes.RY_8, CircuitNodeTypes.RZ_8],
+	[CircuitNodeTypes.CTRL, CircuitNodeTypes.RZ_12],
+	[CircuitNodeTypes.ANTI_CTRL, CircuitNodeTypes.RZ_14],
+	[CircuitNodeTypes.SWAP, CircuitNodeTypes.EMPTY],
+	[CircuitNodeTypes.QFT, CircuitNodeTypes.EMPTY],
+	[CircuitNodeTypes.IDEN, CircuitNodeTypes.EMPTY]
 ];
 
 
@@ -319,6 +319,9 @@ function setCircGridGate(notePitchVelocity) {
 						curCircNodeType = CircuitNodeTypes.RZ_12;
 					}
 
+					else if (pitch == 66) {
+						curCircNodeType = CircuitNodeTypes.ANTI_CTRL;
+					}
 					else if (pitch == 67) {
 						curCircNodeType = CircuitNodeTypes.RZ_14;
 					}

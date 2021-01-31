@@ -88,6 +88,10 @@ function draw()
 			moveto(-0.323, -0.4);
 			text("\u2022");
 		}
+		else if (curNodeType == CircuitNodeTypes.ANTI_CTRL) {
+			moveto(-0.323, -0.35);
+			text("\u26ac");
+		}
 		else if (curNodeType == CircuitNodeTypes.CTRL_X) {
 			moveto(0.0, 0.0);
 			framecircle(0.5, 0, 360);

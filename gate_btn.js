@@ -109,6 +109,11 @@ function draw()
 			text("S\u2020");
 		}
 
+		else if (midiNum == 66) {
+			// CircuitNodeTypes.ANTI_CTRL
+			moveto(-0.323, -0.35);
+			text("\u26ac");
+		}
 		else if (midiNum == 67) {
 			// CircuitNodeTypes.RZ_14
 			moveto(-0.6, -0.35);

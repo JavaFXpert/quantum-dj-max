@@ -69,9 +69,10 @@ var CircuitNodeTypes = {
   SWAP: 9,
   BARRIER: 10,
   CTRL: 11, // "control" part of multi-qubit gate
-  TRACE: 12, // In the path between a gate part and a "control" or "swap" part
-  MEASURE_Z: 13,
-  IDEN: 14,
+  ANTI_CTRL: 12, // "anti-control" part of multi-qubit gate
+  TRACE: 13, // In the path between a gate part and a "control" or "swap" part
+  MEASURE_Z: 14,
+  IDEN: 15,
 
   CTRL_X: 21, // X gate that is associated with control qubit(s)
 
@@ -219,6 +220,9 @@ function circNodeType2Color(circNodeTypeNum) {
   }
   else if (circNodeTypeNum == CircuitNodeTypes.CTRL) {
     colorNum = 123;
+  }
+  else if (circNodeTypeNum == CircuitNodeTypes.ANTI_CTRL) {
+    colorNum = 7;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.CTRL_X) {
     colorNum = 1;
