@@ -130,6 +130,64 @@ var CircuitNodeTypes = {
   QFT: 90 // QFT
 }
 
+
+/**
+ * Given a pi/8 rotation, returns a String that expresses
+ * it in radians
+ *
+ * @param piOver8Arg int in range 0-15 inclusive
+ * @returns String that expresses radians
+ */
+function piOver8RadiansStr(piOver8Arg) {
+  radStr = '0';
+  if (piOver8Arg == 1) {
+    radStr = 'pi/8';
+  }
+  else if (piOver8Arg == 2) {
+    radStr = 'pi/4';
+  }
+  else if (piOver8Arg == 3) {
+    radStr = '3*pi/8';
+  }
+  else if (piOver8Arg == 4) {
+    radStr = 'pi/2';
+  }
+  else if (piOver8Arg == 5) {
+    radStr = '5*pi/8';
+  }
+  else if (piOver8Arg == 6) {
+    radStr = '3*pi/4';
+  }
+  else if (piOver8Arg == 7) {
+    radStr = '7*pi/8';
+  }
+  else if (piOver8Arg == 8) {
+    radStr = 'pi';
+  }
+  else if (piOver8Arg == 9) {
+    radStr = '9*pi/8';
+  }
+  else if (piOver8Arg == 10) {
+    radStr = '5*pi/4';
+  }
+  else if (piOver8Arg == 11) {
+    radStr = '11*pi/8';
+  }
+  else if (piOver8Arg == 12) {
+    radStr = '3*pi/2';
+  }
+  else if (piOver8Arg == 13) {
+    radStr = '13*pi/8';
+  }
+  else if (piOver8Arg == 14) {
+    radStr = '7*pi/4';
+  }
+  else if (piOver8Arg == 15) {
+    radStr = '15*pi/8';
+  }
+  return radStr;
+}
+
 /**
  * Convert a midi note number into a note name
  * @param noteNum MIDI number for a note

@@ -196,7 +196,8 @@ function createQuantumCircuitFromQasm(qasm) {
 								quantumCircuit.crx(7 * Math.PI / 8, qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword == 'crx(pi)' && qNumArray.length == 2) {
-								quantumCircuit.crx(Math.PI, qNumArray[0], qNumArray[1]);
+								//quantumCircuit.crx(Math.PI, qNumArray[0], qNumArray[1]);
+								quantumCircuit.cx(qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword == 'crx(9*pi/8)' && qNumArray.length == 2) {
 								quantumCircuit.crx(9 * Math.PI / 8, qNumArray[0], qNumArray[1]);
@@ -245,7 +246,8 @@ function createQuantumCircuitFromQasm(qasm) {
 								quantumCircuit.rx(7 * Math.PI / 8, qNumArray[0]);
 							}
 							else if (keyword == 'rx(pi)') {
-								quantumCircuit.rx(Math.PI, qNumArray[0]);
+								//quantumCircuit.rx(Math.PI, qNumArray[0]);
+								quantumCircuit.x(qNumArray[0]);
 							}
 							else if (keyword == '9*rx(pi/8)') {
 								quantumCircuit.rx(9 * Math.PI / 8, qNumArray[0]);
@@ -294,7 +296,8 @@ function createQuantumCircuitFromQasm(qasm) {
 								quantumCircuit.ry(7 * Math.PI / 8, qNumArray[0]);
 							}
 							else if (keyword == 'ry(pi)') {
-								quantumCircuit.ry(Math.PI, qNumArray[0]);
+								// quantumCircuit.ry(Math.PI, qNumArray[0]);
+								quantumCircuit.y(qNumArray[0]);
 							}
 							else if (keyword == 'ry(9*pi/8)') {
 								quantumCircuit.ry(9 * Math.PI / 8, qNumArray[0]);
@@ -343,7 +346,8 @@ function createQuantumCircuitFromQasm(qasm) {
 								quantumCircuit.rz(7 * Math.PI / 8, qNumArray[0]);
 							}
 							else if (keyword == 'rz(pi)') {
-								quantumCircuit.rz(Math.PI, qNumArray[0]);
+								//quantumCircuit.rz(Math.PI, qNumArray[0]);
+								quantumCircuit.z(qNumArray[0]);
 							}
 							else if (keyword == 'rz(9*pi/8)') {
 								quantumCircuit.rz(9 * Math.PI / 8, qNumArray[0]);
