@@ -449,7 +449,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		if (ctrlWires.length == 0) {
 			qasmStr += ' rx(' + radStr + ') q[' + gridRow + '];';
 		}
-		else {
+		else if (ctrlWires.length == 1) {
 			ctrlWireNum = ctrlWires[0].wireNum;
 			if (ctrlWires[0].isAntiCtrl) {
 				qasmStr += ' x q[' + ctrlWireNum + ']; crx(' + radStr + ') q[' + ctrlWireNum + '],' + 'q[' + gridRow + ']; x q[' + ctrlWireNum + '];';
@@ -457,6 +457,22 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 			else {
 				qasmStr += ' crx(' + radStr + ') q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 			}
+		}
+		else if (ctrlWires.length >= 2) {
+			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
+
+			qasmStr += ' crx(pi/2) q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[0].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' crx(3*pi/2) q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[0].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' crx(pi/2) q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+
+			// un-NOT the anti-control wires
+			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
+
+			post('\nAfter un-NOT, qasmStr: ' + qasmStr);
 		}
 	}
 
@@ -468,6 +484,8 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 	else if (circNodeType >= CircuitNodeTypes.RZ_0 && circNodeType <= CircuitNodeTypes.RZ_15) {
 		var ctrlWires = ctrlWiresInColumn(gridCol, gridRow);
 		var radStr = piOver8RadiansStr(circNodeType - CircuitNodeTypes.RZ_0);
+		var halfRadStr = piOver16RadiansStr(circNodeType - CircuitNodeTypes.RZ_0);
+		var minusHalfRadStr = piOver16RadiansStr(32 - (circNodeType - CircuitNodeTypes.RZ_0));
 
 		// TODO: Determine if the following two lines are necessary
 		circGrid[gridRow][gridCol] = circNodeType;
@@ -476,7 +494,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		if (ctrlWires.length == 0) {
 			qasmStr += ' rz(' + radStr + ') q[' + gridRow + '];';
 		}
-		else {
+		else if (ctrlWires.length == 1) {
 			ctrlWireNum = ctrlWires[0].wireNum;
 			if (ctrlWires[0].isAntiCtrl) {
 				qasmStr += ' x q[' + ctrlWireNum + ']; crz(' + radStr + ') q[' + ctrlWireNum + '],' + 'q[' + gridRow + ']; x q[' + ctrlWireNum + '];';
@@ -484,6 +502,20 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 			else {
 				qasmStr += ' crz(' + radStr + ') q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 			}
+		}
+		else if (ctrlWires.length >= 2) {
+			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
+
+			qasmStr += ' crz(' + halfRadStr + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[0].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' crz(' + minusHalfRadStr + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[0].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' crz(' + halfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+
+			// un-NOT the anti-control wires
+			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
 		}
 	}
 
@@ -575,7 +607,7 @@ function swapGateRowInColumn(colNum, excludingRow) {
  * @return Array of ControlWire instances
  */
 function ctrlWiresInColumn(colNum, gateRowNum) {
-	//post('\nIn ctrlWiresInColumn, colNum: ' + colNum);
+	post('\nIn ctrlWiresInColumn, colNum: ' + colNum);
 	var controlWires = [];
 	for (var rowNum = 0; rowNum < NUM_GRID_ROWS; rowNum++) {
 		if (circGrid[rowNum][colNum] == CircuitNodeTypes.CTRL ||
@@ -595,10 +627,9 @@ function ctrlWiresInColumn(colNum, gateRowNum) {
 			if (padsToBlink.indexOf(gateWireMidiPitch) == -1) {
 				padsToBlink.push(gateWireMidiPitch);
 			}
-
-			break;
 		}
 	}
+	post('\n    controlWires: ' + controlWires);
 	return controlWires;
 }
 
