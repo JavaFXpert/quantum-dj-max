@@ -19,6 +19,7 @@
  *
  * TODO: Let qasm accept numeric parameters (not just things like 'pi/2')
  */
+var math = require("math.min.js").math;
 include('common.js');
 
 // Inlet 0 receives simulator messages that include a QASM string
@@ -35,6 +36,8 @@ var vbrgb = [1.,1.,1.,1.];
 
 draw();
 
+//TODO: Remove this test of math
+post('\npi/2 == ' + math.evaluate('pi/2'));
 
 function draw()
 {
@@ -371,54 +374,59 @@ function createQuantumCircuitFromQasm(qasm) {
 								quantumCircuit.rz(15 * Math.PI / 8, qNumArray[0]);
 							}
 
-							else if (keyword == 'crz(0)' && qNumArray.length == 2) {
-								quantumCircuit.crz(0, qNumArray[0], qNumArray[1]);
+							else if (keyword.substring(0, 4) == 'crz(') {
+								post('\nProcessing keyword: ' + keyword);
+								quantumCircuit.crz(numFromParen(keyword), qNumArray[0], qNumArray[1]);
 							}
-							else if (keyword == 'crz(pi/8)' && qNumArray.length == 2) {
-								quantumCircuit.crz(Math.PI / 8, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(pi/4)' && qNumArray.length == 2) {
-								quantumCircuit.crz(Math.PI / 4, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(3*pi/8)' && qNumArray.length == 2) {
-								quantumCircuit.crz(3 * Math.PI / 8, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(pi/2)' && qNumArray.length == 2) {
-								quantumCircuit.crz(Math.PI / 2, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(5*pi/8)' && qNumArray.length == 2) {
-								quantumCircuit.crz(5 * Math.PI / 8, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(3*pi/4)' && qNumArray.length == 2) {
-								quantumCircuit.crz(3 * Math.PI / 4, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(7*pi/8)' && qNumArray.length == 2) {
-								quantumCircuit.crz(7 * Math.PI / 8, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(pi)' && qNumArray.length == 2) {
-								quantumCircuit.crz(Math.PI, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(9*pi/8)' && qNumArray.length == 2) {
-								quantumCircuit.crz(9 * Math.PI / 8, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(5*pi/4)' && qNumArray.length == 2) {
-								quantumCircuit.crz(5 * Math.PI / 4, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(11*pi/8)' && qNumArray.length == 2) {
-								quantumCircuit.crz(11 * Math.PI / 8, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(3*pi/2)' && qNumArray.length == 2) {
-								quantumCircuit.crz(3 * Math.PI / 2, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(13*pi/8)' && qNumArray.length == 2) {
-								quantumCircuit.crz(13 * Math.PI / 8, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(7*pi/4)' && qNumArray.length == 2) {
-								quantumCircuit.crz(7 * Math.PI / 4, qNumArray[0], qNumArray[1]);
-							}
-							else if (keyword == 'crz(15*pi/8)' && qNumArray.length == 2) {
-								quantumCircuit.crz(15 * Math.PI / 8, qNumArray[0], qNumArray[1]);
-							}
+
+							// else if (keyword == 'crz(0)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(0, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(pi/8)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(Math.PI / 8, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(pi/4)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(Math.PI / 4, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(3*pi/8)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(3 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(pi/2)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(Math.PI / 2, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(5*pi/8)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(5 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(3*pi/4)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(3 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(7*pi/8)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(7 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(pi)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(Math.PI, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(9*pi/8)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(9 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(5*pi/4)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(5 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(11*pi/8)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(11 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(3*pi/2)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(3 * Math.PI / 2, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(13*pi/8)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(13 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(7*pi/4)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(7 * Math.PI / 4, qNumArray[0], qNumArray[1]);
+							// }
+							// else if (keyword == 'crz(15*pi/8)' && qNumArray.length == 2) {
+							// 	quantumCircuit.crz(15 * Math.PI / 8, qNumArray[0], qNumArray[1]);
+							// }
 
 							else if (keyword == 'cp(0)' && qNumArray.length == 2) {
 								quantumCircuit.cp(0, qNumArray[0], qNumArray[1]);
@@ -489,6 +497,20 @@ function createQuantumCircuitFromQasm(qasm) {
 	}
 
 	return quantumCircuit;
+}
+
+
+function numFromParen(strWithParen) {
+	var numInParen = 0;
+	if (strWithParen != null) {
+		var leftPos = strWithParen.indexOf('(');
+		var rightPos = strWithParen.indexOf(')');
+		if (leftPos >=0 && rightPos > leftPos + 1) {
+			numInParen = math.evaluate(strWithParen.substring(leftPos + 1, rightPos));
+		}
+	}
+	post('\nnumInParen: ' + numInParen);
+	return numInParen;
 }
 
 
