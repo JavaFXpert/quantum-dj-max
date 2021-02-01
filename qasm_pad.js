@@ -521,19 +521,43 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 				qasmStr += ' crz(' + radStr + ') q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 			}
 		}
-		else if (ctrlWires.length >= 2) {
+		else if (ctrlWires.length == 2) {
 			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
 			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
 
-			qasmStr += ' crz(' + halfRadStr + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
-			qasmStr += ' cx q[' + ctrlWires[0].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
-			qasmStr += ' crz(' + minusHalfRadStr + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
-			qasmStr += ' cx q[' + ctrlWires[0].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
-			qasmStr += ' crz(' + halfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cp(' + halfRadStr + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + minusHalfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + halfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
 
 			// un-NOT the anti-control wires
 			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
 			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
+		}
+		else if (ctrlWires.length >= 3) {
+			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[2].isAntiCtrl ? ' x q[' + ctrlWires[2].wireNum + ']; ' : '';
+
+			qasmStr += ' cp(' + halfRadStr + ') q[' + ctrlWires[2].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' cp(' + minusHalfRadStr + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' cp(' + halfRadStr + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + minusHalfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + halfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + minusHalfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + halfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+
+			// un-NOT the anti-control wires
+			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[2].isAntiCtrl ? ' x q[' + ctrlWires[2].wireNum + ']; ' : '';
 		}
 	}
 
