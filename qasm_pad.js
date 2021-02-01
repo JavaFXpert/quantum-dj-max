@@ -123,7 +123,7 @@ function bang() {
 function msg_int(val) {
 	if (inlet == 2) {
 		var piOver8Rotation = val;
-		post('\npiOver8Rotation: ' + piOver8Rotation);
+		//post('\npiOver8Rotation: ' + piOver8Rotation);
 
 		if (selCircGridRow >= 0 &&
 			selCircGridRow < NUM_GRID_ROWS &&
@@ -223,7 +223,6 @@ function resetCircGrid() {
  * @param notePitchVelocity Array containing midi pitch and velocity
  */
 function setCircGridGate(notePitchVelocity) {
-	post('\nIn TEMP setCircGridGate');
 	//post('\notePitchVelocity[0]: ' + notePitchVelocity[0]);
 	//post('notePitchVelocity[1]: ' + notePitchVelocity[1]);
 	if (notePitchVelocity.length >= 2) {
@@ -255,6 +254,9 @@ function setCircGridGate(notePitchVelocity) {
 				// User is placing on the circuit
 				clearCircuitWhenEmptyKeyNextPressed = false;
 
+				selCircGridRow = gridRow;
+				selCircGridCol = gridCol;
+
 				if (circGrid[gridRow][gridCol] == CircuitNodeTypes.EMPTY ||
 					curCircNodeType == CircuitNodeTypes.EMPTY) {
 					circGrid[gridRow][gridCol] = curCircNodeType;
@@ -263,11 +265,11 @@ function setCircGridGate(notePitchVelocity) {
 					post('\nGate already present');
 				}
 
-				selCircGridRow = gridRow;
-				selCircGridCol = gridCol;
-
 				var newPiOver8Rotation = 0;
-				if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.RX_0 &&
+				if (circGrid[gridRow][gridCol] == CircuitNodeTypes.CTRL_X) {
+					newPiOver8Rotation = NUM_PITCHES / 2;
+				}
+				else if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.RX_0 &&
 					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RX_15) {
 
 					newPiOver8Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RX_0;
@@ -438,13 +440,29 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		qasmStr += ' h q[' + gridRow + '];';
 	}
 
-	else if (circNodeType >= CircuitNodeTypes.RX_0 && circNodeType <= CircuitNodeTypes.RX_15) {
-		var ctrlWires = ctrlWiresInColumn(gridCol, gridRow);
-		var radStr = piOver8RadiansStr(circNodeType - CircuitNodeTypes.RX_0);
+	else if ((circNodeType >= CircuitNodeTypes.RX_0 && circNodeType <= CircuitNodeTypes.RX_15) ||
+		circNodeType == CircuitNodeTypes.CTRL_X) {
 
-		// TODO: Determine if the following two lines are necessary
-		circGrid[gridRow][gridCol] = circNodeType;
-		informCircuitBtn(gridRow, gridCol);
+		var ctrlWires = ctrlWiresInColumn(gridCol, gridRow);
+		var radStr = '0';
+
+		if (circNodeType == CircuitNodeTypes.CTRL_X) {
+			radStr = piOver8RadiansStr(NUM_PITCHES / 2);
+		}
+		else {
+			radStr = piOver8RadiansStr(circNodeType - CircuitNodeTypes.RX_0);
+		}
+
+		if (radStr == 'pi') {
+			if (ctrlWires.length > 0) {
+				circNodeType = CircuitNodeTypes.CTRL_X;
+			}
+			else {
+				circNodeType = CircuitNodeTypes.RX_8;
+			}
+			circGrid[gridRow][gridCol] = circNodeType;
+			informCircuitBtn(gridRow, gridCol);
+		}
 
 		if (ctrlWires.length == 0) {
 			qasmStr += ' rx(' + radStr + ') q[' + gridRow + '];';
@@ -472,7 +490,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
 			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
 
-			post('\nAfter un-NOT, qasmStr: ' + qasmStr);
+			//post('\nAfter un-NOT, qasmStr: ' + qasmStr);
 		}
 	}
 
@@ -534,38 +552,6 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 
 
 /**
- * Given a grid column, return the row in which a control exists.
- *
- * @return Zero-based row in which a control exists, -1 if not present.
- * @param colNum Zero-based grid column to check for control
- * @param gateRowNum Row that contains gate for which control is sought
- */
-// function ctrlWireNumInColumn(colNum, gateRowNum) {
-// 	//post('\nIn ctrlWireNumInColumn, colNum: ' + colNum);
-// 	var ctrlRow = -1;
-// 	for (var rowNum = 0; rowNum < NUM_GRID_ROWS; rowNum++) {
-// 		if (circGrid[rowNum][colNum] == CircuitNodeTypes.CTRL) {
-// 			ctrlRow = rowNum;
-//
-// 			// TODO Make function from next line
-// 			var ctrlMidiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - rowNum - 1) * CONTR_MAT_COLS) + colNum;
-// 			if (padsToBlink.indexOf(ctrlMidiPitch) == -1) {
-// 				padsToBlink.push(ctrlMidiPitch);
-// 			}
-//
-// 			var gateMidiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - gateRowNum - 1) * CONTR_MAT_COLS) + colNum;
-// 			if (padsToBlink.indexOf(gateMidiPitch) == -1) {
-// 				padsToBlink.push(gateMidiPitch);
-// 			}
-//
-// 			break;
-// 		}
-// 	}
-// 	return ctrlRow;
-// }
-
-
-/**
  * Given a grid column, return the row, excluding the current row,
  * in which a swap gate exists.
  *
@@ -574,7 +560,7 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
  * @returns Zero-based row in which a swap gate exists, -1 if not present.
  */
 function swapGateRowInColumn(colNum, excludingRow) {
-	post('\nIn swapGateRowInColumn, colNum: ' + colNum + ', excludingRow: ' + excludingRow);
+	//post('\nIn swapGateRowInColumn, colNum: ' + colNum + ', excludingRow: ' + excludingRow);
 	var swapGateRow = -1;
 	for (var rowNum = 0; rowNum < NUM_GRID_ROWS; rowNum++) {
 		if (rowNum != excludingRow && circGrid[rowNum][colNum] == CircuitNodeTypes.SWAP) {
@@ -607,7 +593,7 @@ function swapGateRowInColumn(colNum, excludingRow) {
  * @return Array of ControlWire instances
  */
 function ctrlWiresInColumn(colNum, gateRowNum) {
-	post('\nIn ctrlWiresInColumn, colNum: ' + colNum);
+	//post('\nIn ctrlWiresInColumn, colNum: ' + colNum);
 	var controlWires = [];
 	for (var rowNum = 0; rowNum < NUM_GRID_ROWS; rowNum++) {
 		if (circGrid[rowNum][colNum] == CircuitNodeTypes.CTRL ||
@@ -629,7 +615,7 @@ function ctrlWiresInColumn(colNum, gateRowNum) {
 			}
 		}
 	}
-	post('\n    controlWires: ' + controlWires);
+	//post('\ncontrolWires: ' + controlWires);
 	return controlWires;
 }
 
@@ -643,7 +629,7 @@ function ctrlWiresInColumn(colNum, gateRowNum) {
  * @returns QASM string for QFT gate
  */
 function constructQftCircuit(wireNum, numWires) {
-	post('\nIn constructQftCircuit, wireNum: ' + wireNum + ', numWires: ' + numWires);
+	//post('\nIn constructQftCircuit, wireNum: ' + wireNum + ', numWires: ' + numWires);
 	var qftQasm = '';
 
 	if (numWires == 1) {

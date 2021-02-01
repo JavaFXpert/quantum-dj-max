@@ -390,7 +390,7 @@ function circNodeType2Color(circNodeTypeNum) {
     colorNum = 7;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.CTRL_X) {
-    colorNum = 1;
+    colorNum = 2;
   }
   else if (circNodeTypeNum == CircuitNodeTypes.IDEN) {
     colorNum = 124;

@@ -36,9 +36,6 @@ var vbrgb = [1.,1.,1.,1.];
 
 draw();
 
-//TODO: Remove this test of math
-post('\npi/2 == ' + math.evaluate('pi/2'));
-
 function draw()
 {
 	var width = box.rect[2] - box.rect[0];
@@ -75,7 +72,7 @@ function svsim(qasm) {
 	var qc = createQuantumCircuitFromQasm(qasm);
 	if (qc != null) {
 		var statevector = simulate(qc, 0, 'statevector');
-		post('\nstatevector: ' + statevector);
+		//post('\nstatevector: ' + statevector);
 
 		var svSpaceDelim = statevector.toString().replace(/,/g, ' ');
 		//post('\nsvSpaceDelim: ' + svSpaceDelim);
@@ -237,7 +234,7 @@ function numFromParen(strWithParen) {
 			numInParen = math.evaluate(strWithParen.substring(leftPos + 1, rightPos));
 		}
 	}
-	post('\nnumInParen: ' + numInParen);
+	//post('\nnumInParen: ' + numInParen);
 	return numInParen;
 }
 

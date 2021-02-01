@@ -436,7 +436,7 @@ function setGlobalPhaseShift(phaseShiftDialVal) {
 
 	var piOver8PhaseShift = phaseShiftDialVal;
 	globalPhaseShift = piOver8PhaseShift * (2 * Math.PI / NUM_PITCHES);
-	post('\nglobalPhaseShift: ' + globalPhaseShift);
+	//post('\nglobalPhaseShift: ' + globalPhaseShift);
 	computeProbsPhases();
 }
 
