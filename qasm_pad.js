@@ -489,8 +489,6 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 			// un-NOT the anti-control wires
 			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
 			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
-
-			//post('\nAfter un-NOT, qasmStr: ' + qasmStr);
 		}
 	}
 
@@ -501,63 +499,191 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 
 	else if (circNodeType >= CircuitNodeTypes.RZ_0 && circNodeType <= CircuitNodeTypes.RZ_15) {
 		var ctrlWires = ctrlWiresInColumn(gridCol, gridRow);
-		var radStr = piOver8RadiansStr(circNodeType - CircuitNodeTypes.RZ_0);
-		var halfRadStr = piOver16RadiansStr(circNodeType - CircuitNodeTypes.RZ_0);
-		var minusHalfRadStr = piOver16RadiansStr(32 - (circNodeType - CircuitNodeTypes.RZ_0));
+		var rads = (circNodeType - CircuitNodeTypes.RZ_0) * Math.PI / (NUM_PITCHES / 2);
+		var fracRads = rads / Math.pow(2, ctrlWires.length - 1);
 
 		// TODO: Determine if the following two lines are necessary
-		circGrid[gridRow][gridCol] = circNodeType;
-		informCircuitBtn(gridRow, gridCol);
+		// circGrid[gridRow][gridCol] = circNodeType;
+		// informCircuitBtn(gridRow, gridCol);
 
 		if (ctrlWires.length == 0) {
-			qasmStr += ' rz(' + radStr + ') q[' + gridRow + '];';
+			qasmStr += ' rz(' + rads + ') q[' + gridRow + '];';
 		}
 		else if (ctrlWires.length == 1) {
 			ctrlWireNum = ctrlWires[0].wireNum;
 			if (ctrlWires[0].isAntiCtrl) {
-				qasmStr += ' x q[' + ctrlWireNum + ']; crz(' + radStr + ') q[' + ctrlWireNum + '],' + 'q[' + gridRow + ']; x q[' + ctrlWireNum + '];';
+				qasmStr += ' x q[' + ctrlWireNum + ']; crz(' + rads + ') q[' + ctrlWireNum + '],' + 'q[' + gridRow + ']; x q[' + ctrlWireNum + '];';
 			}
 			else {
-				qasmStr += ' crz(' + radStr + ') q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
+				qasmStr += ' crz(' + rads + ') q[' + ctrlWireNum + '],' + 'q[' + gridRow + '];';
 			}
 		}
 		else if (ctrlWires.length == 2) {
 			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
 			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
 
-			qasmStr += ' cp(' + halfRadStr + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
 			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
-			qasmStr += ' cp(' + minusHalfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
 			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
-			qasmStr += ' cp(' + halfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
 
 			// un-NOT the anti-control wires
 			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
 			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
 		}
-		else if (ctrlWires.length >= 3) {
+		else if (ctrlWires.length == 3) {
 			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
 			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
 			qasmStr += ctrlWires[2].isAntiCtrl ? ' x q[' + ctrlWires[2].wireNum + ']; ' : '';
 
-			qasmStr += ' cp(' + halfRadStr + ') q[' + ctrlWires[2].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[2].wireNum + '],' + 'q[' + gridRow + '];';
 			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
-			qasmStr += ' cp(' + minusHalfRadStr + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
 			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
-			qasmStr += ' cp(' + halfRadStr + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
 			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
-			qasmStr += ' cp(' + minusHalfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
 			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
-			qasmStr += ' cp(' + halfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
 			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
-			qasmStr += ' cp(' + minusHalfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
 			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
-			qasmStr += ' cp(' + halfRadStr + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
 
 			// un-NOT the anti-control wires
 			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
 			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
 			qasmStr += ctrlWires[2].isAntiCtrl ? ' x q[' + ctrlWires[2].wireNum + ']; ' : '';
+		}
+		else if (ctrlWires.length == 4) {
+			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[2].isAntiCtrl ? ' x q[' + ctrlWires[2].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[3].isAntiCtrl ? ' x q[' + ctrlWires[3].wireNum + ']; ' : '';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[3].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[2].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[2].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[2].wireNum + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[2].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+
+			// un-NOT the anti-control wires
+			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[2].isAntiCtrl ? ' x q[' + ctrlWires[2].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[3].isAntiCtrl ? ' x q[' + ctrlWires[3].wireNum + ']; ' : '';
+		}
+		else if (ctrlWires.length >= 5) {
+			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[2].isAntiCtrl ? ' x q[' + ctrlWires[2].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[3].isAntiCtrl ? ' x q[' + ctrlWires[3].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[4].isAntiCtrl ? ' x q[' + ctrlWires[4].wireNum + ']; ' : '';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[4].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[3].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[3].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[3].wireNum + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[3].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[2].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[2].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[2].wireNum + '];';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[1].wireNum + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[1].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[1].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[2].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[3].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + (-fracRads) + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+			qasmStr += ' cx q[' + ctrlWires[4].wireNum + '],' + 'q[' + ctrlWires[0].wireNum + '];';
+			qasmStr += ' cp(' + fracRads + ') q[' + ctrlWires[0].wireNum + '],' + 'q[' + gridRow + '];';
+
+			// un-NOT the anti-control wires
+			qasmStr += ctrlWires[0].isAntiCtrl ? ' x q[' + ctrlWires[0].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[1].isAntiCtrl ? ' x q[' + ctrlWires[1].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[2].isAntiCtrl ? ' x q[' + ctrlWires[2].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[3].isAntiCtrl ? ' x q[' + ctrlWires[3].wireNum + ']; ' : '';
+			qasmStr += ctrlWires[4].isAntiCtrl ? ' x q[' + ctrlWires[4].wireNum + ']; ' : '';
 		}
 	}
 
