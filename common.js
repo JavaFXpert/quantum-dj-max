@@ -54,7 +54,7 @@ var MAX_DRUMPADS = 16;
 var MIN_CIRCUIT_WIRES = 2;
 
 // Threshold for regarding a state as having any probability
-var PROBABILITY_THRESHOLD = 0.12
+var PROBABILITY_THRESHOLD = 0.24
 
 var CircuitNodeTypes = {
   EMPTY: -1,
