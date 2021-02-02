@@ -110,22 +110,22 @@ var CircuitNodeTypes = {
   RY_14: 64, // Ry 7pi/4
   RY_15: 65, // Ry 15pi/8
 
-  RZ_0: 70, // Rz
-  RZ_1: 71, // Rz pi/8
-  RZ_2: 72, // Rz pi/4 (T)
-  RZ_3: 73, // Rz 3pi/8
-  RZ_4: 74, // Rz pi/2 (S)
-  RZ_5: 75, // Rz 5pi/8
-  RZ_6: 76, // Rz 3pi/4
-  RZ_7: 77, // Rz 7pi/8
-  RZ_8: 78, // Rz pi (Z)
-  RZ_9: 79, // Rz 9pi/8
-  RZ_10: 80, // Rz 5pi/4
-  RZ_11: 81, // Rz 11pi/8
-  RZ_12: 82, // Rz 3pi/2 (Sdg)
-  RZ_13: 83, // Rz 13pi/8
-  RZ_14: 84, // Rz 7pi/4 (Tdg)
-  RZ_15: 85, // Rz 15pi/8
+  PHASE_0: 70, // Phase
+  PHASE_1: 71, // Phase pi/8
+  PHASE_2: 72, // Phase pi/4 (T)
+  PHASE_3: 73, // Phase 3pi/8
+  PHASE_4: 74, // Phase pi/2 (S)
+  PHASE_5: 75, // Phase 5pi/8
+  PHASE_6: 76, // Phase 3pi/4
+  PHASE_7: 77, // Phase 7pi/8
+  PHASE_8: 78, // Phase pi (Z)
+  PHASE_9: 79, // Phase 9pi/8
+  PHASE_10: 80, // Phase 5pi/4
+  PHASE_11: 81, // Phase 11pi/8
+  PHASE_12: 82, // Phase 3pi/2 (Sdg)
+  PHASE_13: 83, // Phase 13pi/8
+  PHASE_14: 84, // Phase 7pi/4 (Tdg)
+  PHASE_15: 85, // Phase 15pi/8
 
   QFT: 90 // QFT
 }
@@ -394,52 +394,52 @@ function circNodeType2Color(circNodeTypeNum) {
     colorNum = 97;
   }
 
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_0) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_0) {
     colorNum = 95;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_1) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_1) {
     colorNum = 95;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_2) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_2) {
     colorNum = 103;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_3) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_3) {
     colorNum = 103;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_4) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_4) {
     colorNum = 99;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_5) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_5) {
     colorNum = 99;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_6) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_6) {
     colorNum = 125;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_7) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_7) {
     colorNum = 125;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_8) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_8) {
     colorNum = 18;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_9) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_9) {
     colorNum = 18;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_10) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_10) {
     colorNum = 19;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_11) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_11) {
     colorNum = 19;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_12) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_12) {
     colorNum = 24;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_13) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_13) {
     colorNum = 24;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_14) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_14) {
     colorNum = 113;
   }
-  else if (circNodeTypeNum == CircuitNodeTypes.RZ_15) {
+  else if (circNodeTypeNum == CircuitNodeTypes.PHASE_15) {
     colorNum = 113;
   }
 

@@ -74,11 +74,11 @@ var circGrid = [
 
 
 var gateGrid = [
-	[CircuitNodeTypes.H, CircuitNodeTypes.RZ_2],
-	[CircuitNodeTypes.RX_8, CircuitNodeTypes.RZ_4],
-	[CircuitNodeTypes.RY_8, CircuitNodeTypes.RZ_8],
-	[CircuitNodeTypes.CTRL, CircuitNodeTypes.RZ_12],
-	[CircuitNodeTypes.ANTI_CTRL, CircuitNodeTypes.RZ_14],
+	[CircuitNodeTypes.H, CircuitNodeTypes.PHASE_2],
+	[CircuitNodeTypes.RX_8, CircuitNodeTypes.PHASE_4],
+	[CircuitNodeTypes.RY_8, CircuitNodeTypes.PHASE_8],
+	[CircuitNodeTypes.CTRL, CircuitNodeTypes.PHASE_12],
+	[CircuitNodeTypes.ANTI_CTRL, CircuitNodeTypes.PHASE_14],
 	[CircuitNodeTypes.SWAP, CircuitNodeTypes.EMPTY],
 	[CircuitNodeTypes.QFT, CircuitNodeTypes.EMPTY],
 	[CircuitNodeTypes.IDEN, CircuitNodeTypes.EMPTY]
@@ -143,10 +143,10 @@ function msg_int(val) {
 
 				newNodeType = CircuitNodeTypes.RY_0 + piOver8Rotation;
 			}
-			else if (selNodeType >= CircuitNodeTypes.RZ_0 &&
-				selNodeType <= CircuitNodeTypes.RZ_15) {
+			else if (selNodeType >= CircuitNodeTypes.PHASE_0 &&
+				selNodeType <= CircuitNodeTypes.PHASE_15) {
 
-				newNodeType = CircuitNodeTypes.RZ_0 + piOver8Rotation;
+				newNodeType = CircuitNodeTypes.PHASE_0 + piOver8Rotation;
 			}
 
 			if (newNodeType != CircuitNodeTypes.EMPTY) {
@@ -279,10 +279,10 @@ function setCircGridGate(notePitchVelocity) {
 
 					newPiOver8Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RY_0;
 				}
-				else if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.RZ_0 &&
-					circGrid[gridRow][gridCol] <= CircuitNodeTypes.RZ_15) {
+				else if (circGrid[gridRow][gridCol] >= CircuitNodeTypes.PHASE_0 &&
+					circGrid[gridRow][gridCol] <= CircuitNodeTypes.PHASE_15) {
 
-					newPiOver8Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.RZ_0;
+					newPiOver8Rotation = circGrid[gridRow][gridCol] - CircuitNodeTypes.PHASE_0;
 				}
 				// Set the current rotation on the gate rotator dial
 				outlet(3, 'int', newPiOver8Rotation);
@@ -312,35 +312,35 @@ function setCircGridGate(notePitchVelocity) {
 						curCircNodeType = CircuitNodeTypes.H;
 					}
 					else if (pitch == 99) {
-						curCircNodeType = CircuitNodeTypes.RZ_2;
+						curCircNodeType = CircuitNodeTypes.PHASE_2;
 					}
 
 					else if (pitch == 90) {
 						curCircNodeType = CircuitNodeTypes.RX_8;
 					}
 					else if (pitch == 91) {
-						curCircNodeType = CircuitNodeTypes.RZ_4;
+						curCircNodeType = CircuitNodeTypes.PHASE_4;
 					}
 
 					else if (pitch == 82) {
 						curCircNodeType = CircuitNodeTypes.RY_8;
 					}
 					else if (pitch == 83) {
-						curCircNodeType = CircuitNodeTypes.RZ_8;
+						curCircNodeType = CircuitNodeTypes.PHASE_8;
 					}
 
 					else if (pitch == 74) {
 						curCircNodeType = CircuitNodeTypes.CTRL;
 					}
 					else if (pitch == 75) {
-						curCircNodeType = CircuitNodeTypes.RZ_12;
+						curCircNodeType = CircuitNodeTypes.PHASE_12;
 					}
 
 					else if (pitch == 66) {
 						curCircNodeType = CircuitNodeTypes.ANTI_CTRL;
 					}
 					else if (pitch == 67) {
-						curCircNodeType = CircuitNodeTypes.RZ_14;
+						curCircNodeType = CircuitNodeTypes.PHASE_14;
 					}
 
 					else if (pitch == 58) {
@@ -650,9 +650,9 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
 		qasmStr += ' ry(' + radStr + ') q[' + gridRow + '];';
 	}
 
-	else if (circNodeType >= CircuitNodeTypes.RZ_0 && circNodeType <= CircuitNodeTypes.RZ_15) {
+	else if (circNodeType >= CircuitNodeTypes.PHASE_0 && circNodeType <= CircuitNodeTypes.PHASE_15) {
 		var ctrlWires = ctrlWiresInColumn(gridCol, gridRow);
-		var rads = (circNodeType - CircuitNodeTypes.RZ_0) * Math.PI / (NUM_PITCHES / 2);
+		var rads = (circNodeType - CircuitNodeTypes.PHASE_0) * Math.PI / (NUM_PITCHES / 2);
 		var fracRads = rads / Math.pow(2, ctrlWires.length - 1);
 
 		// TODO: Determine if the following two lines are necessary

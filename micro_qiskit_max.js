@@ -73,12 +73,9 @@ function svsim(qasm) {
 	if (qc != null) {
 		var statevector = simulate(qc, 0, 'statevector');
 		//post('\nstatevector: ' + statevector);
-
 		var svSpaceDelim = statevector.toString().replace(/,/g, ' ');
-		//post('\nsvSpaceDelim: ' + svSpaceDelim);
 
 		outlet(0, 'viz', svSpaceDelim);
-
 	}
 	else {
 		post('\nUnexpectedly, qc: ' + qc);
@@ -100,7 +97,6 @@ function createQuantumCircuitFromQasm(qasm) {
 		var instruction = qasmArray[tokenIdx].trim();
 
 		if (instruction.length > 0) {
-			//post('\ninstruction: ' + instruction);
 			var keywordArgumentArray = instruction.split(' ');
 			if (keywordArgumentArray.length == 2) {
 				var keyword = keywordArgumentArray[0];
@@ -121,7 +117,6 @@ function createQuantumCircuitFromQasm(qasm) {
 						}
 					}
 				}
-
 
 				if (qNumArray.length > 0) {
 					if (qNumArray[0] >= 0) {
@@ -240,7 +235,6 @@ function numFromParen(strWithParen) {
 			numInParen = math.evaluate(strWithParen.substring(leftPos + 1, rightPos));
 		}
 	}
-	//post('\nnumInParen: ' + numInParen);
 	return numInParen;
 }
 
@@ -254,16 +248,16 @@ function QuantumCircuit(n, m) {
 	this.numClbits = m;
 	this.data = [];
 }
+(QuantumCircuit.prototype).h = function(q) {
+	this.data.push(['h', q]);
+	return this;
+};
 (QuantumCircuit.prototype).x = function (q) {
 	this.data.push(['x', q]);
 	return this;
 };
 (QuantumCircuit.prototype).rx = function(theta, q) {
 	this.data.push(['rx', theta, q]);
-	return this;
-};
-(QuantumCircuit.prototype).h = function(q) {
-	this.data.push(['h', q]);
 	return this;
 };
 (QuantumCircuit.prototype).cx = function(s, t) {
@@ -279,14 +273,9 @@ function QuantumCircuit(n, m) {
 	return this;
 };
 (QuantumCircuit.prototype).crz = function(theta, s, t) {
-	// this.h(t);
-	// this.crx(theta, s, t);
-	// this.h(t);
-
-	// TODO: Uncomment above and remove below, after modifying
-	// 			 calls from crz to cp
-	this.data.push(['cp', theta, s, t]);
-
+	this.h(t);
+	this.crx(theta, s, t);
+	this.h(t);
 	return this;
 };
 (QuantumCircuit.prototype).swap = function(s, t) {
@@ -295,14 +284,9 @@ function QuantumCircuit(n, m) {
 };
 
 (QuantumCircuit.prototype).rz = function(theta, q) {
-	// this.h(q);
-	// this.rx(theta, q);
-	// this.h(q);
-
-	// TODO: Uncomment above and remove below, after modifying
-	// 			 calls from rz to p
-	this.data.push(['p', theta, q]);
-
+	this.h(q);
+	this.rx(theta, q);
+	this.h(q);
 	return this;
 };
 (QuantumCircuit.prototype).p = function(theta, q) {
@@ -317,23 +301,23 @@ function QuantumCircuit(n, m) {
 	return this;
 };
 (QuantumCircuit.prototype).z = function(q) {
-	this.rz(Math.PI, q);
+	this.p(Math.PI, q);
 	return this;
 };
 (QuantumCircuit.prototype).s = function(q) {
-	this.rz(Math.PI / 2, q);
+	this.p(Math.PI / 2, q);
 	return this;
 };
 (QuantumCircuit.prototype).sdg = function(q) {
-	this.rz(-Math.PI / 2, q);
+	this.p(-Math.PI / 2, q);
 	return this;
 };
 (QuantumCircuit.prototype).t = function(q) {
-	this.rz(Math.PI / 4, q);
+	this.p(Math.PI / 4, q);
 	return this;
 };
 (QuantumCircuit.prototype).tdg = function(q) {
-	this.rz(-Math.PI / 4, q);
+	this.p(-Math.PI / 4, q);
 	return this;
 };
 (QuantumCircuit.prototype).y = function(q) {

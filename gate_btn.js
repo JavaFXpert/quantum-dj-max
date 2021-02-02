@@ -71,7 +71,7 @@ function draw()
 			text("H");
 		}
 		else if (midiNum == 99) {
-			// CircuitNodeTypes.RZ_2
+			// CircuitNodeTypes.PHASE_2
 			moveto(-0.30, -0.4);
 			text("T");
 		}
@@ -82,7 +82,7 @@ function draw()
 			text("X");
 		}
 		else if (midiNum == 91) {
-			// CircuitNodeTypes.RZ_4
+			// CircuitNodeTypes.PHASE_4
 			moveto(-0.30, -0.4);
 			text("S");
 		}
@@ -93,7 +93,7 @@ function draw()
 			text("Y");
 		}
 		else if (midiNum == 83) {
-			// CircuitNodeTypes.RZ_8
+			// CircuitNodeTypes.PHASE_8
 			moveto(-0.25, -0.4);
 			text("Z");
 		}
@@ -104,7 +104,7 @@ function draw()
 			text("\u2022");
 		}
 		else if (midiNum == 75) {
-			// CircuitNodeTypes.RZ_12
+			// CircuitNodeTypes.PHASE_12
 			moveto(-0.6, -0.35);
 			text("S\u2020");
 		}
@@ -115,7 +115,7 @@ function draw()
 			text("\u26ac");
 		}
 		else if (midiNum == 67) {
-			// CircuitNodeTypes.RZ_14
+			// CircuitNodeTypes.PHASE_14
 			moveto(-0.6, -0.35);
 			text("T\u2020");
 		}
