@@ -67,7 +67,6 @@ onresize.local = 1; //private
  * Accept an svsim message
  */
 function svsim(qasm) {
-	//post('svsim: ' + arguments.length);
 	post('qasm: ' + qasm);
 	var qc = createQuantumCircuitFromQasm(qasm);
 	if (qc != null) {

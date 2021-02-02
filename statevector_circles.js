@@ -96,17 +96,14 @@ function msg_int(val) {
 		populateCircGridFromClip();
 
 		preserveGlobalPhaseShift = tempPreserveGlobalPhaseShift;
-		//post('curClipPath: ' + curClipPath);
 	}
 	if (inlet == 4) {
 		// Preserve either global phase, or first pitch with above threshold probability
 		preserveGlobalPhaseShift = (val > 0);
-		//post('\npreserveGlobalPhaseShift: ' + preserveGlobalPhaseShift);
 	}
 	else if (inlet == 5) {
 		//preserveGlobalPhaseShift = true;
 		numTransposeSemitones = val;
-		//post('\nnumTransposeSemitones: ' + numTransposeSemitones);
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		qasmPadObj.js.padNoteNamesDirty = true;
 		computeProbsPhases();
@@ -139,7 +136,6 @@ function viz(svlist) {
 	svArray = svlist.toString().split(' ');
 	//post("\nsvArray: " + svArray);
 	var numStates = svArray.length / 2;
-	//post('\nnumStates: ' + numStates);
 
 	messnamed('cmd_to_svgrid', 'columns', Math.min(numStates, maxDisplayedSteps));
 
@@ -180,10 +176,9 @@ function computeProbsPhases() {
 
 		if (probability > PROBABILITY_THRESHOLD / numBasisStatesWithNonZeroProbability) {
 			var polar = cartesianToPolar(real, imag);
-			//post('\noriginal polar.theta: ' + polar.theta);
 
-			// Adjust slightly for rounding TODO: remove
-			polar.theta += -Math.PI / (NUM_PITCHES * 4);
+			// Adjust slightly for rounding TODO: remove?
+			//polar.theta += -Math.PI / (NUM_PITCHES * 4);
 
 			// If first basis state with significant probability has non-zero phase,
 			// shift global phase by its phase
@@ -192,22 +187,12 @@ function computeProbsPhases() {
 				if (polar.theta < 0) {
 					polar.theta += 2 * Math.PI;
 				}
-
 				//post('\npolar.theta: ' + polar.theta);
 
 				var piOver8Phase = Math.round(polar.theta / (Math.PI / (NUM_PITCHES / 2)));
-				//post('\nInitial piOver8Phase: ' + piOver8Phase);
-				//post('\nprevPiOver8Phase: ' + prevPiOver8Phase);
-
 				piOver8Phase += NUM_PITCHES - prevPiOver8Phase;
-				//post('\nSubsequent piOver8Phase: ' + piOver8Phase);
-
 				piOver8Phase = piOver8Phase % NUM_PITCHES;
-				//post('\nThen piOver8Phase: ' + piOver8Phase);
-
-
 				globalPhaseShiftMidi = (NUM_PITCHES - piOver8Phase) % NUM_PITCHES;
-				//post('\nglobalPhaseShiftMidi: ' + globalPhaseShiftMidi);
 
 				outlet(0, 'int', globalPhaseShiftMidi);
 			}
@@ -229,7 +214,6 @@ function computeProbsPhases() {
 	// Set the notes into the clip
 	//var clip = new LiveAPI('live_set tracks 0 clip_slots 1 clip');
 	var clip = new LiveAPI(curClipPath);
-	//post('\nclip.path: ' + clip.unquotedpath);
 	clip.call('remove_notes', 0, 0, 256, 128);
 
 	clip.set('loop_end', svArray.length / 8);
@@ -252,18 +236,12 @@ function computeProbsPhases() {
 
 			var time = (pnIdx / 4.0).toFixed(2);
 
-			//post('\npnIdx: ' + pnIdx);
-			//post('\npitchTransformIndex: ' + pitchTransformIndex);
-
 			if (pitchTransformIndex == 0) {
 				clip.call('note', pitchNums[pnIdx] + 36, time, ".25", 100, 0);
-				//post('\npitchNums[pnIdx] + 36: ' + pitchNums[pnIdx] + 36);
 			}
 			else {
 				clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex,
 					numTransposeSemitones), time, ".25", 100, 0);
-				//post('\npitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex): ' +
-				//	pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex));
 			}
 		}
 	}
@@ -277,31 +255,23 @@ function computeProbsPhases() {
   		if (gateMidi == -1) {
   			gateMidi = 127;
 			}
-  		//post('gateMidi: ' + gateMidi);
 
 			var metaDataTime = ((startIdx + (colIdx * NUM_GRID_ROWS + rowIdx)) / 4.0).toFixed(2);
-  		//post('\nmetaDataTime: ' + metaDataTime);
   		clip.call('note', gateMidi, metaDataTime, ".25", 100, 0);
 		}
 	}
 
 	// Encode global phase shift
 	var globalPhaseShiftTime = ((startIdx + NUM_GRID_CELLS) / 4.0).toFixed(2);
-	//post('\nEncoding globalPhaseShiftMidi: ' + globalPhaseShiftMidi);
 	clip.call('note', globalPhaseShiftMidi, globalPhaseShiftTime, ".25", 100, 0);
-	//post('\nglobalPhaseShiftTime: ' + globalPhaseShiftTime);
 
 	// Encode pitch transformation index
 	var pitchTransformIndexTime = ((startIdx + NUM_GRID_CELLS + 1) / 4.0).toFixed(2);
-	//post('\nEncoding pitchTransformIndex: ' + pitchTransformIndex);
 	clip.call('note', pitchTransformIndex, pitchTransformIndexTime, ".25", 100, 0);
-	//post('\npitchTransformIndexTime: ' + pitchTransformIndexTime);
 
 	// Encode number of semitones transposition
 	var numTransposeSemitonesTime = ((startIdx + NUM_GRID_CELLS + 2) / 4.0).toFixed(2);
-	//post('\nEncoding numTransposeSemitones: ' + numTransposeSemitones);
 	clip.call('note', numTransposeSemitones, numTransposeSemitonesTime, ".25", 100, 0);
-	//post('\nnumTransposeSemitonesTime: ' + numTransposeSemitonesTime);
 
 	clip.call('done');
 
@@ -311,7 +281,6 @@ function computeProbsPhases() {
 	var trackPathTokens = curClipPath.split(' ');
 	trackPathTokens.length = 3;
 	var trackPath = trackPathTokens.join(' ');
-	//post('\ntrackPath: ' + trackPath);
 	// Display the pads/notes corresponding to each phase
 	qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones);
 }
@@ -322,59 +291,41 @@ function computeProbsPhases() {
  * @param clipPath
  */
 function populateCircGridFromClip() {
-	//post("\nIn populateCircGridFromClip, curClipPath: " + curClipPath);
-
 	var notesArrayPeriod = 6;
 	//var numGridCells = NUM_GRID_ROWS * NUM_GRID_COLS;
 	var qasmPadObj = this.patcher.getnamed("qasmpad");
 	var clip = new LiveAPI(curClipPath);
 	var loopEnd = clip.get('loop_end');
-	//post('\nloopEnd: ' + loopEnd);
 
 	qasmPadObj.js.resetCircGrid();
 
 	var notes = clip.call('get_notes', loopEnd, 0, NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES, 128);
 
-	//post('\nnotes: ' + notes);
-
 	if (notes[0] == 'notes' && notes[1] == NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES) {
-		//for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
 		for (var noteIdx = 0; noteIdx < NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES; noteIdx++) {
-			//for (var rowIdx = NUM_GRID_ROWS - 1; rowIdx >= 0; rowIdx--) {
-			//for (var rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
 			var noteMidi = notes[noteIdx * notesArrayPeriod + 3];
 			var noteStart = notes[noteIdx * notesArrayPeriod + 4];
-			//messnamed('bob', noteMidi, 127);
 
 			if (noteMidi < 127) {
-				//post('\n----- noteMidi: ' + noteMidi);
-				//post('\nnoteStart: ' + noteStart);
-
 				// Use the start time for each note for ascertaining
 				// proper place in grid
 				// TODO: Create class(es) to abstract Clip and notes?
 				var adjNoteStart = noteStart - loopEnd;
-				//post('\nadjNoteStart: ' + adjNoteStart);
 
 				if (adjNoteStart * 4 == NUM_GRID_CELLS) {
 					globalPhaseShiftMidi = noteMidi;
-					//post('\nFound the globalPhaseShiftMidi: ' + globalPhaseShiftMidi);
-
-						//preserveGlobalPhaseShift = true;
 
 					// Send globalPhaseShift
 					outlet(0, 'int', globalPhaseShiftMidi);
 				}
 				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 1) {
 					pitchTransformIndex = noteMidi;
-					//post('\nFound the pitchTransformIndex: ' + pitchTransformIndex);
 
 					// Send pitch transform index
 					outlet(1, 'int', pitchTransformIndex);
 				}
 				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 2) {
 					numTransposeSemitones = noteMidi;
-					//post('\nFound the numTransposeSemitones: ' + numTransposeSemitones);
 
 					// Send pitch transform index
 					outlet(1, 'int', pitchTransformIndex);
@@ -384,13 +335,8 @@ function populateCircGridFromClip() {
 				}
 				else {
 					var noteCol = Math.floor(adjNoteStart * 4 / NUM_GRID_ROWS);
-					//post('\nnoteCol: ' + noteCol);
 
 					var noteRow = Math.floor(adjNoteStart * 4 % NUM_GRID_ROWS);
-					//post('\nnoteRow: ' + noteRow);
-
-					//var temp = [1, noteMidi];
-					//qasmPadObj.js.setCurCircNodeType(temp);
 
 					var midiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - noteRow - 1) * CONTR_MAT_COLS) + noteCol;
 					var notePitchVelocity = [midiPitch, 127];
@@ -408,7 +354,7 @@ function populateCircGridFromClip() {
 		var trackPathTokens = curClipPath.split(' ');
 		trackPathTokens.length = 3;
 		var trackPath = trackPathTokens.join(' ');
-		//post('\ntrackPath: ' + trackPath);
+
 		// Display the pads/notes corresponding to each phase
 		qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones);
 
@@ -436,7 +382,6 @@ function setGlobalPhaseShift(phaseShiftDialVal) {
 
 	var piOver8PhaseShift = phaseShiftDialVal;
 	globalPhaseShift = piOver8PhaseShift * (2 * Math.PI / NUM_PITCHES);
-	//post('\nglobalPhaseShift: ' + globalPhaseShift);
 	computeProbsPhases();
 }
 

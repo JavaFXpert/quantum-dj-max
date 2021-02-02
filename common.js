@@ -251,7 +251,6 @@ function pitchIdxToDiatonic(pitchIdx, octaveNumPlus2, transposeSemitones) {
   } else if (pitchIdx == 15) {
     diatonicMidiPitch = octaveNum * 12 + 50;
   }
-  //post('diatonicMidiPitch: ' + diatonicMidiPitch);
   diatonicMidiPitch += transposeSemitones;
   return diatonicMidiPitch;
 }

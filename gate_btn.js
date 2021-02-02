@@ -27,10 +27,8 @@ var val = 0;
 var vbrgb = [1.,1.,1.,1.];
 
 // process arguments
-//post'processing args');
 if (jsarguments.length > 1) {
 	this.midiNum = jsarguments[1];
-	//post'\njsarguments[1]: ' + jsarguments[1]);
 }
 
 draw();

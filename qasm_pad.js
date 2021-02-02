@@ -18,13 +18,8 @@
  * Quantum DJ device circuit pad that may be used even when
  * a Push 2 device is not connected.
  *
- * TODO: Modify resolution everywhere to pi/8
- *  - Change NUM_PITCHES to 16
- *  - Add constants and rotations
- *  - Identify color scheme that accommodate pi/8
- *
+ * TODO: Identify color scheme that accommodate pi/8
  * TODO: Inquire surface number for Push
- * TODO: Replace rx and crx with p and cp
  * TODO: Implement cry gate
  */
 include('common.js');
@@ -53,7 +48,6 @@ var clearCircuitWhenEmptyKeyNextPressed = false;
 var curCircNodeType = CircuitNodeTypes.H;
 
 var highMidiPitch = (NUM_GRID_ROWS - 1) * CONTR_MAT_COLS + NUM_GRID_COLS + LOW_MIDI_PITCH - 1;
-//post('highMidiPitch: ' + highMidiPitch);
 
 // TODO: Allocate the array and call refreshPadNoteNames method?
 var padNoteNames = [];
@@ -123,7 +117,6 @@ function bang() {
 function msg_int(val) {
 	if (inlet == 2) {
 		var piOver8Rotation = val;
-		//post('\npiOver8Rotation: ' + piOver8Rotation);
 
 		if (selCircGridRow >= 0 &&
 			selCircGridRow < NUM_GRID_ROWS &&
@@ -161,7 +154,6 @@ function msg_int(val) {
 
 
 function getPathByClipNameIdx(clipNameIdx) {
-	//post('In getPathByClipNameIdx, clipNameIdx: ' + clipNameIdx);
 	if (clipNameIdx < clipsPaths.length) {
 		var caratPos = clipsPaths[clipNameIdx].indexOf('^');
 		if (caratPos > 0) {
@@ -223,34 +215,23 @@ function resetCircGrid() {
  * @param notePitchVelocity Array containing midi pitch and velocity
  */
 function setCircGridGate(notePitchVelocity) {
-	//post('\notePitchVelocity[0]: ' + notePitchVelocity[0]);
-	//post('notePitchVelocity[1]: ' + notePitchVelocity[1]);
 	if (notePitchVelocity.length >= 2) {
 		var pitch = notePitchVelocity[0];
 		var velocity = notePitchVelocity[1];
-
-		//post('\nA pitch: ' + pitch);
 
 		// Only process noteup events (when user releases controller button)
 		if (velocity > 0 ) {
 			return;
 		}
 
-		//post('\nB pitch: ' + pitch);
-
 		if (pitch >= LOW_MIDI_PITCH && pitch <= highMidiPitch + 4) {
 			var gridRow = Math.floor((highMidiPitch - pitch) / CONTR_MAT_COLS);
 			var gridCol = (highMidiPitch - pitch) % CONTR_MAT_COLS;
 
-			//post('\npitch: ' + pitch);
-			//post('\ngridRow: ' + gridRow);
-			//post('\ngridCol: ' + gridCol);
-
 			if (gridCol >= 0 && gridCol < NUM_GRID_COLS) {
 
 				gridCol = NUM_GRID_COLS - gridCol - 1;
-				//post('\nB gridRow: ' + gridRow);
-				//post('\nB gridCol: ' + gridCol);
+
 				// User is placing on the circuit
 				clearCircuitWhenEmptyKeyNextPressed = false;
 
@@ -291,7 +272,6 @@ function setCircGridGate(notePitchVelocity) {
 				createQasmFromGrid();
 			}
 			else {
-				//post('\nin else, pitch: ' + pitch);
 				// User is choosing a gate
 			  if (pitch == 43) {
 					curCircNodeType = CircuitNodeTypes.EMPTY;
@@ -356,7 +336,6 @@ function setCircGridGate(notePitchVelocity) {
 					}
 				}
 				refreshControllerPads();
-				//post('\nIn setCircGridGate, curCircNodeType is now ' + curCircNodeType);
 			}
 		}
 	}
@@ -390,8 +369,6 @@ function createQasmFromGrid() {
 	}
 
 	qasm = qasmHeaderStr + qasmGatesStr;
-  //post('\nqasm: ' + qasm);
-
 	refreshControllerPads();
 
 	// Send statevector simulator message with QASM to outlet
@@ -411,16 +388,11 @@ function createQasmFromGrid() {
  * @returns QASM string for the gate
  */
 function addGateFromGrid(qasmStr, gridRow, gridCol) {
-	//post('\nIn addGateFromGrid, gridRow: ' + gridRow + ', gridCol: ' + gridCol);
 	var circNodeType = circGrid[gridRow][gridCol];
-
-	//post('\n  circNodeType: ' + circNodeType);
-	//post('\n  numConsecutiveQftRowsInCol: ' + numConsecutiveQftRowsInCol);
 
 	// TODO: DRY
   if (circNodeType == CircuitNodeTypes.QFT) {
 		numConsecutiveQftRowsInCol++;
-		//post('\n      numConsecutiveQftRowsInCol now: ' + numConsecutiveQftRowsInCol);
 
 		if (gridRow + 1 == computeNumWires()) {
 			qasmStr += constructQftCircuit(gridRow + 1 - numConsecutiveQftRowsInCol,
@@ -863,7 +835,6 @@ function addGateFromGrid(qasmStr, gridRow, gridCol) {
  * @returns Zero-based row in which a swap gate exists, -1 if not present.
  */
 function swapGateRowInColumn(colNum, excludingRow) {
-	//post('\nIn swapGateRowInColumn, colNum: ' + colNum + ', excludingRow: ' + excludingRow);
 	var swapGateRow = -1;
 	for (var rowNum = 0; rowNum < NUM_GRID_ROWS; rowNum++) {
 		if (rowNum != excludingRow && circGrid[rowNum][colNum] == CircuitNodeTypes.SWAP) {
@@ -896,7 +867,6 @@ function swapGateRowInColumn(colNum, excludingRow) {
  * @return Array of ControlWire instances
  */
 function ctrlWiresInColumn(colNum, gateRowNum) {
-	//post('\nIn ctrlWiresInColumn, colNum: ' + colNum);
 	var controlWires = [];
 	for (var rowNum = 0; rowNum < NUM_GRID_ROWS; rowNum++) {
 		if (circGrid[rowNum][colNum] == CircuitNodeTypes.CTRL ||
@@ -918,7 +888,6 @@ function ctrlWiresInColumn(colNum, gateRowNum) {
 			}
 		}
 	}
-	//post('\ncontrolWires: ' + controlWires);
 	return controlWires;
 }
 
@@ -932,7 +901,6 @@ function ctrlWiresInColumn(colNum, gateRowNum) {
  * @returns QASM string for QFT gate
  */
 function constructQftCircuit(wireNum, numWires) {
-	//post('\nIn constructQftCircuit, wireNum: ' + wireNum + ', numWires: ' + numWires);
 	var qftQasm = '';
 
 	if (numWires == 1) {
@@ -1122,9 +1090,6 @@ function computeNumWires() {
  */
 function informCircuitBtn(gridRowIdx, gridColIdx) {
 	var midiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - gridRowIdx - 1) * CONTR_MAT_COLS) + gridColIdx;
-	//post('\n----In informCircuitBtn, midiPitch: ' + midiPitch);
-	//post('\nIn informCircuitBtn, gridRowIdx: ' + gridRowIdx);
-	//post('\nIn informCircuitBtn, gridColIdx: ' + gridColIdx);
 	var circBtnObj = this.patcher.getnamed('circbtn' + midiPitch);
 	circBtnObj.js.updateDisplay(circGrid[gridRowIdx][gridColIdx]);
 }
@@ -1134,12 +1099,12 @@ function informCircuitBtn(gridRowIdx, gridColIdx) {
  * Output the circuit grid to the console for debug purposes
  */
 function printCircGrid() {
-	//post('\n');
+	post('\n');
 	for (rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
 		for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
-			//post(circGrid[rowIdx][colIdx] + ' ');
+			post(circGrid[rowIdx][colIdx] + ' ');
 		}
-		//post('\n');
+		post('\n');
 	}
 }
 
@@ -1181,33 +1146,25 @@ function populateMidiClipsList() {
 
 	for (var trackIdx = 0; trackIdx < numTracks; trackIdx++ ) {
 		var track = new LiveAPI('live_set tracks ' + trackIdx);
-		//post('\ntrack ' + trackIdx + ' id: ' + track.id);
 
 		if (track.get('has_midi_input')) {
 			var numClipSlots = track.getcount('clip_slots');
 
 			for (var clipSlotIdx = 0; clipSlotIdx < numClipSlots; clipSlotIdx++) {
 				var clipSlot = new LiveAPI('live_set tracks ' + trackIdx + ' clip_slots ' + clipSlotIdx);
-				//post('\nclipSlot ' + clipSlotIdx + ' id: ' + clipSlot.id);
 
 				if (clipSlot.get('has_clip') != 0) {
 					var clip = new LiveAPI('live_set tracks ' + trackIdx + ' clip_slots ' + clipSlotIdx + ' clip');
-					//post('\nclip id: ' + clip.id);
 
 					var clipName = clip.getstring('name');
 					if (clipName.length > 2) {
 						if (clipName.substring(0, 1) == '\"') {
 							clipName = clipName.substring(1, clipName.length - 1);
 						}
-						//post('\nclipName: ' + clipName);
-						//post('\nclip path: ' + clip.unquotedpath);
 
 						outlet(1, 'append', clipName);
 						clipsPaths.push(clipName + '^' + clip.unquotedpath);
 						clipsNames.push(clipName);
-
-						//post('\nclipsIds: ' + clipsId[0]);
-						//post('\nSecond slot path: ' + getPathByClipNameIdx(1));
 					}
 				}
 			}
@@ -1216,12 +1173,7 @@ function populateMidiClipsList() {
 
 	// TODO: Move
 	var clipSelectDial = this.patcher.getnamed('clip_select');
-	//clipSelectDial.setattr('_parameter_steps', clipsNames.length);
-
 	clipSelectDial.setattr('_parameter_range', clipsNames);
-
-	//post('\nclipSelectDial: ' + clipSelectDial.getattrnames());
-	//post('\n_parameter_range: ' + clipSelectDial.getattr('_parameter_range'));
 
 	// Zero the clip selector dial
 	outlet(2, 'int', 0);
@@ -1235,18 +1187,12 @@ function populateMidiClipsList() {
 function populatePadNoteNames(trackPath, pitchTransformIdx, transposeSemitones) {
 	if (padNoteNamesDirty) {
 		padNoteNamesDirty = false;
-		//post('\nIn populatePadNoteNames, trackPath: ' + trackPath);
 		var track = new LiveAPI(trackPath);
 
 		if (track.get('has_midi_input')) {
 			var textbox = this.patcher.getnamed('pad_note[0]');
-			//post('\ntextbox: ' + textbox.getattr('text'));
-
 			var device = new LiveAPI(trackPath + ' devices ' + 0);
-			//post("\ndevice name: " + device.get('name'));
-
 			var canHaveDrumPads = device.get('can_have_drum_pads') == 1;
-			//post("\ndevice can_have_drum_pads: " + canHaveDrumPads);
 
 			refreshPadNoteNames();
 
@@ -1254,20 +1200,16 @@ function populatePadNoteNames(trackPath, pitchTransformIdx, transposeSemitones) 
 				for (var drumPadIdx = 0; drumPadIdx < MAX_DRUMPADS; drumPadIdx++) {
 					var drumPad =
 						new LiveAPI(trackPath + ' devices ' + 0 + ' drum_pads ' + (LOW_DRUMPAD_MIDI + drumPadIdx));
-					//post("\ndrumPad name: " + drumPad.getstring('name'));
 					padNoteNames[drumPadIdx] = drumPad.getstring('name');
 				}
 			}
-			//post('\npadNoteNames: ' + padNoteNames);
 
 			for (var midiPitchIdx = 0; midiPitchIdx < NUM_PITCHES; midiPitchIdx++) {
 				var noteName = '';
 				if (pitchTransformIdx == 0) {
 					noteName = padNoteNames[midiPitchIdx];
-					//post('\nPad noteName: ' + noteName);
 				} else {
 					noteName = padNoteNames[pitchIdxToDiatonic(midiPitchIdx, pitchTransformIdx, transposeSemitones)];
-					//post('\nDiatonic noteName: ' + noteName);
 				}
 
 				// Update textbox
@@ -1297,7 +1239,6 @@ function refreshControllerPads() {
 			var midiPitch = LOW_MIDI_PITCH + ((NUM_GRID_ROWS - rowIdx - 1) * CONTR_MAT_COLS) + colIdx;
 			var padColor = circNodeType2Color(circGrid[rowIdx][colIdx]);
 
-			//post('\npadsToBlink: ' + padsToBlink);
 			controlSurface.call('send_midi', 144, midiPitch, 0);
 			if (padsToBlink.indexOf(midiPitch) != -1) {
 				controlSurface.call('send_midi', 147, midiPitch, padColor);
