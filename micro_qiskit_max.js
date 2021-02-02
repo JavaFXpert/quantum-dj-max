@@ -185,7 +185,13 @@ function createQuantumCircuitFromQasm(qasm) {
 								quantumCircuit.cx(qNumArray[0], qNumArray[1]);
 							}
 							else if (keyword.substring(0, 4) == 'crx(') {
-								quantumCircuit.crx(numFromParen(keyword), qNumArray[0], qNumArray[1]);
+								var rads = numFromParen(keyword);
+								if (Math.abs(rads - Math.PI) < 0.0001) {
+									quantumCircuit.cx(qNumArray[0], qNumArray[1]);
+								}
+								else {
+									quantumCircuit.crx(rads, qNumArray[0], qNumArray[1]);
+								}
 							}
 
 
