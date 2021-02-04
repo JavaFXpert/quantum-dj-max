@@ -44,6 +44,10 @@ var NUM_ADDITIONAL_METADATA_VALUES = 3;
 // Also represents resolution of phase.
 var NUM_PITCHES = 16;
 
+// TODO: Make these configurable
+var HALF_SCALE = false;
+var REVERSE_SCALE = false;
+
 // Lowest MIDI value of drum pad
 var LOW_DRUMPAD_MIDI = 36;
 
@@ -218,6 +222,12 @@ function midi2NoteName(noteNum) {
 function pitchIdxToDiatonic(pitchIdx, octaveNumPlus2, transposeSemitones) {
   var octaveNum = octaveNumPlus2 - 2;
   var diatonicMidiPitch = 0
+  if (REVERSE_SCALE) {
+    pitchIdx = NUM_PITCHES - pitchIdx - 1;
+  }
+  if (HALF_SCALE) {
+    pitchIdx = Math.floor(pitchIdx / 2.0);
+  }
   if (pitchIdx == 0) {
     diatonicMidiPitch = octaveNum * 12 + 24;
   } else if (pitchIdx == 1) {
