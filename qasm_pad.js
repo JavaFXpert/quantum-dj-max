@@ -21,6 +21,9 @@
  * TODO: Identify color scheme that accommodate pi/8
  * TODO: Inquire surface number for Push
  * TODO: Implement cry gate
+ * TODO: Implement / leverage chords & apeggiator
+ * TODO: Implement note duration (one shot, or sustained until next note,
+ *  configurable per track)
  */
 include('common.js');
 

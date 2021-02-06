@@ -44,9 +44,10 @@ var NUM_ADDITIONAL_METADATA_VALUES = 3;
 // Also represents resolution of phase.
 var NUM_PITCHES = 16;
 
-// TODO: Make these configurable
+// TODO: Make these configurable per track
 var HALF_SCALE = false;
 var REVERSE_SCALE = false;
+var LEGATO = true;
 
 // Lowest MIDI value of drum pad
 var LOW_DRUMPAD_MIDI = 36;

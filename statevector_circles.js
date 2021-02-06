@@ -236,12 +236,19 @@ function computeProbsPhases() {
 
 			var time = (pnIdx / 4.0).toFixed(2);
 
+			var duration = 0.25;
+			if (pnIdx < pitchNums.length - 1) {
+				if (LEGATO) {
+					duration = 0.50;
+				}
+			}
+
 			if (pitchTransformIndex == 0) {
-				clip.call('note', pitchNums[pnIdx] + 36, time, ".25", 100, 0);
+				clip.call('note', pitchNums[pnIdx] + 36, time, duration, 100, 0);
 			}
 			else {
 				clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex,
-					numTransposeSemitones), time, ".25", 100, 0);
+					numTransposeSemitones), time, duration, 100, 0);
 			}
 		}
 	}
