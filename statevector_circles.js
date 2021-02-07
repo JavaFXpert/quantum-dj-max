@@ -129,11 +129,15 @@ function msg_int(val) {
 	if (inlet == 7) {
 		// Make scale reversed
 		reverseScale = (val > 0);
+		var qasmPadObj = this.patcher.getnamed("qasmpad");
+		qasmPadObj.js.padNoteNamesDirty = true;
 		computeProbsPhases();
 	}
 	if (inlet == 8) {
 		// Make scale half its range
 		halfScale = (val > 0);
+		var qasmPadObj = this.patcher.getnamed("qasmpad");
+		qasmPadObj.js.padNoteNamesDirty = true;
 		computeProbsPhases();
 	}
 }
