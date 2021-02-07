@@ -47,7 +47,6 @@ var NUM_PITCHES = 16;
 // TODO: Make these configurable per track
 var HALF_SCALE = false;
 var REVERSE_SCALE = false;
-var LEGATO = true;
 
 // Lowest MIDI value of drum pad
 var LOW_DRUMPAD_MIDI = 36;

@@ -35,7 +35,9 @@ var maxDisplayedSteps = 64
 // Inlet 4 receives bang messages to shift global phase in such a way
 //   that makes the first basis state have a 0 phase (if possible).
 // Inlet 5 receives number of semitones to transpose
-this.inlets = 6;
+// Inlet 6 receives receives messages that indicate whether notes
+// are to be legato
+this.inlets = 7;
 
 // Outlet 0 sends global phase shift
 // Outlet 1 sends pitch transform index
@@ -58,6 +60,10 @@ var globalPhaseShiftMidi = 0;
 
 // Flag that indicates not to zero the globalPhaseShift
 var preserveGlobalPhaseShift = false;
+
+// Flag that indicates whether note duration should be
+// until the the next note begins playing.
+var legato = false;
 
 // Instrument type selection
 // TODO: Find better name
@@ -106,6 +112,11 @@ function msg_int(val) {
 		numTransposeSemitones = val;
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		qasmPadObj.js.padNoteNamesDirty = true;
+		computeProbsPhases();
+	}
+	if (inlet == 6) {
+		// Make notes legato
+		legato = (val > 0);
 		computeProbsPhases();
 	}
 }
@@ -237,7 +248,7 @@ function computeProbsPhases() {
 			var time = (pnIdx / 4.0).toFixed(2);
 
 			var duration = 0.25;
-			if (LEGATO) {
+			if (legato) {
 				for (var remPnIdx = pnIdx + 1; remPnIdx < pitchNums.length; remPnIdx++) {
 					if (pitchNums[remPnIdx] > -1) {
 						duration = ((remPnIdx - pnIdx) / 4.0).toFixed(2);
