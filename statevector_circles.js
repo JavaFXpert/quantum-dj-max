@@ -35,9 +35,10 @@ var maxDisplayedSteps = 64
 // Inlet 4 receives bang messages to shift global phase in such a way
 //   that makes the first basis state have a 0 phase (if possible).
 // Inlet 5 receives number of semitones to transpose
-// Inlet 6 receives receives messages that indicate whether notes
-// are to be legato
-this.inlets = 7;
+// Inlet 6 receives messages that indicate whether notes are to be legato
+// Inlet 7 receives messages that indicate whether scale is to be reversed
+// Inlet 8 receives messages that indicate whether scale is to be halved
+this.inlets = 9;
 
 // Outlet 0 sends global phase shift
 // Outlet 1 sends pitch transform index
@@ -123,6 +124,16 @@ function msg_int(val) {
 	if (inlet == 6) {
 		// Make notes legato
 		legato = (val > 0);
+		computeProbsPhases();
+	}
+	if (inlet == 7) {
+		// Make scale reversed
+		reverseScale = (val > 0);
+		computeProbsPhases();
+	}
+	if (inlet == 8) {
+		// Make scale half its range
+		halfScale = (val > 0);
 		computeProbsPhases();
 	}
 }
