@@ -249,12 +249,19 @@ function computeProbsPhases() {
 
 			var duration = 0.25;
 			if (legato) {
+				var successorNoteFound = false;
 				for (var remPnIdx = pnIdx + 1; remPnIdx < pitchNums.length; remPnIdx++) {
 					if (pitchNums[remPnIdx] > -1) {
+						successorNoteFound = true;
 						duration = ((remPnIdx - pnIdx) / 4.0).toFixed(2);
 						//post('\nnew duration: ' + duration);
 						break;
 					}
+				}
+				if (!successorNoteFound) {
+					// No successor note was found so duration of final note extends
+					// to the end of the loop
+					duration = ((pitchNums.length - pnIdx) / 4.0).toFixed(2);
 				}
 			}
 
