@@ -45,8 +45,8 @@ var NUM_ADDITIONAL_METADATA_VALUES = 3;
 var NUM_PITCHES = 16;
 
 // TODO: Make these configurable per track
-var HALF_SCALE = false;
-var REVERSE_SCALE = false;
+// var HALF_SCALE = false;
+// var REVERSE_SCALE = false;
 
 // Lowest MIDI value of drum pad
 var LOW_DRUMPAD_MIDI = 36;
@@ -215,17 +215,16 @@ function midi2NoteName(noteNum) {
  * Compute a MIDI pitch given a diatonic pitch, octave number, and
  * number of semitones to transpose.
  * @param pitchIdx Diatonic pitch index (0 - NUM_PITCHES-1)
- * @param octaveNum MIDI octave number. 0 indicates that a kit should be used.
  * @param transposeSemitones Number of semitones to transpose the outputted note (0 - 11)
  * @returns {number}
  */
-function pitchIdxToDiatonic(pitchIdx, octaveNumPlus2, transposeSemitones) {
+function pitchIdxToDiatonic(pitchIdx, octaveNumPlus2, transposeSemitones, reverseScale, halfScale) {
   var octaveNum = octaveNumPlus2 - 2;
   var diatonicMidiPitch = 0
-  if (REVERSE_SCALE) {
+  if (reverseScale) {
     pitchIdx = NUM_PITCHES - pitchIdx - 1;
   }
-  if (HALF_SCALE) {
+  if (halfScale) {
     pitchIdx = Math.floor(pitchIdx / 2.0);
   }
   if (pitchIdx == 0) {

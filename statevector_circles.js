@@ -72,6 +72,12 @@ var pitchTransformIndex = 0;
 // Number of semitones to transpose
 var numTransposeSemitones = 0;
 
+// Use inverted scale
+var reverseScale = false;
+
+// Use half the number of pitches in the scale
+var halfScale = false;
+
 var prevPiOver8Phase = 0;
 
 var curClipPath = "";
@@ -269,8 +275,7 @@ function computeProbsPhases() {
 				clip.call('note', pitchNums[pnIdx] + 36, time, duration, 100, 0);
 			}
 			else {
-				clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex,
-					numTransposeSemitones), time, duration, 100, 0);
+				clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale), time, duration, 100, 0);
 			}
 		}
 	}
@@ -311,7 +316,7 @@ function computeProbsPhases() {
 	trackPathTokens.length = 3;
 	var trackPath = trackPathTokens.join(' ');
 	// Display the pads/notes corresponding to each phase
-	qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones);
+	qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale);
 }
 
 
@@ -385,7 +390,7 @@ function populateCircGridFromClip() {
 		var trackPath = trackPathTokens.join(' ');
 
 		// Display the pads/notes corresponding to each phase
-		qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones);
+		qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale);
 
 
 		qasmPadObj.js.createQasmFromGrid();
