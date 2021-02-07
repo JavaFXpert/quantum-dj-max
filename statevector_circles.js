@@ -237,9 +237,13 @@ function computeProbsPhases() {
 			var time = (pnIdx / 4.0).toFixed(2);
 
 			var duration = 0.25;
-			if (pnIdx < pitchNums.length - 1) {
-				if (LEGATO) {
-					duration = 0.50;
+			if (LEGATO) {
+				for (var remPnIdx = pnIdx + 1; remPnIdx < pitchNums.length; remPnIdx++) {
+					if (pitchNums[remPnIdx] > -1) {
+						duration = ((remPnIdx - pnIdx) / 4.0).toFixed(2);
+						//post('\nnew duration: ' + duration);
+						break;
+					}
 				}
 			}
 
