@@ -43,7 +43,10 @@ this.inlets = 9;
 // Outlet 0 sends global phase shift
 // Outlet 1 sends pitch transform index
 // Outlet 2 sends number of semitones transposition
-this.outlets = 3;
+// Outlet 3 sends indication of whether notes are to be legato
+// Outlet 4 sends indication of whether scale is to be reversed
+// Outlet 5 sends indication of whether scale is to be halved
+this.outlets = 6;
 
 sketch.default2d();
 var vbrgb = [1.,1.,1.,1.];
@@ -322,6 +325,24 @@ function computeProbsPhases() {
 	var numTransposeSemitonesTime = ((startIdx + NUM_GRID_CELLS + 2) / 4.0).toFixed(2);
 	clip.call('note', numTransposeSemitones, numTransposeSemitonesTime, ".25", 100, 0);
 
+	// Encode flags (legato, reverseScale, halfScale)
+	// The value encoded is a binary representation, where:
+	//   - 0b0000001 place represents legato
+	//   - 0b0000010 place represents reverseScale
+	//   - 0b0000100 place represents halfScale
+	var miscFlagsVal = 0;
+	if (legato) {
+		miscFlagsVal += 1;
+	}
+	if (reverseScale) {
+		miscFlagsVal += 2;
+	}
+	if (halfScale) {
+		miscFlagsVal += 4;
+	}
+	var miscFlagsTime = ((startIdx + NUM_GRID_CELLS + 3) / 4.0).toFixed(2);
+	clip.call('note', miscFlagsVal, miscFlagsTime, ".25", 100, 0);
+
 	clip.call('done');
 
 	// TODO: Refactor code below and its occurrence elsewhere into separate method
@@ -381,6 +402,16 @@ function populateCircGridFromClip() {
 
 					// Send number of semitones transposition
 					outlet(2, 'int', numTransposeSemitones);
+				}
+				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 3) {
+					legato = noteMidi & 1 == 1; // legato is represented in 0b0000001 place
+					reverseScale = noteMidi & 2 == 2; // reverseScale is represented in 0b0000010 place
+					halfScale = noteMidi & 4 == 4; // halfScale is represented in 0b0000100 place
+
+					// Send states to UI controls
+					outlet(3, 'int', legato ? 1 : 0);
+					outlet(4, 'int', reverseScale ? 1 : 0);
+					outlet(5, 'int', halfScale ? 1 : 0);
 				}
 				else {
 					var noteCol = Math.floor(adjNoteStart * 4 / NUM_GRID_ROWS);

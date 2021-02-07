@@ -38,7 +38,7 @@ var NUM_GATE_COLS = 2;
 
 // Number of values in addition to the circuit grid
 // stored as metadata in the clip
-var NUM_ADDITIONAL_METADATA_VALUES = 3;
+var NUM_ADDITIONAL_METADATA_VALUES = 4;
 
 // Resolution of calculation from phase to notes or sounds in a kit.
 // Also represents resolution of phase.
