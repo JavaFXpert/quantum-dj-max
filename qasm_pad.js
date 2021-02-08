@@ -22,8 +22,10 @@
  * TODO: Inquire surface number for Push
  * TODO: Implement cry gate
  * TODO: Implement / leverage chords & apeggiator
- * TODO: Implement note duration (one shot, or sustained until next note,
- *  configurable per track)
+ * TODO: Implement one-shot (non-looping) clips
+ * TODO: Clear Push pad when switching between Note and Session
+ * TODO: Ensure that only MIDI clips are in dropdown
+ * TODO: Use On/Off graphic on Push
  */
 include('common.js');
 
