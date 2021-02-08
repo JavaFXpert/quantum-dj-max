@@ -1189,7 +1189,7 @@ function populateMidiClipsList() {
  * Given a track path, pad/note names in display
  * @param trackPath
  */
-function populatePadNoteNames(trackPath, pitchTransformIdx, transposeSemitones, reverseScale, halfScale) {
+function populatePadNoteNames(trackPath, pitchTransformIdx, transposeSemitones, reverseScale, halfScale, scaleType) {
 	if (padNoteNamesDirty) {
 		padNoteNamesDirty = false;
 		var track = new LiveAPI(trackPath);
@@ -1214,7 +1214,7 @@ function populatePadNoteNames(trackPath, pitchTransformIdx, transposeSemitones, 
 				if (pitchTransformIdx == 0) {
 					noteName = padNoteNames[midiPitchIdx];
 				} else {
-					noteName = padNoteNames[pitchIdxToDiatonic(midiPitchIdx, pitchTransformIdx, transposeSemitones, reverseScale, halfScale)];
+					noteName = padNoteNames[pitchIdxToMidi(midiPitchIdx, pitchTransformIdx, transposeSemitones, reverseScale, halfScale, 0)];
 				}
 
 				// Update textbox

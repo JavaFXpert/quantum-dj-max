@@ -135,6 +135,15 @@ var CircuitNodeTypes = {
 }
 
 
+// Types of scales
+var ScaleTypes = {
+  MAJOR: 0,
+  MINOR: 1,
+  CHROMATIC: 2,
+  PENTATONIC: 3
+}
+
+
 /**
  * Given a pi/8 rotation, returns a String that expresses
  * it in radians
@@ -218,9 +227,9 @@ function midi2NoteName(noteNum) {
  * @param transposeSemitones Number of semitones to transpose the outputted note (0 - 11)
  * @returns {number}
  */
-function pitchIdxToDiatonic(pitchIdx, octaveNumPlus2, transposeSemitones, reverseScale, halfScale) {
+function pitchIdxToMidi(pitchIdx, octaveNumPlus2, transposeSemitones, reverseScale, halfScale, scaleType) {
   var octaveNum = octaveNumPlus2 - 2;
-  var diatonicMidiPitch = 0
+  var midiPitch = 0
   if (reverseScale) {
     pitchIdx = NUM_PITCHES - pitchIdx - 1;
   }
@@ -228,40 +237,40 @@ function pitchIdxToDiatonic(pitchIdx, octaveNumPlus2, transposeSemitones, revers
     pitchIdx = Math.floor(pitchIdx / 2.0);
   }
   if (pitchIdx == 0) {
-    diatonicMidiPitch = octaveNum * 12 + 24;
+    midiPitch = octaveNum * 12 + 24;
   } else if (pitchIdx == 1) {
-    diatonicMidiPitch = octaveNum * 12 + 26;
+    midiPitch = octaveNum * 12 + 26;
   } else if (pitchIdx == 2) {
-    diatonicMidiPitch = octaveNum * 12 + 28;
+    midiPitch = octaveNum * 12 + 28;
   } else if (pitchIdx == 3) {
-    diatonicMidiPitch = octaveNum * 12 + 29;
+    midiPitch = octaveNum * 12 + 29;
   } else if (pitchIdx == 4) {
-    diatonicMidiPitch = octaveNum * 12 + 31;
+    midiPitch = octaveNum * 12 + 31;
   } else if (pitchIdx == 5) {
-    diatonicMidiPitch = octaveNum * 12 + 33;
+    midiPitch = octaveNum * 12 + 33;
   } else if (pitchIdx == 6) {
-    diatonicMidiPitch = octaveNum * 12 + 35;
+    midiPitch = octaveNum * 12 + 35;
   } else if (pitchIdx == 7) {
-    diatonicMidiPitch = octaveNum * 12 + 36;
+    midiPitch = octaveNum * 12 + 36;
   } else if (pitchIdx == 8) {
-    diatonicMidiPitch = octaveNum * 12 + 38;
+    midiPitch = octaveNum * 12 + 38;
   } else if (pitchIdx == 9) {
-    diatonicMidiPitch = octaveNum * 12 + 40;
+    midiPitch = octaveNum * 12 + 40;
   } else if (pitchIdx == 10) {
-    diatonicMidiPitch = octaveNum * 12 + 41;
+    midiPitch = octaveNum * 12 + 41;
   } else if (pitchIdx == 11) {
-    diatonicMidiPitch = octaveNum * 12 + 43;
+    midiPitch = octaveNum * 12 + 43;
   } else if (pitchIdx == 12) {
-    diatonicMidiPitch = octaveNum * 12 + 45;
+    midiPitch = octaveNum * 12 + 45;
   } else if (pitchIdx == 13) {
-    diatonicMidiPitch = octaveNum * 12 + 47;
+    midiPitch = octaveNum * 12 + 47;
   } else if (pitchIdx == 14) {
-    diatonicMidiPitch = octaveNum * 12 + 48;
+    midiPitch = octaveNum * 12 + 48;
   } else if (pitchIdx == 15) {
-    diatonicMidiPitch = octaveNum * 12 + 50;
+    midiPitch = octaveNum * 12 + 50;
   }
-  diatonicMidiPitch += transposeSemitones;
-  return diatonicMidiPitch;
+  midiPitch += transposeSemitones;
+  return midiPitch;
 }
 
 function removeQuotes(str) {

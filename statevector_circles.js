@@ -293,7 +293,7 @@ function computeProbsPhases() {
 				clip.call('note', pitchNums[pnIdx] + 36, time, duration, 100, 0);
 			}
 			else {
-				clip.call('note', pitchIdxToDiatonic(pitchNums[pnIdx], pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale), time, duration, 100, 0);
+				clip.call('note', pitchIdxToMidi(pitchNums[pnIdx], pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale, 0), time, duration, 100, 0);
 			}
 		}
 	}
