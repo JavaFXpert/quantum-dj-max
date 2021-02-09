@@ -38,7 +38,8 @@ var maxDisplayedSteps = 64
 // Inlet 6 receives messages that indicate whether notes are to be legato
 // Inlet 7 receives messages that indicate whether scale is to be reversed
 // Inlet 8 receives messages that indicate whether scale is to be halved
-this.inlets = 9;
+// Inlet 9 receives messages that indicate current scale type
+this.inlets = 10;
 
 // Outlet 0 sends global phase shift
 // Outlet 1 sends pitch transform index
@@ -81,6 +82,11 @@ var reverseScale = false;
 
 // Use half the number of pitches in the scale
 var halfScale = false;
+
+
+// Type of scale to use
+var curScaleType = ScaleTypes.MAJOR;
+
 
 var prevPiOver8Phase = 0;
 
@@ -139,6 +145,13 @@ function msg_int(val) {
 	if (inlet == 8) {
 		// Make scale half its range
 		halfScale = (val > 0);
+		var qasmPadObj = this.patcher.getnamed("qasmpad");
+		qasmPadObj.js.padNoteNamesDirty = true;
+		computeProbsPhases();
+	}
+	if (inlet == 9) {
+		// Set the scale type
+		curScaleType = val;
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		qasmPadObj.js.padNoteNamesDirty = true;
 		computeProbsPhases();
@@ -293,7 +306,7 @@ function computeProbsPhases() {
 				clip.call('note', pitchNums[pnIdx] + 36, time, duration, 100, 0);
 			}
 			else {
-				clip.call('note', pitchIdxToMidi(pitchNums[pnIdx], pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale, 0), time, duration, 100, 0);
+				clip.call('note', pitchIdxToMidi(pitchNums[pnIdx], pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale, curScaleType), time, duration, 100, 0);
 			}
 		}
 	}
@@ -352,7 +365,7 @@ function computeProbsPhases() {
 	trackPathTokens.length = 3;
 	var trackPath = trackPathTokens.join(' ');
 	// Display the pads/notes corresponding to each phase
-	qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale);
+	qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale, curScaleType);
 }
 
 
@@ -436,7 +449,7 @@ function populateCircGridFromClip() {
 		var trackPath = trackPathTokens.join(' ');
 
 		// Display the pads/notes corresponding to each phase
-		qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale);
+		qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale, curScaleType);
 
 
 		qasmPadObj.js.createQasmFromGrid();
