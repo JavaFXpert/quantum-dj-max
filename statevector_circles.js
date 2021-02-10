@@ -47,7 +47,8 @@ this.inlets = 10;
 // Outlet 3 sends indication of whether notes are to be legato
 // Outlet 4 sends indication of whether scale is to be reversed
 // Outlet 5 sends indication of whether scale is to be halved
-this.outlets = 6;
+// Outlet 6 sends the current scale type value
+this.outlets = 7;
 
 sketch.default2d();
 var vbrgb = [1.,1.,1.,1.];
@@ -338,6 +339,10 @@ function computeProbsPhases() {
 	var numTransposeSemitonesTime = ((startIdx + NUM_GRID_CELLS + 2) / 4.0).toFixed(2);
 	clip.call('note', numTransposeSemitones, numTransposeSemitonesTime, ".25", 100, 0);
 
+	// Encode scale type
+	var scaleTypeTime = ((startIdx + NUM_GRID_CELLS + 3) / 4.0).toFixed(2);
+	clip.call('note', curScaleType, scaleTypeTime, ".25", 100, 0);
+
 	// Encode flags (legato, reverseScale, halfScale)
 	// The value encoded is a binary representation, where:
 	//   - 0b0000001 place represents legato
@@ -353,7 +358,7 @@ function computeProbsPhases() {
 	if (halfScale) {
 		miscFlagsVal += 4;
 	}
-	var miscFlagsTime = ((startIdx + NUM_GRID_CELLS + 3) / 4.0).toFixed(2);
+	var miscFlagsTime = ((startIdx + NUM_GRID_CELLS + 4) / 4.0).toFixed(2);
 	clip.call('note', miscFlagsVal, miscFlagsTime, ".25", 100, 0);
 
 	clip.call('done');
@@ -410,13 +415,19 @@ function populateCircGridFromClip() {
 				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 2) {
 					numTransposeSemitones = noteMidi;
 
-					// Send pitch transform index
+					// Send pitch transform index TODO: Remove from here?
 					outlet(1, 'int', pitchTransformIndex);
 
 					// Send number of semitones transposition
 					outlet(2, 'int', numTransposeSemitones);
 				}
 				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 3) {
+					curScaleType = noteMidi;
+
+					// Send current scale type value
+					outlet(6, 'int', curScaleType);
+				}
+				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 4) {
 					legato = (noteMidi & 1) == 1; // legato is represented in 0b0000001 place
 					reverseScale = (noteMidi & 2) == 2; // reverseScale is represented in 0b0000010 place
 					halfScale = (noteMidi & 4) == 4; // halfScale is represented in 0b0000100 place

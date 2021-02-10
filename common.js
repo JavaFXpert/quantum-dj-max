@@ -38,7 +38,7 @@ var NUM_GATE_COLS = 2;
 
 // Number of values in addition to the circuit grid
 // stored as metadata in the clip
-var NUM_ADDITIONAL_METADATA_VALUES = 4;
+var NUM_ADDITIONAL_METADATA_VALUES = 5;
 
 // Resolution of calculation from phase to notes or sounds in a kit.
 // Also represents resolution of phase.
@@ -263,40 +263,6 @@ function pitchIdxToMidi(pitchIdx, octaveNumPlus2, transposeSemitones, reverseSca
     pitchIdx = 0;
   }
   midiPitch = octaveNum * 12 + 24 + scaleOffsets[pitchIdx];
-
-  // if (pitchIdx == 0) {
-  //   midiPitch = octaveNum * 12 + 24;
-  // } else if (pitchIdx == 1) {
-  //   midiPitch = octaveNum * 12 + 26;
-  // } else if (pitchIdx == 2) {
-  //   midiPitch = octaveNum * 12 + 28;
-  // } else if (pitchIdx == 3) {
-  //   midiPitch = octaveNum * 12 + 29;
-  // } else if (pitchIdx == 4) {
-  //   midiPitch = octaveNum * 12 + 31;
-  // } else if (pitchIdx == 5) {
-  //   midiPitch = octaveNum * 12 + 33;
-  // } else if (pitchIdx == 6) {
-  //   midiPitch = octaveNum * 12 + 35;
-  // } else if (pitchIdx == 7) {
-  //   midiPitch = octaveNum * 12 + 36;
-  // } else if (pitchIdx == 8) {
-  //   midiPitch = octaveNum * 12 + 38;
-  // } else if (pitchIdx == 9) {
-  //   midiPitch = octaveNum * 12 + 40;
-  // } else if (pitchIdx == 10) {
-  //   midiPitch = octaveNum * 12 + 41;
-  // } else if (pitchIdx == 11) {
-  //   midiPitch = octaveNum * 12 + 43;
-  // } else if (pitchIdx == 12) {
-  //   midiPitch = octaveNum * 12 + 45;
-  // } else if (pitchIdx == 13) {
-  //   midiPitch = octaveNum * 12 + 47;
-  // } else if (pitchIdx == 14) {
-  //   midiPitch = octaveNum * 12 + 48;
-  // } else if (pitchIdx == 15) {
-  //   midiPitch = octaveNum * 12 + 50;
-  // }
   midiPitch += transposeSemitones;
   return midiPitch;
 }
