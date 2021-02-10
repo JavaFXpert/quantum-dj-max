@@ -417,9 +417,9 @@ function populateCircGridFromClip() {
 					outlet(2, 'int', numTransposeSemitones);
 				}
 				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 3) {
-					legato = noteMidi & 1 == 1; // legato is represented in 0b0000001 place
-					reverseScale = noteMidi & 2 == 2; // reverseScale is represented in 0b0000010 place
-					halfScale = noteMidi & 4 == 4; // halfScale is represented in 0b0000100 place
+					legato = (noteMidi & 1) == 1; // legato is represented in 0b0000001 place
+					reverseScale = (noteMidi & 2) == 2; // reverseScale is represented in 0b0000010 place
+					halfScale = (noteMidi & 4) == 4; // halfScale is represented in 0b0000100 place
 
 					// Send states to UI controls
 					outlet(3, 'int', legato ? 1 : 0);
