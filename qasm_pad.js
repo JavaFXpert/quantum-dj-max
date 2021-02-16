@@ -26,6 +26,10 @@
  * TODO: Clear Push pad when switching between Note and Session
  * TODO: Ensure that only MIDI clips are in dropdown
  * TODO: Use On/Off graphic on Push
+ * TODO: Implement rule-based composition constraints, e.g.:
+ *  - Ending on same note as beginning
+ *  - Removing notes with LSB 111 in a four wire circuit
+ *  - Penultimate note is 7, 1 or 2
  */
 include('common.js');
 
