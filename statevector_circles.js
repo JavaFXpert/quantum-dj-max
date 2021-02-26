@@ -86,7 +86,7 @@ var halfScale = false;
 
 
 // Type of scale to use
-var curScaleType = ScaleTypes.MAJOR;
+var curScaleType = 0; //Major
 
 
 var prevPiOver8Phase = 0;
