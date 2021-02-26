@@ -141,7 +141,8 @@ var ScaleTypes = {
   MINOR: 1,
   CHROMATIC: 2,
   PENTATONIC_MAJOR: 3,
-  PENTATONIC_MINOR: 4
+  PENTATONIC_MINOR: 4,
+  RAGA_15_MAYAMALAVAGOWLA: 5
 }
 
 
@@ -150,6 +151,7 @@ var MINOR_SCALE_OFFSETS = [0, 2, 3, 5, 7, 8, 10, 12, 14, 15, 17, 19, 20, 22, 24,
 var CHROMATIC_SCALE_OFFSETS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 var PENTA_MAJ_SCALE_OFFSETS = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24, 26, 28, 31, 33, 36];
 var PENTA_MIN_SCALE_OFFSETS = [0, 3, 5, 7, 10, 12, 15, 17, 19, 22, 24, 27, 29, 31, 34, 36];
+var RAGA_15_OFFSETS = [0, 1, 4, 5, 7, 8, 11, 12, 13, 16, 17, 19, 20, 23, 24, 25];
 
 
 /**
@@ -249,6 +251,10 @@ function pitchIdxToMidi(pitchIdx, octaveNumPlus2, transposeSemitones, reverseSca
   else if (scaleType == ScaleTypes.PENTATONIC_MINOR) {
     scaleOffsets = PENTA_MIN_SCALE_OFFSETS;
   }
+  else if (scaleType == ScaleTypes.RAGA_15_MAYAMALAVAGOWLA) {
+    scaleOffsets = RAGA_15_OFFSETS;
+  }
+
   var octaveNum = octaveNumPlus2 - 2;
   var midiPitch = 0;
   if (reverseScale) {
