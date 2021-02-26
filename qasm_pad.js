@@ -30,6 +30,11 @@
  *  - Ending on same note as beginning
  *  - Removing notes with LSB 111 in a four wire circuit
  *  - Penultimate note is 7, 1 or 2
+ * TODO: Populate textbox with QASM for circuit
+ *  - Test result after applying column of Hadamards
+ * TODO: Replace set_notes with add_new_notes
+ * TODO: Consider increasing note duration on legato to slight overlap
+ *       so that Sitar slides to next note
  */
 include('common.js');
 
