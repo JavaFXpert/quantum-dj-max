@@ -217,6 +217,9 @@ var musicalScales = [
     [0, 2, 3, 5, 7, 8, 11, 12, 14, 15, 17, 19, 20, 23, 24, 26]),
   new MusicalScale('Raga 22 Kharaharapriya',
     [0, 2, 3, 5, 7, 9, 10, 12, 14, 15, 17, 19, 21, 22, 24, 26]),
+  new MusicalScale('Abheri Raga',
+    [0, -1, 3, 5, 7, -1, 10, 12, -1, 15, 17, 19, -1, 22, 24, 26],
+    [0, 2, 3, 5, 7, 9, 10, 12, 14, 15, 17, 19, 21, 22, 24, 26]),
   new MusicalScale('Raga 23 Gourimanohari',
     [0, 2, 3, 5, 7, 9, 11, 12, 14, 15, 17, 19, 21, 23, 24, 26]),
   new MusicalScale('Raga 24 Varunapriya',
@@ -424,8 +427,16 @@ function pitchIdxToMidi(pitchIdx, octaveNumPlus2, transposeSemitones,
     post('\npitchIdx unexpectedly: ' + pitchIdx + ', setting to 0');
     pitchIdx = 0;
   }
-  midiPitch = octaveNum * 12 + 24 + scaleOffsets[pitchIdx];
-  midiPitch += transposeSemitones;
+
+  if (scaleOffsets[pitchIdx] != -1) {
+    midiPitch = octaveNum * 12 + 24 + scaleOffsets[pitchIdx];
+    midiPitch += transposeSemitones;
+  }
+  else {
+    // Scale doesn't contain requested degree so signal with 127
+    midiPitch = 127;
+  }
+
   return midiPitch;
 }
 
