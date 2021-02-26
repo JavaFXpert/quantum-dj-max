@@ -162,6 +162,11 @@ var musicalScales = [
     [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24, 26]),
   new MusicalScale('Natural minor',
     [0, 2, 3, 5, 7, 8, 10, 12, 14, 15, 17, 19, 20, 22, 24, 26]),
+  new MusicalScale('Harmonic minor',
+    [0, 2, 3, 5, 7, 8, 11, 12, 14, 15, 17, 19, 20, 23, 24, 26]),
+  new MusicalScale('Melodic minor',
+    [0, 2, 3, 5, 7, 9, 11, 12, 14, 15, 17, 19, 21, 23, 24, 26],
+    [0, 2, 3, 5, 7, 8, 10, 12, 14, 15, 17, 19, 20, 22, 24, 26]),
   new MusicalScale('Chromatic',
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]),
   new MusicalScale('Pentatonic major',
@@ -256,11 +261,12 @@ function midi2NoteName(noteNum) {
  * @param transposeSemitones Number of semitones to transpose the outputted note (0 - 11)
  * @returns {number}
  */
-function pitchIdxToMidi(pitchIdx, octaveNumPlus2, transposeSemitones, reverseScale, halfScale, scaleType) {
+function pitchIdxToMidi(pitchIdx, octaveNumPlus2, transposeSemitones,
+                        reverseScale, halfScale, scaleType, useDescOffsets) {
   var scaleOffsets = musicalScales[0].ascOffsets; // Default to Major scale
 
   if (scaleType < musicalScales.length) {
-    scaleOffsets = musicalScales[scaleType].ascOffsets;
+    scaleOffsets = useDescOffsets ? musicalScales[scaleType].descOffsets : musicalScales[scaleType].ascOffsets;
   }
 
   var octaveNum = octaveNumPlus2 - 2;

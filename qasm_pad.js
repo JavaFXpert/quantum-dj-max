@@ -1223,7 +1223,8 @@ function populatePadNoteNames(trackPath, pitchTransformIdx, transposeSemitones, 
 				if (pitchTransformIdx == 0) {
 					noteName = padNoteNames[midiPitchIdx];
 				} else {
-					noteName = padNoteNames[pitchIdxToMidi(midiPitchIdx, pitchTransformIdx, transposeSemitones, reverseScale, halfScale, scaleType)];
+					noteName = padNoteNames[pitchIdxToMidi(midiPitchIdx, pitchTransformIdx, transposeSemitones,
+						reverseScale, halfScale, scaleType, false)];
 				}
 
 				// Update textbox

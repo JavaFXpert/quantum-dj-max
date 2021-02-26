@@ -275,6 +275,7 @@ function computeProbsPhases() {
 	clip.call('notes', numNotes + NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES);
 
 	var foundFirstPitch = false;
+	var formerPitchNum = 0;
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
 		if (pitchNums[pnIdx] > -1) {
 			if (!foundFirstPitch) {
@@ -307,8 +308,17 @@ function computeProbsPhases() {
 				clip.call('note', pitchNums[pnIdx] + 36, time, duration, 100, 0);
 			}
 			else {
-				clip.call('note', pitchIdxToMidi(pitchNums[pnIdx], pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale, curScaleType), time, duration, 100, 0);
+				clip.call('note',
+					pitchIdxToMidi(pitchNums[pnIdx],
+						pitchTransformIndex,
+						numTransposeSemitones,
+						reverseScale,
+						halfScale,
+						curScaleType,
+						pitchNums[pnIdx] < formerPitchNum),
+					time, duration, 100, 0);
 			}
+			formerPitchNum = pitchNums[pnIdx];
 		}
 	}
 
