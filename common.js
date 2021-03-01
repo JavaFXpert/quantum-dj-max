@@ -134,6 +134,18 @@ var CircuitNodeTypes = {
   QFT: 90 // QFT
 }
 
+
+var GamakaTypes = {
+  NONE: 0,
+  SLIDE_UP: 1, //
+  SLIDE_UP_2_PITCHES: 2, //
+  SLIDE_DOWN: 3, //
+  ASCENDING_SLIDE_OSCILLATE: 4,
+  ASCENDING_OSCILLATE: 5,
+  DESCENDING_OSCILLATE: 6
+}
+
+
 /**
  *
  * @param name
@@ -141,9 +153,11 @@ var CircuitNodeTypes = {
  * @param descOffsets Required only if different than ascOffsets
  * @constructor
  */
-function MusicalScale(nameArg, ascOffsetsArg, descOffsetsArg) {
+function MusicalScale(nameArg, ascOffsetsArg, descOffsetsArg, ascGamakasArg, descGamakasArg) {
   this.name = nameArg;
   this.ascOffsets = ascOffsetsArg;
+  this.ascGamakas = ascGamakasArg;
+  this.descGamakas = descGamakasArg;
 
   if (typeof descOffsetsArg !== "undefined" &&
     descOffsetsArg.constructor === Array &&
@@ -152,6 +166,58 @@ function MusicalScale(nameArg, ascOffsetsArg, descOffsetsArg) {
   }
   else {
     this.descOffsets = ascOffsetsArg;
+  }
+
+  if (typeof ascGamakasArg !== "undefined" &&
+    ascGamakasArg.constructor === Array &&
+    ascGamakasArg.length > 0) {
+    this.ascGamakas = ascGamakasArg;
+  }
+  else {
+    this.ascGamakas = [
+      GamakaTypes.NONE,                      // Sa
+      GamakaTypes.NONE,                      // Ri
+      GamakaTypes.ASCENDING_SLIDE_OSCILLATE, // Ga
+      GamakaTypes.NONE,                      // Ma
+      GamakaTypes.NONE,                      // Pa
+      GamakaTypes.ASCENDING_OSCILLATE,       // Da
+      GamakaTypes.ASCENDING_SLIDE_OSCILLATE, // Ni
+      GamakaTypes.NONE,                      // Sa
+      GamakaTypes.NONE,                      // Ri
+      GamakaTypes.ASCENDING_SLIDE_OSCILLATE, // Ga
+      GamakaTypes.NONE,                      // Ma
+      GamakaTypes.NONE,                      // Pa
+      GamakaTypes.ASCENDING_OSCILLATE,       // Da
+      GamakaTypes.ASCENDING_SLIDE_OSCILLATE, // Ni
+      GamakaTypes.NONE,                      // Sa
+      GamakaTypes.NONE,                      // Ri
+    ];
+  }
+
+  if (typeof descGamakasArg !== "undefined" &&
+    descGamakasArg.constructor === Array &&
+    descGamakasArg.length > 0) {
+    this.descGamakas = descGamakasArg;
+  }
+  else {
+    this.descGamakas = [
+      GamakaTypes.NONE,                      // Sa
+      GamakaTypes.SLIDE_DOWN,                // Ri
+      GamakaTypes.DESCENDING_OSCILLATE,      // Ga
+      GamakaTypes.SLIDE_UP_2_PITCHES,        // Ma
+      GamakaTypes.NONE,                      // Pa
+      GamakaTypes.SLIDE_DOWN,                // Da
+      GamakaTypes.DESCENDING_OSCILLATE,      // Ni
+      GamakaTypes.SLIDE_UP_2_PITCHES,        // Sa
+      GamakaTypes.SLIDE_DOWN,                // Ri
+      GamakaTypes.DESCENDING_OSCILLATE,      // Ga
+      GamakaTypes.SLIDE_UP_2_PITCHES,        // Ma
+      GamakaTypes.NONE,                      // Pa
+      GamakaTypes.SLIDE_DOWN,                // Da
+      GamakaTypes.DESCENDING_OSCILLATE,      // Ni
+      GamakaTypes.SLIDE_UP_2_PITCHES,        // Sa
+      GamakaTypes.SLIDE_DOWN,                // Ri
+    ];
   }
 }
 
