@@ -257,6 +257,7 @@ function computeProbsPhases() {
 
 	var foundFirstPitch = false;
 	var formerPitchNum = 0;
+	var successorPitchNum = 0;
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
 		if (pitchNums[pnIdx] > -1) {
 			if (!foundFirstPitch) {
@@ -266,17 +267,20 @@ function computeProbsPhases() {
 			}
 
 			var duration = 0.25;
-			if (legato) {
-				var successorNoteFound = false;
-				for (var remPnIdx = pnIdx + 1; remPnIdx < pitchNums.length; remPnIdx++) {
-					if (pitchNums[remPnIdx] > -1) {
-						successorNoteFound = true;
+			var successorNoteFound = false;
+			for (var remPnIdx = pnIdx + 1; remPnIdx < pitchNums.length; remPnIdx++) {
+				if (pitchNums[remPnIdx] > -1) {
+					successorNoteFound = true;
+					successorPitchNum = pitchNums[remPnIdx];
+					if (legato) {
 						duration = (remPnIdx - pnIdx) / beatsPerMeasure;
-						//post('\nnew duration: ' + duration);
-						break;
 					}
+					//post('\nnew duration: ' + duration);
+					break;
 				}
-				if (!successorNoteFound) {
+			}
+			if (!successorNoteFound) {
+				if (legato) {
 					// No successor note was found so duration of final note extends
 					// to the end of the loop
 					duration = (pitchNums.length - pnIdx) / beatsPerMeasure;
@@ -298,6 +302,7 @@ function computeProbsPhases() {
 				gamakaType = pitchIdxToGamaka(pitchNums[pnIdx], curScaleType, pitchNums[pnIdx] <= formerPitchNum);
 
 				if (gamakaType == GamakaTypes.SLIDE_UP_2_PITCHES) {
+					// Ensure that there is a pitch from which to slide
 					if (pitchNums[pnIdx] >= 2) {
 						notesDict.notes.push(
 							{
@@ -324,6 +329,93 @@ function computeProbsPhases() {
 									pitchNums[pnIdx] <= formerPitchNum),
 								start_time: pnIdx / beatsPerMeasure + duration * 0.25,
 								duration: duration * 0.75,
+								velocity: 100
+							}
+						);
+					}
+				}
+				else if (gamakaType == GamakaTypes.ASCENDING_SLIDE_OSCILLATE) {
+					// Ensure that the previous note is lower in pitch than the
+					// gamaka note, and that the following pitch is higher
+					post('\npnIdx: ' + pnIdx + ', formerPitchNum: ' + formerPitchNum +
+						', pitchNums[pnIdx]: ' + pitchNums[pnIdx] +
+						', successorPitchNum: ' + successorPitchNum);
+
+					if (pnIdx > 0 && formerPitchNum < pitchNums[pnIdx] &&
+						successorPitchNum > pitchNums[pnIdx]) {
+
+						// Begin slide from the previous note pitch
+						notesDict.notes.push(
+							{
+								pitch: pitchIdxToMidi(formerPitchNum,
+									pitchTransformIndex,
+									numTransposeSemitones,
+									reverseScale,
+									halfScale,
+									curScaleType,
+									pitchNums[pnIdx] <= formerPitchNum),
+								start_time: pnIdx / beatsPerMeasure,
+								duration: duration * 0.25,
+								velocity: 100
+							}
+						);
+						// Slide up to pitch in the note following the gamaka
+						notesDict.notes.push(
+							{
+								pitch: pitchIdxToMidi(successorPitchNum,
+									pitchTransformIndex,
+									numTransposeSemitones,
+									reverseScale,
+									halfScale,
+									curScaleType,
+									pitchNums[pnIdx] <= formerPitchNum),
+								start_time: pnIdx / beatsPerMeasure + duration * 0.1875, // 3/16
+								duration: duration * 0.25,
+								velocity: 100
+							}
+						);
+						// Slide down to pitch in the gamaka note
+						notesDict.notes.push(
+							{
+								pitch: pitchIdxToMidi(pitchNums[pnIdx],
+									pitchTransformIndex,
+									numTransposeSemitones,
+									reverseScale,
+									halfScale,
+									curScaleType,
+									pitchNums[pnIdx] <= formerPitchNum),
+								start_time: pnIdx / beatsPerMeasure + duration * 0.375, // 6/16
+								duration: duration * 0.25,
+								velocity: 100
+							}
+						);
+						// Slide up to pitch in the note following the gamaka
+						notesDict.notes.push(
+							{
+								pitch: pitchIdxToMidi(successorPitchNum,
+									pitchTransformIndex,
+									numTransposeSemitones,
+									reverseScale,
+									halfScale,
+									curScaleType,
+									pitchNums[pnIdx] <= formerPitchNum),
+								start_time: pnIdx / beatsPerMeasure + duration * 0.5625, // 9/16
+								duration: duration * 0.25,
+								velocity: 100
+							}
+						);
+						// Slide down to pitch in the gamaka note
+						notesDict.notes.push(
+							{
+								pitch: pitchIdxToMidi(pitchNums[pnIdx],
+									pitchTransformIndex,
+									numTransposeSemitones,
+									reverseScale,
+									halfScale,
+									curScaleType,
+									pitchNums[pnIdx] <= formerPitchNum),
+								start_time: pnIdx / beatsPerMeasure + duration * 0.75, // 12/16
+								duration: duration * 0.25,
 								velocity: 100
 							}
 						);
