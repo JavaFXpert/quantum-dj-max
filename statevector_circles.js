@@ -241,15 +241,6 @@ function computeProbsPhases() {
 			}
 			pitchNum = Math.round(shiftedPhase / (2 * Math.PI) * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
 
-			// if (pitchNum > -1) {
-			// 	gamakaType = pitchIdxToGamaka(pitchNum, curScaleType,
-			// 		pitchNum < formerPitchNum);
-			//
-			// 	if (gamakaType != GamakaTypes.NONE) {
-			// 		//numNotes += 1;
-			// 	}
-			// }
-
 			if (svIdx / 2 < maxDisplayedSteps) {
 				messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pitchNum + 1, 127);
 			}
@@ -258,13 +249,11 @@ function computeProbsPhases() {
 	}
 
 	// Set the notes into the clip
-	//var clip = new LiveAPI('live_set tracks 0 clip_slots 1 clip');
+	notesDict.notes = [];
 	var clip = new LiveAPI(curClipPath);
 	clip.call('remove_notes_extended', 0, 128, 0, 256);
 
 	clip.set('loop_end', svArray.length / 8);
-
-	notesDict.notes = [];
 
 	var foundFirstPitch = false;
 	var formerPitchNum = 0;
@@ -273,7 +262,7 @@ function computeProbsPhases() {
 			if (!foundFirstPitch) {
 				prevPiOver8Phase = pitchNums[pnIdx];
 				foundFirstPitch = true;
-				post('\n***** prevPiOver8Phase: ' + prevPiOver8Phase);
+				//post('\n***** prevPiOver8Phase: ' + prevPiOver8Phase);
 			}
 
 			var duration = 0.25;
@@ -306,8 +295,41 @@ function computeProbsPhases() {
 
 			}
 			else {
-				gamakaType = pitchIdxToGamaka(pitchNums[pnIdx], curScaleType, pitchNums[pnIdx] < formerPitchNum);
-				if (gamakaType != GamakaTypes.NONE) {
+				gamakaType = pitchIdxToGamaka(pitchNums[pnIdx], curScaleType, pitchNums[pnIdx] <= formerPitchNum);
+
+				if (gamakaType == GamakaTypes.SLIDE_UP_2_PITCHES) {
+					if (pitchNums[pnIdx] >= 2) {
+						notesDict.notes.push(
+							{
+								pitch: pitchIdxToMidi(pitchNums[pnIdx] - 2,
+									pitchTransformIndex,
+									numTransposeSemitones,
+									reverseScale,
+									halfScale,
+									curScaleType,
+									pitchNums[pnIdx] <= formerPitchNum),
+								start_time: pnIdx / beatsPerMeasure,
+								duration: duration * 0.30,
+								velocity: 100
+							}
+						);
+						notesDict.notes.push(
+							{
+								pitch: pitchIdxToMidi(pitchNums[pnIdx],
+									pitchTransformIndex,
+									numTransposeSemitones,
+									reverseScale,
+									halfScale,
+									curScaleType,
+									pitchNums[pnIdx] <= formerPitchNum),
+								start_time: pnIdx / beatsPerMeasure + duration * 0.25,
+								duration: duration * 0.75,
+								velocity: 100
+							}
+						);
+					}
+				}
+				else {
 					notesDict.notes.push(
 						{
 							pitch: pitchIdxToMidi(pitchNums[pnIdx],
@@ -316,29 +338,13 @@ function computeProbsPhases() {
 								reverseScale,
 								halfScale,
 								curScaleType,
-								pitchNums[pnIdx] < formerPitchNum) - 1,
+								pitchNums[pnIdx] < formerPitchNum),
 							start_time: pnIdx / beatsPerMeasure,
 							duration: duration,
 							velocity: 100
 						}
 					);
 				}
-
-				notesDict.notes.push(
-					{
-						pitch: pitchIdxToMidi(pitchNums[pnIdx],
-							pitchTransformIndex,
-							numTransposeSemitones,
-							reverseScale,
-							halfScale,
-							curScaleType,
-							pitchNums[pnIdx] < formerPitchNum),
-						start_time: pnIdx / beatsPerMeasure,
-						duration: duration,
-						velocity: 100
-					}
-				);
-
 			}
 			formerPitchNum = pitchNums[pnIdx];
 		}
@@ -530,8 +536,6 @@ function populateCircGridFromClip() {
 
 
 		qasmPadObj.js.createQasmFromGrid();
-		//preserveGlobalPhaseShift = false;
-		//qasmPadObj.js.printCircGrid();
 	}
 }
 

@@ -508,10 +508,12 @@ function pitchIdxToMidi(pitchIdx, octaveNumPlus2, transposeSemitones,
 
 
 function pitchIdxToGamaka(pitchIdx, scaleType, useDescOffsets) {
-  var gamakas = musicalScales[0].ascGamakas; // Default to ascending gamakas
+  var gamakas = musicalScales[0].ascGamakas; // Default to Major scale ascending gamakas
+  var scaleOffsets = musicalScales[0].ascOffsets; // Default to Major scale ascending offsets
 
   if (scaleType < musicalScales.length) {
     gamakas = useDescOffsets ? musicalScales[scaleType].descGamakas : musicalScales[scaleType].ascGamakas;
+    scaleOffsets = useDescOffsets ? musicalScales[scaleType].descOffsets : musicalScales[scaleType].ascOffsets;
   }
 
   if (pitchIdx < 0 || pitchIdx >= NUM_PITCHES) {
@@ -520,7 +522,13 @@ function pitchIdxToGamaka(pitchIdx, scaleType, useDescOffsets) {
   }
 
   post('\nIn pitchIdxToGamaka, gamakas[pitchIdx]: ' + gamakas[pitchIdx]);
-  return gamakas[pitchIdx];
+
+  var gamakaType = GamakaTypes.NONE;
+  if (scaleOffsets[pitchIdx] != -1) {
+    // Only return a gamaka if there is an associated pitch in the scale
+    gamakaType = gamakas[pitchIdx];
+  }
+  return gamakaType;
 }
 
 
