@@ -421,6 +421,77 @@ function computeProbsPhases() {
 						);
 					}
 				}
+				else if (gamakaType == GamakaTypes.ASCENDING_OSCILLATE) {
+					// Ensure that the previous note is lower in pitch than the
+					// gamaka note.
+					post('\npnIdx: ' + pnIdx + ', formerPitchNum: ' + formerPitchNum +
+						', pitchNums[pnIdx]: ' + pitchNums[pnIdx] +
+						', successorPitchNum: ' + successorPitchNum);
+
+					if (pnIdx > 0 && formerPitchNum < pitchNums[pnIdx]) {
+
+						// Begin slide from the previous note pitch
+						notesDict.notes.push(
+							{
+								pitch: pitchIdxToMidi(formerPitchNum,
+									pitchTransformIndex,
+									numTransposeSemitones,
+									reverseScale,
+									halfScale,
+									curScaleType,
+									pitchNums[pnIdx] <= formerPitchNum),
+								start_time: pnIdx / beatsPerMeasure,
+								duration: duration * 0.30,
+								velocity: 100
+							}
+						);
+						// Slide up to pitch of the gamaka note
+						notesDict.notes.push(
+							{
+								pitch: pitchIdxToMidi(pitchNums[pnIdx],
+									pitchTransformIndex,
+									numTransposeSemitones,
+									reverseScale,
+									halfScale,
+									curScaleType,
+									pitchNums[pnIdx] <= formerPitchNum),
+								start_time: pnIdx / beatsPerMeasure + duration * 0.25,
+								duration: duration * 0.30,
+								velocity: 100
+							}
+						);
+						// Slide down to the previous note pitch
+						notesDict.notes.push(
+							{
+								pitch: pitchIdxToMidi(formerPitchNum,
+									pitchTransformIndex,
+									numTransposeSemitones,
+									reverseScale,
+									halfScale,
+									curScaleType,
+									pitchNums[pnIdx] <= formerPitchNum),
+								start_time: pnIdx / beatsPerMeasure + duration * 0.5,
+								duration: duration * 0.30,
+								velocity: 100
+							}
+						);
+						// Slide back up to pitch of the gamaka note
+						notesDict.notes.push(
+							{
+								pitch: pitchIdxToMidi(pitchNums[pnIdx],
+									pitchTransformIndex,
+									numTransposeSemitones,
+									reverseScale,
+									halfScale,
+									curScaleType,
+									pitchNums[pnIdx] <= formerPitchNum),
+								start_time: pnIdx / beatsPerMeasure + duration * 0.75,
+								duration: duration * 0.30,
+								velocity: 100
+							}
+						);
+					}
+				}
 				else {
 					notesDict.notes.push(
 						{
