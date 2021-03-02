@@ -93,6 +93,11 @@ var prevPiOver8Phase = 0;
 
 var curClipPath = "";
 
+// Dictionary for sending notes to Live
+var notesDict = {
+	notes: []
+};
+
 draw();
 refresh();
 
@@ -202,6 +207,9 @@ function computeProbsPhases() {
 	var numBasisStates = svArray.length / 2;
 	var numBasisStatesWithNonZeroProbability = 0;
 
+	var formerPitchNum = 0;
+	var gamakaType = GamakaTypes.NONE;
+
 	var globalPhaseShifted = false;
 
 	for (var svIdx = 0; svIdx < svArray.length; svIdx += 2) {
@@ -251,13 +259,25 @@ function computeProbsPhases() {
 				shiftedPhase += (2*Math.PI);
 			}
 			pitchNum = Math.round(shiftedPhase / (2 * Math.PI) * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
+
+			// TODO: Remove note counting logic
 			numNotes++;
+
+			if (pitchNum > -1) {
+				gamakaType = pitchIdxToGamaka(pitchNum, curScaleType,
+					pitchNum < formerPitchNum);
+
+				if (gamakaType != GamakaTypes.NONE) {
+					numNotes += 1;
+				}
+			}
 
 			if (svIdx / 2 < maxDisplayedSteps) {
 				messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pitchNum + 1, 127);
 			}
 		}
 		pitchNums.push(pitchNum);
+		formerPitchNum = pitchNum;
 	}
 
 	// Set the notes into the clip
@@ -267,15 +287,21 @@ function computeProbsPhases() {
 
 	clip.set('loop_end', svArray.length / 8);
 
-	clip.call('set_notes');
+	// TODO: Remove
+	//clip.call('set_notes');
 
 	// Number of notes will include circuit node type values from grid,
 	// plus globalPhaseShift and pitchTransformationIndex
 
-	clip.call('notes', numNotes + NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES);
+	post('\nBefore writing notes, numNotes: ' + numNotes);
+
+	// TODO: Remove
+	// clip.call('notes', numNotes + NUM_GRID_CELLS + NUM_ADDITIONAL_METADATA_VALUES);
+
+	notesDict.notes = [];
 
 	var foundFirstPitch = false;
-	var formerPitchNum = 0;
+	formerPitchNum = 0;
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
 		if (pitchNums[pnIdx] > -1) {
 			if (!foundFirstPitch) {
@@ -292,7 +318,7 @@ function computeProbsPhases() {
 				for (var remPnIdx = pnIdx + 1; remPnIdx < pitchNums.length; remPnIdx++) {
 					if (pitchNums[remPnIdx] > -1) {
 						successorNoteFound = true;
-						duration = ((remPnIdx - pnIdx) / 4.0).toFixed(2);
+						duration = (remPnIdx - pnIdx) / 4.0;
 						//post('\nnew duration: ' + duration);
 						break;
 					}
@@ -300,23 +326,80 @@ function computeProbsPhases() {
 				if (!successorNoteFound) {
 					// No successor note was found so duration of final note extends
 					// to the end of the loop
-					duration = ((pitchNums.length - pnIdx) / 4.0).toFixed(2);
+					duration = (pitchNums.length - pnIdx) / 4.0;
 				}
 			}
 
 			if (pitchTransformIndex == 0) {
-				clip.call('note', pitchNums[pnIdx] + 36, time, duration, 100, 0);
+				//clip.call('note', pitchNums[pnIdx] + 36, time, duration, 100, 0);
+
+				notesDict.notes.push(
+					{
+						pitch: pitchNums[pnIdx] + 36,
+						start_time: pnIdx / 4.0,
+						duration: duration,
+						velocity: 100
+					}
+				);
+
 			}
 			else {
-				clip.call('note',
-					pitchIdxToMidi(pitchNums[pnIdx],
-						pitchTransformIndex,
-						numTransposeSemitones,
-						reverseScale,
-						halfScale,
-						curScaleType,
-						pitchNums[pnIdx] < formerPitchNum),
-					time, duration, 100, 0);
+				gamakaType = pitchIdxToGamaka(pitchNums[pnIdx], curScaleType, pitchNums[pnIdx] < formerPitchNum);
+				if (gamakaType != GamakaTypes.NONE) {
+
+					// TODO: Remove
+					// clip.call('note',
+					// 	pitchIdxToMidi(pitchNums[pnIdx],
+					// 		pitchTransformIndex,
+					// 		numTransposeSemitones,
+					// 		reverseScale,
+					// 		halfScale,
+					// 		curScaleType,
+					// 		pitchNums[pnIdx] < formerPitchNum) - 1,
+					// 	time, duration, 100, 0);
+
+					notesDict.notes.push(
+						{
+							pitch: pitchIdxToMidi(pitchNums[pnIdx],
+								pitchTransformIndex,
+								numTransposeSemitones,
+								reverseScale,
+								halfScale,
+								curScaleType,
+								pitchNums[pnIdx] < formerPitchNum) - 1,
+							start_time: pnIdx / 4.0,
+							duration: duration,
+							velocity: 100
+						}
+					);
+				}
+
+				// TODO: Remove
+				// clip.call('note',
+				// 	pitchIdxToMidi(pitchNums[pnIdx],
+				// 		pitchTransformIndex,
+				// 		numTransposeSemitones,
+				// 		reverseScale,
+				// 		halfScale,
+				// 		curScaleType,
+				// 		pitchNums[pnIdx] < formerPitchNum),
+				// 	time, duration, 100, 0);
+
+				notesDict.notes.push(
+					{
+						pitch: pitchIdxToMidi(pitchNums[pnIdx],
+							pitchTransformIndex,
+							numTransposeSemitones,
+							reverseScale,
+							halfScale,
+							curScaleType,
+							pitchNums[pnIdx] < formerPitchNum),
+						start_time: pnIdx / 4.0,
+						duration: duration,
+						velocity: 100
+					}
+				);
+
 			}
 			formerPitchNum = pitchNums[pnIdx];
 		}
@@ -333,25 +416,76 @@ function computeProbsPhases() {
 			}
 
 			var metaDataTime = ((startIdx + (colIdx * NUM_GRID_ROWS + rowIdx)) / 4.0).toFixed(2);
-  		clip.call('note', gateMidi, metaDataTime, ".25", 100, 0);
+
+  		// TODO: Remove
+  		//clip.call('note', gateMidi, metaDataTime, ".25", 100, 0);
+
+			notesDict.notes.push(
+				{
+					pitch: gateMidi,
+					start_time: (startIdx + (colIdx * NUM_GRID_ROWS + rowIdx)) / 4.0,
+					duration: 0.25,
+				}
+			);
+
 		}
 	}
 
 	// Encode global phase shift
 	var globalPhaseShiftTime = ((startIdx + NUM_GRID_CELLS) / 4.0).toFixed(2);
-	clip.call('note', globalPhaseShiftMidi, globalPhaseShiftTime, ".25", 100, 0);
+
+	// TODO: Remove
+	//clip.call('note', globalPhaseShiftMidi, globalPhaseShiftTime, ".25", 100, 0);
+
+	notesDict.notes.push(
+		{
+			pitch: globalPhaseShiftMidi,
+			start_time: (startIdx + NUM_GRID_CELLS) / 4.0,
+			duration: 0.25,
+		}
+	);
 
 	// Encode pitch transformation index
 	var pitchTransformIndexTime = ((startIdx + NUM_GRID_CELLS + 1) / 4.0).toFixed(2);
-	clip.call('note', pitchTransformIndex, pitchTransformIndexTime, ".25", 100, 0);
+
+	// TODO: Remove
+	//clip.call('note', pitchTransformIndex, pitchTransformIndexTime, ".25", 100, 0);
+
+	notesDict.notes.push(
+		{
+			pitch: pitchTransformIndex,
+			start_time: (startIdx + NUM_GRID_CELLS + 1) / 4.0,
+			duration: 0.25,
+		}
+	);
 
 	// Encode number of semitones transposition
 	var numTransposeSemitonesTime = ((startIdx + NUM_GRID_CELLS + 2) / 4.0).toFixed(2);
-	clip.call('note', numTransposeSemitones, numTransposeSemitonesTime, ".25", 100, 0);
+
+	// TODO: Remove
+	//clip.call('note', numTransposeSemitones, numTransposeSemitonesTime, ".25", 100, 0);
+
+	notesDict.notes.push(
+		{
+			pitch: numTransposeSemitones,
+			start_time: (startIdx + NUM_GRID_CELLS + 2) / 4.0,
+			duration: 0.25,
+		}
+	);
 
 	// Encode scale type
 	var scaleTypeTime = ((startIdx + NUM_GRID_CELLS + 3) / 4.0).toFixed(2);
-	clip.call('note', curScaleType, scaleTypeTime, ".25", 100, 0);
+
+	// TODO: Remove
+	//clip.call('note', curScaleType, scaleTypeTime, ".25", 100, 0);
+
+	notesDict.notes.push(
+		{
+			pitch: curScaleType,
+			start_time: (startIdx + NUM_GRID_CELLS + 3) / 4.0,
+			duration: 0.25,
+		}
+	);
 
 	// Encode flags (legato, reverseScale, halfScale)
 	// The value encoded is a binary representation, where:
@@ -369,9 +503,23 @@ function computeProbsPhases() {
 		miscFlagsVal += 4;
 	}
 	var miscFlagsTime = ((startIdx + NUM_GRID_CELLS + 4) / 4.0).toFixed(2);
-	clip.call('note', miscFlagsVal, miscFlagsTime, ".25", 100, 0);
 
-	clip.call('done');
+	// TODO: Remove
+	//clip.call('note', miscFlagsVal, miscFlagsTime, ".25", 100, 0);
+
+	notesDict.notes.push(
+		{
+			pitch: miscFlagsVal,
+			start_time: (startIdx + NUM_GRID_CELLS + 4) / 4.0,
+			duration: 0.25,
+		}
+	);
+
+	// TODO: Remove
+	//clip.call('done');
+
+	clip.call('add_new_notes', notesDict);
+
 
 	// TODO: Refactor code below and its occurrence elsewhere into separate method
 	//	 		 and ensure that it doesn't get call unnecessarily

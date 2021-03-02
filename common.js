@@ -136,7 +136,7 @@ var CircuitNodeTypes = {
 
 
 var GamakaTypes = {
-  NONE: 0,
+  NONE: -1,
   SLIDE_UP: 1, //
   SLIDE_UP_2_PITCHES: 2, //
   SLIDE_DOWN: 3, //
@@ -505,6 +505,24 @@ function pitchIdxToMidi(pitchIdx, octaveNumPlus2, transposeSemitones,
 
   return midiPitch;
 }
+
+
+function pitchIdxToGamaka(pitchIdx, scaleType, useDescOffsets) {
+  var gamakas = musicalScales[0].ascGamakas; // Default to ascending gamakas
+
+  if (scaleType < musicalScales.length) {
+    gamakas = useDescOffsets ? musicalScales[scaleType].descGamakas : musicalScales[scaleType].ascGamakas;
+  }
+
+  if (pitchIdx < 0 || pitchIdx >= NUM_PITCHES) {
+    post('\nIn pitchIdxToGamaka, pitchIdx unexpectedly: ' + pitchIdx + ', setting to 0');
+    pitchIdx = 0;
+  }
+
+  post('\nIn pitchIdxToGamaka, gamakas[pitchIdx]: ' + gamakas[pitchIdx]);
+  return gamakas[pitchIdx];
+}
+
 
 function removeQuotes(str) {
   var unquotedStr = str;
