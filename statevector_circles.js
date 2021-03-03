@@ -300,6 +300,7 @@ function computeProbsPhases() {
 			}
 			else {
 				gamakaType = pitchIdxToGamaka(pitchNums[pnIdx], curScaleType, pitchNums[pnIdx] <= formerPitchNum);
+				var gamakaPlayed = false;
 
 				if (gamakaType == GamakaTypes.SLIDE_UP_2_PITCHES) {
 					// Ensure that there is a pitch from which to slide
@@ -332,6 +333,7 @@ function computeProbsPhases() {
 								velocity: 100
 							}
 						);
+						gamakaPlayed = true;
 					}
 				}
 				else if (gamakaType == GamakaTypes.SLIDE_DOWN) {
@@ -370,6 +372,7 @@ function computeProbsPhases() {
 								velocity: 100
 							}
 						);
+						gamakaPlayed = true;
 					}
 				}
 				else if (gamakaType == GamakaTypes.ASCENDING_SLIDE_OSCILLATE) {
@@ -457,6 +460,7 @@ function computeProbsPhases() {
 								velocity: 100
 							}
 						);
+						gamakaPlayed = true;
 					}
 				}
 				else if (gamakaType == GamakaTypes.ASCENDING_OSCILLATE) {
@@ -528,6 +532,7 @@ function computeProbsPhases() {
 								velocity: 100
 							}
 						);
+						gamakaPlayed = true;
 					}
 				}
 				else if (gamakaType == GamakaTypes.DESCENDING_OSCILLATE) {
@@ -599,9 +604,11 @@ function computeProbsPhases() {
 								velocity: 100
 							}
 						);
+						gamakaPlayed = true;
 					}
 				}
-				else {
+
+				if (!gamakaPlayed) {
 					notesDict.notes.push(
 						{
 							pitch: pitchIdxToMidi(pitchNums[pnIdx],
