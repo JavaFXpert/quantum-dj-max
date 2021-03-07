@@ -173,7 +173,7 @@ function MusicalScale(nameArg, ascOffsetsArg, descOffsetsArg, ascGamakasArg, des
     ascGamakasArg.length > 0) {
     this.ascGamakas = ascGamakasArg;
   }
-  else {
+  else if (nameArg !== "undefined" && nameArg.indexOf("Raga") !== -1){
     this.ascGamakas = [
       GamakaTypes.NONE,                      // Sa
       GamakaTypes.NONE,                      // Ri
@@ -190,7 +190,27 @@ function MusicalScale(nameArg, ascOffsetsArg, descOffsetsArg, ascGamakasArg, des
       GamakaTypes.ASCENDING_OSCILLATE,       // Da
       GamakaTypes.ASCENDING_SLIDE_OSCILLATE, // Ni
       GamakaTypes.NONE,                      // Sa
-      GamakaTypes.NONE,                      // Ri
+      GamakaTypes.NONE                      // Ri
+    ];
+  }
+  else {
+    this.ascGamakas = [
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE
     ];
   }
 
@@ -199,7 +219,7 @@ function MusicalScale(nameArg, ascOffsetsArg, descOffsetsArg, ascGamakasArg, des
     descGamakasArg.length > 0) {
     this.descGamakas = descGamakasArg;
   }
-  else {
+  else if (nameArg !== "undefined" && nameArg.indexOf("Raga") !== -1){
     this.descGamakas = [
       GamakaTypes.NONE,                      // Sa
       GamakaTypes.SLIDE_DOWN,                // Ri
@@ -216,7 +236,27 @@ function MusicalScale(nameArg, ascOffsetsArg, descOffsetsArg, ascGamakasArg, des
       GamakaTypes.SLIDE_DOWN,                // Da
       GamakaTypes.DESCENDING_OSCILLATE,      // Ni
       GamakaTypes.SLIDE_UP_2_PITCHES,        // Sa
-      GamakaTypes.SLIDE_DOWN,                // Ri
+      GamakaTypes.SLIDE_DOWN                // Ri
+    ];
+  }
+  else {
+    this.descGamakas = [
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE,
+      GamakaTypes.NONE
     ];
   }
 }
