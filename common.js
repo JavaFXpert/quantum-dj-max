@@ -142,7 +142,8 @@ var GamakaTypes = {
   SLIDE_DOWN: 3, //
   ASCENDING_SLIDE_OSCILLATE: 4,
   ASCENDING_OSCILLATE: 5,
-  DESCENDING_OSCILLATE: 6
+  DESCENDING_OSCILLATE: 6,
+  HAMMER_ON_CHROMATIC: 7  // Hammer-on from one semitone below
 }
 
 
@@ -220,6 +221,7 @@ function MusicalScale(nameArg, ascOffsetsArg, descOffsetsArg, ascGamakasArg, des
     this.descGamakas = descGamakasArg;
   }
   else if (nameArg !== "undefined" && nameArg.indexOf("Raga") !== -1){
+  //else if (this.isRaga()){
     this.descGamakas = [
       GamakaTypes.NONE,                      // Sa
       GamakaTypes.SLIDE_DOWN,                // Ri
@@ -260,7 +262,9 @@ function MusicalScale(nameArg, ascOffsetsArg, descOffsetsArg, ascGamakasArg, des
     ];
   }
 }
-
+(MusicalScale.prototype).isRaga = function() {
+  return this.name !== "undefined" && this.name.indexOf("Raga") !== -1;
+};
 
 // Supported musical scales
 var musicalScales = [
@@ -547,13 +551,13 @@ function pitchIdxToMidi(pitchIdx, octaveNumPlus2, transposeSemitones,
 }
 
 
-function pitchIdxToGamaka(pitchIdx, scaleType, useDescOffsets) {
+function pitchIdxToGamaka(pitchIdx, scaleType, formerPitchNum) {
   var gamakas = musicalScales[0].ascGamakas; // Default to Major scale ascending gamakas
   var scaleOffsets = musicalScales[0].ascOffsets; // Default to Major scale ascending offsets
 
   if (scaleType < musicalScales.length) {
-    gamakas = useDescOffsets ? musicalScales[scaleType].descGamakas : musicalScales[scaleType].ascGamakas;
-    scaleOffsets = useDescOffsets ? musicalScales[scaleType].descOffsets : musicalScales[scaleType].ascOffsets;
+    gamakas = pitchIdx <= formerPitchNum ? musicalScales[scaleType].descGamakas : musicalScales[scaleType].ascGamakas;
+    scaleOffsets = pitchIdx <= formerPitchNum  ? musicalScales[scaleType].descOffsets : musicalScales[scaleType].ascOffsets;
   }
 
   if (pitchIdx < 0 || pitchIdx >= NUM_PITCHES) {
@@ -564,9 +568,16 @@ function pitchIdxToGamaka(pitchIdx, scaleType, useDescOffsets) {
   post('\nIn pitchIdxToGamaka, gamakas[pitchIdx]: ' + gamakas[pitchIdx]);
 
   var gamakaType = GamakaTypes.NONE;
+
+  // Only return a gamaka if there is an associated pitch in the scale
   if (scaleOffsets[pitchIdx] != -1) {
-    // Only return a gamaka if there is an associated pitch in the scale
-    gamakaType = gamakas[pitchIdx];
+    // For Ragas, if pitch and former pitch are the same (repeated note), hammer on second note
+    if (musicalScales[scaleType].isRaga() && pitchIdx == formerPitchNum) {
+      gamakaType = GamakaTypes.HAMMER_ON_CHROMATIC;
+    }
+    else {
+      gamakaType = gamakas[pitchIdx];
+    }
   }
   return gamakaType;
 }
