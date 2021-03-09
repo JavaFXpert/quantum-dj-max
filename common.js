@@ -38,7 +38,7 @@ var NUM_GATE_COLS = 2;
 
 // Number of values in addition to the circuit grid
 // stored as metadata in the clip
-var NUM_ADDITIONAL_METADATA_VALUES = 5;
+var NUM_ADDITIONAL_METADATA_VALUES = 6;
 
 // Resolution of calculation from phase to notes or sounds in a kit.
 // Also represents resolution of phase.
@@ -772,4 +772,19 @@ function circNodeType2Color(circNodeTypeNum) {
 
   return colorNum;
 }
+
+
+// TODO: Perhaps import a log2 function
+/*
+function calcNumQubitsFromNumBasisStates(nbsArg) {
+  var nq = 0;
+  var nbs = nbsArg;
+
+  while (nbs > 1) {
+    nbs /= 2;
+    nq++;
+  }
+  return nq;
+}
+*/
 

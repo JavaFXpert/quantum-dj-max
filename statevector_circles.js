@@ -20,7 +20,7 @@
  */
 include('common.js');
 
-var maxDisplayedSteps = 64
+var maxDisplayedSteps = 64;
 
 // Inlet 0 receives "viz" messages with a statevector to display
 // Inlet 1 receives global phase shift integer from 0 - 7
@@ -38,7 +38,8 @@ var maxDisplayedSteps = 64
 // Inlet 7 receives messages that indicate whether scale is to be reversed
 // Inlet 8 receives messages that indicate whether scale is to be halved
 // Inlet 9 receives messages that indicate current scale type
-this.inlets = 10;
+// Inlet 10 receives messages that indicate current beats in a cycle
+this.inlets = 11;
 
 // Outlet 0 sends global phase shift
 // Outlet 1 sends pitch transform index
@@ -47,7 +48,8 @@ this.inlets = 10;
 // Outlet 4 sends indication of whether scale is to be reversed
 // Outlet 5 sends indication of whether scale is to be halved
 // Outlet 6 sends the current scale type value
-this.outlets = 7;
+// Outlet 7 sends the current beats in a cycle
+this.outlets = 8;
 
 sketch.default2d();
 var vbrgb = [1.,1.,1.,1.];
@@ -87,6 +89,9 @@ var halfScale = false;
 // Type of scale to use
 var curScaleType = 0; //Major
 
+
+// TODO: Document this
+var curCycleLength = 4;
 
 var prevPiOver8Phase = 0;
 
@@ -163,6 +168,11 @@ function msg_int(val) {
 		qasmPadObj.js.padNoteNamesDirty = true;
 		computeProbsPhases();
 	}
+	if (inlet == 10) {
+		// Set cycle length
+		curCycleLength = val;
+		computeProbsPhases();
+	}
 }
 
 
@@ -190,7 +200,14 @@ function viz(svlist) {
 function computeProbsPhases() {
 	messnamed('cmd_to_svgrid', 'clear');
 	var pitchNums = [];
+
 	var numBasisStates = svArray.length / 2;
+
+	// Send pitch transform index
+	// TODO: Remove/replace
+	//curCycleLength = 4;
+	//outlet(7, 'int', curCycleLength);
+
 	var numBasisStatesWithNonZeroProbability = 0;
 
 	var gamakaType = GamakaTypes.NONE;
@@ -245,6 +262,13 @@ function computeProbsPhases() {
 				messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pitchNum + 1, 127);
 			}
 		}
+		if (svIdx / 2 < maxDisplayedSteps) {
+			if (!basisStateIncluded(svIdx / 2, numBasisStates, curCycleLength)) {
+				for (var pIdx = 0; pIdx < NUM_PITCHES; pIdx++) {
+					messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pIdx + 1, 1);
+				}
+			}
+		}
 		pitchNums.push(pitchNum);
 	}
 
@@ -253,419 +277,404 @@ function computeProbsPhases() {
 	var clip = new LiveAPI(curClipPath);
 	clip.call('remove_notes_extended', 0, 128, 0, 256);
 
-	clip.set('loop_end', svArray.length / 8);
-
 	var foundFirstPitch = false;
 	var formerPitchNum = 0;
 	var successorPitchNum = 0;
+
+	// Tracks the beats in the loop
+	var beatIdx = 0;
+
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
-		if (pitchNums[pnIdx] > -1) {
-			if (!foundFirstPitch) {
-				prevPiOver8Phase = pitchNums[pnIdx];
-				foundFirstPitch = true;
-				//post('\n***** prevPiOver8Phase: ' + prevPiOver8Phase);
-			}
+		if (basisStateIncluded(pnIdx, numBasisStates, curCycleLength)) {
+			if (pitchNums[pnIdx] > -1) {
+				if (!foundFirstPitch) {
+					prevPiOver8Phase = pitchNums[pnIdx];
+					foundFirstPitch = true;
+					//post('\n***** prevPiOver8Phase: ' + prevPiOver8Phase);
+				}
 
-			var duration = 0.25;
-			var successorNoteFound = false;
-			for (var remPnIdx = pnIdx + 1; remPnIdx < pitchNums.length; remPnIdx++) {
-				if (pitchNums[remPnIdx] > -1) {
-					successorNoteFound = true;
-					successorPitchNum = pitchNums[remPnIdx];
+				var duration = 0.25;
+				var successorNoteFound = false;
+				for (var remPnIdx = pnIdx + 1; remPnIdx < pitchNums.length; remPnIdx++) {
+					if (pitchNums[remPnIdx] > -1) {
+						successorNoteFound = true;
+						successorPitchNum = pitchNums[remPnIdx];
+						if (legato) {
+							duration = (remPnIdx - pnIdx) / beatsPerMeasure;
+						}
+						//post('\nnew duration: ' + duration);
+						break;
+					}
+				}
+				if (!successorNoteFound) {
 					if (legato) {
-						duration = (remPnIdx - pnIdx) / beatsPerMeasure;
-					}
-					//post('\nnew duration: ' + duration);
-					break;
-				}
-			}
-			if (!successorNoteFound) {
-				if (legato) {
-					// No successor note was found so duration of final note extends
-					// to the end of the loop
-					duration = (pitchNums.length - pnIdx) / beatsPerMeasure;
-				}
-			}
-
-			if (pitchTransformIndex == 0) {
-				notesDict.notes.push(
-					{
-						pitch: pitchNums[pnIdx] + 36,
-						start_time: pnIdx / beatsPerMeasure,
-						duration: duration,
-						velocity: 100
-					}
-				);
-
-			}
-			else {
-				gamakaType = pitchIdxToGamaka(pitchNums[pnIdx], curScaleType, formerPitchNum);
-				var gamakaPlayed = false;
-
-				if (gamakaType == GamakaTypes.SLIDE_UP_2_PITCHES) {
-					// Ensure that there is a pitch from which to slide
-					if (pitchNums[pnIdx] >= 2) {
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(pitchNums[pnIdx] - 2,
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure,
-								duration: duration * 0.30,
-								velocity: 100
-							}
-						);
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(pitchNums[pnIdx],
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.25,
-								duration: duration * 0.75,
-								velocity: 100
-							}
-						);
-						gamakaPlayed = true;
-					}
-				}
-				else if (gamakaType == GamakaTypes.SLIDE_DOWN) {
-					// Ensure that the previous note is higher in pitch than the
-					// gamaka note.
-					post('\npnIdx: ' + pnIdx + ', formerPitchNum: ' + formerPitchNum +
-						', pitchNums[pnIdx]: ' + pitchNums[pnIdx] +
-						', successorPitchNum: ' + successorPitchNum);
-
-					if (formerPitchNum > 0 && formerPitchNum > pitchNums[pnIdx]) {
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(formerPitchNum,
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure,
-								duration: duration * 0.30,
-								velocity: 100
-							}
-						);
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(pitchNums[pnIdx],
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.25,
-								duration: duration * 0.75,
-								velocity: 100
-							}
-						);
-						gamakaPlayed = true;
-					}
-				}
-				else if (gamakaType == GamakaTypes.ASCENDING_SLIDE_OSCILLATE) {
-					// Ensure that the previous note is lower in pitch than the
-					// gamaka note, and that the following pitch is higher
-					post('\npnIdx: ' + pnIdx + ', formerPitchNum: ' + formerPitchNum +
-						', pitchNums[pnIdx]: ' + pitchNums[pnIdx] +
-						', successorPitchNum: ' + successorPitchNum);
-
-					if (formerPitchNum > 0  && formerPitchNum < pitchNums[pnIdx] &&
-						successorPitchNum > pitchNums[pnIdx]) {
-
-						// Begin slide from the previous note pitch
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(formerPitchNum,
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure,
-								duration: duration * 0.25,
-								velocity: 100
-							}
-						);
-						// Slide up to pitch in the note following the gamaka
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(successorPitchNum,
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.1875, // 3/16
-								duration: duration * 0.25,
-								velocity: 100
-							}
-						);
-						// Slide down to pitch in the gamaka note
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(pitchNums[pnIdx],
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.375, // 6/16
-								duration: duration * 0.25,
-								velocity: 100
-							}
-						);
-						// Slide up to pitch in the note following the gamaka
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(successorPitchNum,
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.5625, // 9/16
-								duration: duration * 0.25,
-								velocity: 100
-							}
-						);
-						// Slide down to pitch in the gamaka note
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(pitchNums[pnIdx],
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.75, // 12/16
-								duration: duration * 0.25,
-								velocity: 100
-							}
-						);
-						gamakaPlayed = true;
-					}
-				}
-				else if (gamakaType == GamakaTypes.ASCENDING_OSCILLATE) {
-					// Ensure that the previous note is lower in pitch than the
-					// gamaka note.
-					post('\npnIdx: ' + pnIdx + ', formerPitchNum: ' + formerPitchNum +
-						', pitchNums[pnIdx]: ' + pitchNums[pnIdx] +
-						', successorPitchNum: ' + successorPitchNum);
-
-					if (formerPitchNum > 0  && formerPitchNum < pitchNums[pnIdx]) {
-
-						// Begin slide from the previous note pitch
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(formerPitchNum,
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure,
-								duration: duration * 0.30,
-								velocity: 100
-							}
-						);
-						// Slide up to pitch of the gamaka note
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(pitchNums[pnIdx],
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.25,
-								duration: duration * 0.30,
-								velocity: 100
-							}
-						);
-						// Slide down to the previous note pitch
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(formerPitchNum,
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.5,
-								duration: duration * 0.30,
-								velocity: 100
-							}
-						);
-						// Slide back up to pitch of the gamaka note
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(pitchNums[pnIdx],
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.75,
-								duration: duration * 0.25,
-								velocity: 100
-							}
-						);
-						gamakaPlayed = true;
-					}
-				}
-				else if (gamakaType == GamakaTypes.DESCENDING_OSCILLATE) {
-					// Ensure that the previous note is higher in pitch than the
-					// gamaka note.
-					post('\npnIdx: ' + pnIdx + ', formerPitchNum: ' + formerPitchNum +
-						', pitchNums[pnIdx]: ' + pitchNums[pnIdx] +
-						', successorPitchNum: ' + successorPitchNum);
-
-					if (formerPitchNum > 0 && formerPitchNum > pitchNums[pnIdx]) {
-
-						// Begin slide from the gamaka pitch
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(pitchNums[pnIdx],
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure,
-								duration: duration * 0.30,
-								velocity: 100
-							}
-						);
-						// Slide up to pitch of the previous note
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(formerPitchNum,
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.25,
-								duration: duration * 0.30,
-								velocity: 100
-							}
-						);
-						// Slide down to the gamaka note pitch
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(pitchNums[pnIdx],
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.5,
-								duration: duration * 0.30,
-								velocity: 100
-							}
-						);
-						// Slide back up to pitch of the previous note
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(formerPitchNum,
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.75,
-								duration: duration * 0.25,
-								velocity: 100
-							}
-						);
-						gamakaPlayed = true;
-					}
-				}
-				else if (gamakaType == GamakaTypes.HAMMER_ON_CHROMATIC) {
-					// Ensure that there is a lower pitch from which to hammer on
-					if (pitchNums[pnIdx] >= 1) {
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(pitchNums[pnIdx],
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum) - 1,
-								start_time: pnIdx / beatsPerMeasure,
-								duration: duration * 0.15,
-								velocity: 100
-							}
-						);
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(pitchNums[pnIdx],
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] <= formerPitchNum),
-								start_time: pnIdx / beatsPerMeasure + duration * 0.10,
-								duration: duration * 0.9,
-								velocity: 100
-							}
-						);
-						gamakaPlayed = true;
+						// No successor note was found so duration of final note extends
+						// to the end of the loop
+						duration = (pitchNums.length - pnIdx) / beatsPerMeasure;
 					}
 				}
 
-				if (!gamakaPlayed) {
+				if (pitchTransformIndex == 0) {
 					notesDict.notes.push(
 						{
-							pitch: pitchIdxToMidi(pitchNums[pnIdx],
-								pitchTransformIndex,
-								numTransposeSemitones,
-								reverseScale,
-								halfScale,
-								curScaleType,
-								pitchNums[pnIdx] < formerPitchNum),
-							start_time: pnIdx / beatsPerMeasure,
+							pitch: pitchNums[pnIdx] + 36,
+							start_time: beatIdx / beatsPerMeasure,
 							duration: duration,
 							velocity: 100
 						}
 					);
+
+				} else {
+					gamakaType = pitchIdxToGamaka(pitchNums[pnIdx], curScaleType, formerPitchNum);
+					var gamakaPlayed = false;
+
+					if (gamakaType == GamakaTypes.SLIDE_UP_2_PITCHES) {
+						// Ensure that there is a pitch from which to slide
+						if (pitchNums[pnIdx] >= 2) {
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(pitchNums[pnIdx] - 2,
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure,
+									duration: duration * 0.30,
+									velocity: 100
+								}
+							);
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(pitchNums[pnIdx],
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.25,
+									duration: duration * 0.75,
+									velocity: 100
+								}
+							);
+							gamakaPlayed = true;
+						}
+					} else if (gamakaType == GamakaTypes.SLIDE_DOWN) {
+						// Ensure that the previous note is higher in pitch than the
+						// gamaka note.
+						if (formerPitchNum > 0 && formerPitchNum > pitchNums[pnIdx]) {
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(formerPitchNum,
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure,
+									duration: duration * 0.30,
+									velocity: 100
+								}
+							);
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(pitchNums[pnIdx],
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.25,
+									duration: duration * 0.75,
+									velocity: 100
+								}
+							);
+							gamakaPlayed = true;
+						}
+					} else if (gamakaType == GamakaTypes.ASCENDING_SLIDE_OSCILLATE) {
+						// Ensure that the previous note is lower in pitch than the
+						// gamaka note, and that the following pitch is higher
+						if (formerPitchNum > 0 && formerPitchNum < pitchNums[pnIdx] &&
+							successorPitchNum > pitchNums[pnIdx]) {
+
+							// Begin slide from the previous note pitch
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(formerPitchNum,
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure,
+									duration: duration * 0.25,
+									velocity: 100
+								}
+							);
+							// Slide up to pitch in the note following the gamaka
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(successorPitchNum,
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.1875, // 3/16
+									duration: duration * 0.25,
+									velocity: 100
+								}
+							);
+							// Slide down to pitch in the gamaka note
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(pitchNums[pnIdx],
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.375, // 6/16
+									duration: duration * 0.25,
+									velocity: 100
+								}
+							);
+							// Slide up to pitch in the note following the gamaka
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(successorPitchNum,
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.5625, // 9/16
+									duration: duration * 0.25,
+									velocity: 100
+								}
+							);
+							// Slide down to pitch in the gamaka note
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(pitchNums[pnIdx],
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.75, // 12/16
+									duration: duration * 0.25,
+									velocity: 100
+								}
+							);
+							gamakaPlayed = true;
+						}
+					} else if (gamakaType == GamakaTypes.ASCENDING_OSCILLATE) {
+						// Ensure that the previous note is lower in pitch than the
+						// gamaka note.
+						if (formerPitchNum > 0 && formerPitchNum < pitchNums[pnIdx]) {
+
+							// Begin slide from the previous note pitch
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(formerPitchNum,
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure,
+									duration: duration * 0.30,
+									velocity: 100
+								}
+							);
+							// Slide up to pitch of the gamaka note
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(pitchNums[pnIdx],
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.25,
+									duration: duration * 0.30,
+									velocity: 100
+								}
+							);
+							// Slide down to the previous note pitch
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(formerPitchNum,
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.5,
+									duration: duration * 0.30,
+									velocity: 100
+								}
+							);
+							// Slide back up to pitch of the gamaka note
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(pitchNums[pnIdx],
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.75,
+									duration: duration * 0.25,
+									velocity: 100
+								}
+							);
+							gamakaPlayed = true;
+						}
+					} else if (gamakaType == GamakaTypes.DESCENDING_OSCILLATE) {
+						// Ensure that the previous note is higher in pitch than the
+						// gamaka note.
+						if (formerPitchNum > 0 && formerPitchNum > pitchNums[pnIdx]) {
+
+							// Begin slide from the gamaka pitch
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(pitchNums[pnIdx],
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure,
+									duration: duration * 0.30,
+									velocity: 100
+								}
+							);
+							// Slide up to pitch of the previous note
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(formerPitchNum,
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.25,
+									duration: duration * 0.30,
+									velocity: 100
+								}
+							);
+							// Slide down to the gamaka note pitch
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(pitchNums[pnIdx],
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.5,
+									duration: duration * 0.30,
+									velocity: 100
+								}
+							);
+							// Slide back up to pitch of the previous note
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(formerPitchNum,
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.75,
+									duration: duration * 0.25,
+									velocity: 100
+								}
+							);
+							gamakaPlayed = true;
+						}
+					} else if (gamakaType == GamakaTypes.HAMMER_ON_CHROMATIC) {
+						// Ensure that there is a lower pitch from which to hammer on
+						if (pitchNums[pnIdx] >= 1) {
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(pitchNums[pnIdx],
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum) - 1,
+									start_time: beatIdx / beatsPerMeasure,
+									duration: duration * 0.15,
+									velocity: 100
+								}
+							);
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(pitchNums[pnIdx],
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] <= formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure + duration * 0.10,
+									duration: duration * 0.9,
+									velocity: 100
+								}
+							);
+							gamakaPlayed = true;
+						}
+					}
+
+					if (!gamakaPlayed) {
+						notesDict.notes.push(
+							{
+								pitch: pitchIdxToMidi(pitchNums[pnIdx],
+									pitchTransformIndex,
+									numTransposeSemitones,
+									reverseScale,
+									halfScale,
+									curScaleType,
+									pitchNums[pnIdx] < formerPitchNum),
+								start_time: beatIdx / beatsPerMeasure,
+								duration: duration,
+								velocity: 100
+							}
+						);
+					}
 				}
+				formerPitchNum = pitchNums[pnIdx];
 			}
-			formerPitchNum = pitchNums[pnIdx];
+			beatIdx++;
 		}
 	}
+	var numBeats = beatIdx;
+	clip.set('loop_end', numBeats / beatsPerMeasure);
 
 	// Encode circuit grid into the clip, after the loop end
 	var qasmPadObj = this.patcher.getnamed("qasmpad");
-	var startIdx = pitchNums.length;
+	var startIdx = numBeats;
   for (var colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
   	for (var rowIdx = 0; rowIdx < NUM_GRID_ROWS; rowIdx++) {
   		var gateMidi = qasmPadObj.js.circGrid[rowIdx][colIdx];
@@ -720,6 +729,15 @@ function computeProbsPhases() {
 		}
 	);
 
+	// Encode cycle length
+	notesDict.notes.push(
+		{
+			pitch: curCycleLength,
+			start_time: (startIdx + NUM_GRID_CELLS + 4) / beatsPerMeasure,
+			duration: 0.25,
+		}
+	);
+
 	// Encode flags (legato, reverseScale, halfScale)
 	// The value encoded is a binary representation, where:
 	//   - 0b0000001 place represents legato
@@ -735,12 +753,11 @@ function computeProbsPhases() {
 	if (halfScale) {
 		miscFlagsVal += 4;
 	}
-	var miscFlagsTime = ((startIdx + NUM_GRID_CELLS + 4) / beatsPerMeasure).toFixed(2);
 
 	notesDict.notes.push(
 		{
 			pitch: miscFlagsVal,
-			start_time: (startIdx + NUM_GRID_CELLS + 4) / beatsPerMeasure,
+			start_time: (startIdx + NUM_GRID_CELLS + 5) / beatsPerMeasure,
 			duration: 0.25,
 		}
 	);
@@ -749,7 +766,7 @@ function computeProbsPhases() {
 
 
 	// TODO: Refactor code below and its occurrence elsewhere into separate method
-	//	 		 and ensure that it doesn't get call unnecessarily
+	//	 		 and ensure that it doesn't get called unnecessarily
 	// Get truncated path that only includes track (e.g. live_set tracks 2)
 	var trackPathTokens = curClipPath.split(' ');
 	trackPathTokens.length = 3;
@@ -813,6 +830,12 @@ function populateCircGridFromClip() {
 					outlet(6, 'int', curScaleType);
 				}
 				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 4) {
+					curCycleLength = noteMidi;
+
+					// Send current scale type value
+					outlet(7, 'int', curCycleLength);
+				}
+				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 5) {
 					legato = (noteMidi & 1) == 1; // legato is represented in 0b0000001 place
 					reverseScale = (noteMidi & 2) == 2; // reverseScale is represented in 0b0000010 place
 					halfScale = (noteMidi & 4) == 4; // halfScale is represented in 0b0000100 place
@@ -872,6 +895,24 @@ function setGlobalPhaseShift(phaseShiftDialVal) {
 	computeProbsPhases();
 }
 
+
+function basisStateIncluded(basisStateIdx, numBasisStates, cycleLength) {
+	var retIncluded = false;
+
+	var closest = 1;
+	while (cycleLength > closest) {
+		closest *= 2;
+	}
+
+	for (var cycleStart = 0; cycleStart < numBasisStates; cycleStart += closest) {
+		if (basisStateIdx >= cycleStart && basisStateIdx < cycleStart + cycleLength) {
+			retIncluded = true;
+			break;
+		}
+	}
+
+	return retIncluded;
+}
 
 
 // Given an object in Cartesian coordinates x, y
