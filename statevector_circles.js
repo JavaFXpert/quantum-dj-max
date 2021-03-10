@@ -39,7 +39,8 @@ var maxDisplayedSteps = 64;
 // Inlet 8 receives messages that indicate whether scale is to be halved
 // Inlet 9 receives messages that indicate current scale type
 // Inlet 10 receives messages that indicate current beats in a cycle
-this.inlets = 11;
+// Inlet 11 receives messages that indicate whether pitch num 15 is a rest
+this.inlets = 12;
 
 // Outlet 0 sends global phase shift
 // Outlet 1 sends pitch transform index
@@ -49,7 +50,8 @@ this.inlets = 11;
 // Outlet 5 sends indication of whether scale is to be halved
 // Outlet 6 sends the current scale type value
 // Outlet 7 sends the current beats in a cycle
-this.outlets = 8;
+// Outlet 8 sends indication of whether pitch num 15 is a rest
+this.outlets = 9;
 
 sketch.default2d();
 var vbrgb = [1.,1.,1.,1.];
@@ -79,19 +81,24 @@ var pitchTransformIndex = 0;
 // Number of semitones to transpose
 var numTransposeSemitones = 0;
 
+
 // Use inverted scale
 var reverseScale = false;
 
 // Use half the number of pitches in the scale
 var halfScale = false;
 
+// Make pitch number 15 a rest
+var restPitchNum15 = true;
+
 
 // Type of scale to use
 var curScaleType = 0; //Major
 
 
-// TODO: Document this
-var curCycleLength = 4;
+// Length of cycle
+var curCycleLength = 2;
+
 
 var prevPiOver8Phase = 0;
 
@@ -131,7 +138,7 @@ function msg_int(val) {
 
 		preserveGlobalPhaseShift = tempPreserveGlobalPhaseShift;
 	}
-	if (inlet == 4) {
+	else if (inlet == 4) {
 		// Preserve either global phase, or first pitch with above threshold probability
 		preserveGlobalPhaseShift = (val > 0);
 	}
@@ -142,35 +149,42 @@ function msg_int(val) {
 		qasmPadObj.js.padNoteNamesDirty = true;
 		computeProbsPhases();
 	}
-	if (inlet == 6) {
+	else if (inlet == 6) {
 		// Make notes legato
 		legato = (val > 0);
 		computeProbsPhases();
 	}
-	if (inlet == 7) {
+	else if (inlet == 7) {
 		// Make scale reversed
 		reverseScale = (val > 0);
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		qasmPadObj.js.padNoteNamesDirty = true;
 		computeProbsPhases();
 	}
-	if (inlet == 8) {
+	else if (inlet == 8) {
 		// Make scale half its range
 		halfScale = (val > 0);
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		qasmPadObj.js.padNoteNamesDirty = true;
 		computeProbsPhases();
 	}
-	if (inlet == 9) {
+	else if (inlet == 9) {
 		// Set the scale type
 		curScaleType = val;
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		qasmPadObj.js.padNoteNamesDirty = true;
 		computeProbsPhases();
 	}
-	if (inlet == 10) {
+	else if (inlet == 10) {
 		// Set cycle length
 		curCycleLength = val;
+		computeProbsPhases();
+	}
+	else if (inlet == 11) {
+		// Make pitch number 15 a rest
+		restPitchNum15 = (val > 0);
+		var qasmPadObj = this.patcher.getnamed("qasmpad");
+		qasmPadObj.js.padNoteNamesDirty = true;
 		computeProbsPhases();
 	}
 }
@@ -286,7 +300,7 @@ function computeProbsPhases() {
 
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
 		if (basisStateIncluded(pnIdx, numBasisStates, curCycleLength)) {
-			if (pitchNums[pnIdx] > -1) {
+			if (pitchNums[pnIdx] > -1 && !(restPitchNum15 && pitchNums[pnIdx] == 15)) {
 				if (!foundFirstPitch) {
 					prevPiOver8Phase = pitchNums[pnIdx];
 					foundFirstPitch = true;
@@ -296,7 +310,7 @@ function computeProbsPhases() {
 				var duration = 0.25;
 				var successorNoteFound = false;
 				for (var remPnIdx = pnIdx + 1; remPnIdx < pitchNums.length; remPnIdx++) {
-					if (pitchNums[remPnIdx] > -1) {
+					if (pitchNums[remPnIdx] > -1 && !(restPitchNum15 && pitchNums[remPnIdx] == 15)) {
 						successorNoteFound = true;
 						successorPitchNum = pitchNums[remPnIdx];
 						if (legato) {
@@ -625,7 +639,8 @@ function computeProbsPhases() {
 										curScaleType,
 										pitchNums[pnIdx] <= formerPitchNum) - 1,
 									start_time: beatIdx / beatsPerMeasure,
-									duration: duration * 0.15,
+									//duration: duration * 0.15,
+									duration: 0.15,
 									velocity: 100
 								}
 							);
@@ -638,8 +653,10 @@ function computeProbsPhases() {
 										halfScale,
 										curScaleType,
 										pitchNums[pnIdx] <= formerPitchNum),
-									start_time: beatIdx / beatsPerMeasure + duration * 0.10,
-									duration: duration * 0.9,
+									//start_time: beatIdx / beatsPerMeasure + duration * 0.10,
+									start_time: beatIdx / beatsPerMeasure + 0.10,
+									//duration: duration * 0.9,
+									duration: duration - 0.10,
 									velocity: 100
 								}
 							);
@@ -738,11 +755,12 @@ function computeProbsPhases() {
 		}
 	);
 
-	// Encode flags (legato, reverseScale, halfScale)
+	// Encode flags (legato, reverseScale, halfScale, restPitchNum15)
 	// The value encoded is a binary representation, where:
 	//   - 0b0000001 place represents legato
 	//   - 0b0000010 place represents reverseScale
 	//   - 0b0000100 place represents halfScale
+	//   - 0b0001000 place represents restPitchNum15
 	var miscFlagsVal = 0;
 	if (legato) {
 		miscFlagsVal += 1;
@@ -752,6 +770,9 @@ function computeProbsPhases() {
 	}
 	if (halfScale) {
 		miscFlagsVal += 4;
+	}
+	if (restPitchNum15) {
+		miscFlagsVal += 8;
 	}
 
 	notesDict.notes.push(
@@ -772,7 +793,7 @@ function computeProbsPhases() {
 	trackPathTokens.length = 3;
 	var trackPath = trackPathTokens.join(' ');
 	// Display the pads/notes corresponding to each phase
-	qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale, curScaleType);
+	qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale, curScaleType, restPitchNum15);
 }
 
 
@@ -839,11 +860,13 @@ function populateCircGridFromClip() {
 					legato = (noteMidi & 1) == 1; // legato is represented in 0b0000001 place
 					reverseScale = (noteMidi & 2) == 2; // reverseScale is represented in 0b0000010 place
 					halfScale = (noteMidi & 4) == 4; // halfScale is represented in 0b0000100 place
+					restPitchNum15 = (noteMidi & 8) == 8; // restPitchNum15 is represented in 0b0001000 place
 
 					// Send states to UI controls
 					outlet(3, 'int', legato ? 1 : 0);
 					outlet(4, 'int', reverseScale ? 1 : 0);
 					outlet(5, 'int', halfScale ? 1 : 0);
+					outlet(8, 'int', restPitchNum15 ? 1 : 0);
 				}
 				else {
 					var noteCol = Math.floor(adjNoteStart * 4 / NUM_GRID_ROWS);
@@ -868,7 +891,7 @@ function populateCircGridFromClip() {
 		var trackPath = trackPathTokens.join(' ');
 
 		// Display the pads/notes corresponding to each phase
-		qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale, curScaleType);
+		qasmPadObj.js.populatePadNoteNames(trackPath, pitchTransformIndex, numTransposeSemitones, reverseScale, halfScale, curScaleType, restPitchNum15);
 
 
 		qasmPadObj.js.createQasmFromGrid();

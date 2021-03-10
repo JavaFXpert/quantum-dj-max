@@ -1198,7 +1198,7 @@ function populateMidiClipsList() {
  * Given a track path, pad/note names in display
  * @param trackPath
  */
-function populatePadNoteNames(trackPath, pitchTransformIdx, transposeSemitones, reverseScale, halfScale, scaleType) {
+function populatePadNoteNames(trackPath, pitchTransformIdx, transposeSemitones, reverseScale, halfScale, scaleType, restPitchNum15) {
 	if (padNoteNamesDirty) {
 		padNoteNamesDirty = false;
 		var track = new LiveAPI(trackPath);
@@ -1220,9 +1220,13 @@ function populatePadNoteNames(trackPath, pitchTransformIdx, transposeSemitones, 
 
 			for (var midiPitchIdx = 0; midiPitchIdx < NUM_PITCHES; midiPitchIdx++) {
 				var noteName = '';
-				if (pitchTransformIdx == 0) {
+				if (restPitchNum15 && midiPitchIdx == NUM_PITCHES - 1) {
+					noteName = 'REST';
+				}
+				else if (pitchTransformIdx == 0) {
 					noteName = padNoteNames[midiPitchIdx];
-				} else {
+				}
+				else {
 					noteName = padNoteNames[pitchIdxToMidi(midiPitchIdx, pitchTransformIdx, transposeSemitones,
 						reverseScale, halfScale, scaleType, false)];
 				}
