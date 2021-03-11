@@ -20,7 +20,8 @@
  */
 include('common.js');
 
-var maxDisplayedSteps = 64;
+var maxDisplayedSteps = 256;
+var numSvGrids = 4;
 
 // Inlet 0 receives "viz" messages with a statevector to display
 // Inlet 1 receives global phase shift integer from 0 - 7
@@ -105,6 +106,8 @@ var prevPiOver8Phase = 0;
 var curClipPath = "";
 
 var beatsPerMeasure = 4.0;
+
+var curNumBasisStates = 4;
 
 // Dictionary for sending notes to Live
 var notesDict = {
@@ -199,12 +202,35 @@ function msg_int(val) {
  */
 function viz(svlist) {
 	svArray = svlist.toString().split(' ');
-	//post("\nsvArray: " + svArray);
-	var numStates = svArray.length / 2;
+	curNumBasisStates = svArray.length / 2;
 
-	messnamed('cmd_to_svgrid', 'columns', Math.min(numStates, maxDisplayedSteps));
+	dimSvGrid();
 
 	computeProbsPhases();
+}
+
+
+
+function dimSvGrid() {
+	for (var gIdx = 0; gIdx < numSvGrids; gIdx++) {
+		var svGrid = this.patcher.getnamed('svgrid[' + gIdx + ']');
+		svGrid.setattr('columns', Math.floor(curNumBasisStates / numSvGrids));
+	}
+}
+
+function clearSvGrid() {
+	for (var gIdx = 0; gIdx < numSvGrids; gIdx++) {
+		var svGrid = this.patcher.getnamed('svgrid[' + gIdx + ']');
+		svGrid.message('clear');
+	}
+}
+
+function setSvGridCell(colIdx, rowIdx) {
+	var svGridIdx = Math.floor(colIdx / curNumBasisStates * numSvGrids);
+	var svGrid = this.patcher.getnamed('svgrid[' + svGridIdx + ']');
+	var svGridColIdx = colIdx % (curNumBasisStates / numSvGrids);
+
+	svGrid.message('setcell', svGridColIdx + 1, rowIdx + 1, 127);
 }
 
 
@@ -212,7 +238,7 @@ function viz(svlist) {
  * Compute probabilities and phases
  */
 function computeProbsPhases() {
-	messnamed('cmd_to_svgrid', 'clear');
+	clearSvGrid();
 	var pitchNums = [];
 
 	var numBasisStates = svArray.length / 2;
@@ -273,13 +299,13 @@ function computeProbsPhases() {
 			pitchNum = Math.round(shiftedPhase / (2 * Math.PI) * NUM_PITCHES + NUM_PITCHES, 0) % NUM_PITCHES;
 
 			if (svIdx / 2 < maxDisplayedSteps) {
-				messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pitchNum + 1, 127);
+				setSvGridCell((svIdx / 2), pitchNum);
 			}
 		}
 		if (svIdx / 2 < maxDisplayedSteps) {
 			if (!basisStateIncluded(svIdx / 2, numBasisStates, curCycleLength)) {
 				for (var pIdx = 0; pIdx < NUM_PITCHES; pIdx++) {
-					messnamed('cmd_to_svgrid', 'setcell', (svIdx / 2) + 1, pIdx + 1, 1);
+					setSvGridCell((svIdx / 2), pIdx);
 				}
 			}
 		}
