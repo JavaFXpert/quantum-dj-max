@@ -17,7 +17,6 @@
 /*
  * MicroQiskit implementation in Max
  *
- * TODO: Let qasm accept numeric parameters (not just things like 'pi/2')
  */
 var math = require("math.min.js").math;
 include('common.js');

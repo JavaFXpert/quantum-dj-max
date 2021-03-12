@@ -32,16 +32,15 @@
  *  - Penultimate note is 7, 1 or 2
  * TODO: Populate textbox with QASM for circuit
  *  - Test result after applying column of Hadamards
- * TODO: Replace set_notes with add_new_notes
- * TODO: Consider increasing note duration on legato to slight overlap
- *       so that Sitar slides to next note
  */
 include('common.js');
 
 // Inlet 0 receives note messages that include velocity.
 // Inlet 1 receives bang message to update clips
 // Inlet 2 receives gate rotation messages
-this.inlets = 3;
+// Inlet 3 receives shift gates down message
+// Inlet 4 receives shift gates up message
+this.inlets = 5;
 
 // Outlet 0 sends message to a simulator with generated QASM
 // Outlet 1 sends messages to the midi clips list box
@@ -124,6 +123,14 @@ function bang() {
 	if (inlet == 1) {
 		// bang received to refresh list of clips
 		populateMidiClipsList();
+	}
+	if (inlet == 3) {
+		// bang received to shift all gates down
+		shiftAllGatesVertically(true);
+	}
+	if (inlet == 4) {
+		// bang received to shift all gates up
+		shiftAllGatesVertically(false);
 	}
 }
 
@@ -219,6 +226,53 @@ function resetCircGrid() {
 			informCircuitBtn(rowIdx, colIdx);
 		}
 	}
+}
+
+
+function shiftAllGatesVertically(shiftDown) {
+	if (shiftDown) {
+		if (rowIsEmpty(NUM_GRID_ROWS - 1)) {
+			for (rowIdx = NUM_GRID_ROWS - 2; rowIdx >= 0; rowIdx--) {
+				for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+					circGrid[rowIdx + 1][colIdx] = circGrid[rowIdx][colIdx];
+					circGrid[rowIdx][colIdx] = CircuitNodeTypes.EMPTY;
+
+					selCircGridRow = -1;
+					selCircGridCol = -1;
+					informCircuitBtn(rowIdx, colIdx);
+					informCircuitBtn(rowIdx + 1, colIdx);
+				}
+			}
+		}
+	}
+	else {
+		if (rowIsEmpty(0)) {
+			for (rowIdx = 1; rowIdx < NUM_GRID_ROWS; rowIdx++) {
+				for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+					circGrid[rowIdx - 1][colIdx] = circGrid[rowIdx][colIdx];
+					circGrid[rowIdx][colIdx] = CircuitNodeTypes.EMPTY;
+
+					selCircGridRow = -1;
+					selCircGridCol = -1;
+					informCircuitBtn(rowIdx - 1, colIdx);
+					informCircuitBtn(rowIdx, colIdx);
+				}
+			}
+		}
+	}
+	createQasmFromGrid();
+}
+
+
+function rowIsEmpty(rowIdx) {
+	var rowEmpty = true;
+	for (colIdx = 0; colIdx < NUM_GRID_COLS; colIdx++) {
+		if (circGrid[rowIdx][colIdx] != CircuitNodeTypes.EMPTY) {
+			rowEmpty = false;
+			break;
+		}
+	}
+	return rowEmpty;
 }
 
 
@@ -393,8 +447,6 @@ function createQasmFromGrid() {
 /**
  * Creates a quantum gate from an element in the circuit grid
  * and adds it to the supplied QuantumCircuit instance
- * TODO: Support additional CNOT-type gates, including with ANTI_CTRL,
- *       and some other gates
  *
  * @param qasmStr Current QASM string
  * @param gridRow Zero-based row number on circuit grid
