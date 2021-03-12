@@ -776,11 +776,20 @@ function computeProbsPhases() {
 		}
 	);
 
-	// Encode cycle length
+	// Encode cycle length A
 	notesDict.notes.push(
 		{
 			pitch: curCycleLengthA,
 			start_time: (startIdx + NUM_GRID_CELLS + 4) / beatsPerMeasure,
+			duration: 0.25,
+		}
+	);
+
+	// Encode cycle length B
+	notesDict.notes.push(
+		{
+			pitch: curCycleLengthB,
+			start_time: (startIdx + NUM_GRID_CELLS + 5) / beatsPerMeasure,
 			duration: 0.25,
 		}
 	);
@@ -808,7 +817,7 @@ function computeProbsPhases() {
 	notesDict.notes.push(
 		{
 			pitch: miscFlagsVal,
-			start_time: (startIdx + NUM_GRID_CELLS + 5) / beatsPerMeasure,
+			start_time: (startIdx + NUM_GRID_CELLS + 6) / beatsPerMeasure,
 			duration: 0.25,
 		}
 	);
@@ -883,10 +892,16 @@ function populateCircGridFromClip() {
 				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 4) {
 					curCycleLengthA = noteMidi;
 
-					// Send current scale type value
+					// Send current cycle length A
 					outlet(7, 'int', curCycleLengthA);
 				}
 				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 5) {
+					curCycleLengthB = noteMidi;
+
+					// Send current cycle length B
+					outlet(9, 'int', curCycleLengthB);
+				}
+				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 6) {
 					legato = (noteMidi & 1) == 1; // legato is represented in 0b0000001 place
 					reverseScale = (noteMidi & 2) == 2; // reverseScale is represented in 0b0000010 place
 					halfScale = (noteMidi & 4) == 4; // halfScale is represented in 0b0000100 place
