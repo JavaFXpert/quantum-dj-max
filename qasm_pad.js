@@ -38,15 +38,15 @@ include('common.js');
 // Inlet 0 receives note messages that include velocity.
 // Inlet 1 receives bang message to update clips
 // Inlet 2 receives gate rotation messages
-// Inlet 3 receives shift gates down message
-// Inlet 4 receives shift gates up message
-this.inlets = 5;
+// Inlet 3 receives shift gates up/down messages
+this.inlets = 4;
 
 // Outlet 0 sends message to a simulator with generated QASM
 // Outlet 1 sends messages to the midi clips list box
-// Outlet 2 sends messages the clip selector dial
-// Outlet 3 sends messages the gate rotator dial
-this.outlets = 4;
+// Outlet 2 sends messages to the clip selector dial
+// Outlet 3 sends messages to the gate rotator dial
+// Outlet 4 sends messages to the gates shifter dial
+this.outlets = 5;
 
 
 // Flag that indicates whether the currently displayed pads/notes
@@ -169,6 +169,15 @@ function msg_int(val) {
 				createQasmFromGrid();
 			}
 		}
+	}
+	else if (inlet == 3) {
+		if (val < 0) {
+			shiftAllGatesVertically(true);
+		}
+		else if (val > 0) {
+			shiftAllGatesVertically(false);
+		}
+		outlet(4, 'int', 0);
 	}
 }
 
