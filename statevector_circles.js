@@ -39,9 +39,10 @@ var numSvGrids = 4;
 // Inlet 7 receives messages that indicate whether scale is to be reversed
 // Inlet 8 receives messages that indicate whether scale is to be halved
 // Inlet 9 receives messages that indicate current scale type
-// Inlet 10 receives messages that indicate current beats in a cycle
+// Inlet 10 receives messages that indicate current beats in cycle A
 // Inlet 11 receives messages that indicate whether pitch num 15 is a rest
-this.inlets = 12;
+// Inlet 12 receives messages that indicate current beats in cycle B
+this.inlets = 13;
 
 // Outlet 0 sends global phase shift
 // Outlet 1 sends pitch transform index
@@ -50,9 +51,10 @@ this.inlets = 12;
 // Outlet 4 sends indication of whether scale is to be reversed
 // Outlet 5 sends indication of whether scale is to be halved
 // Outlet 6 sends the current scale type value
-// Outlet 7 sends the current beats in a cycle
+// Outlet 7 sends the current beats in cycle A
 // Outlet 8 sends indication of whether pitch num 15 is a rest
-this.outlets = 9;
+// Outlet 9 sends the current beats in a cycle B
+this.outlets = 10;
 
 sketch.default2d();
 var vbrgb = [1.,1.,1.,1.];
@@ -97,9 +99,11 @@ var restPitchNum15 = true;
 var curScaleType = 0; //Major
 
 
-// Length of cycle
-var curCycleLength = 2;
+// Length of cycle A
+var curCycleLengthA = 2;
 
+// Length of cycle B
+var curCycleLengthB = 2;
 
 var prevPiOver8Phase = 0;
 
@@ -179,8 +183,8 @@ function msg_int(val) {
 		computeProbsPhases();
 	}
 	else if (inlet == 10) {
-		// Set cycle length
-		curCycleLength = val;
+		// Set cycle A length
+		curCycleLengthA = val;
 		computeProbsPhases();
 	}
 	else if (inlet == 11) {
@@ -188,6 +192,11 @@ function msg_int(val) {
 		restPitchNum15 = (val > 0);
 		var qasmPadObj = this.patcher.getnamed("qasmpad");
 		qasmPadObj.js.padNoteNamesDirty = true;
+		computeProbsPhases();
+	}
+	else if (inlet == 12) {
+		// Set cycle B length
+		curCycleLengthB = val;
 		computeProbsPhases();
 	}
 }
@@ -242,11 +251,6 @@ function computeProbsPhases() {
 	var pitchNums = [];
 
 	var numBasisStates = svArray.length / 2;
-
-	// Send pitch transform index
-	// TODO: Remove/replace
-	//curCycleLength = 4;
-	//outlet(7, 'int', curCycleLength);
 
 	var numBasisStatesWithNonZeroProbability = 0;
 
@@ -303,7 +307,7 @@ function computeProbsPhases() {
 			}
 		}
 		if (svIdx / 2 < maxDisplayedSteps) {
-			if (!basisStateIncluded(svIdx / 2, numBasisStates, curCycleLength)) {
+			if (!basisStateIncluded(svIdx / 2, numBasisStates, curCycleLengthA, curCycleLengthB)) {
 				for (var pIdx = 0; pIdx < NUM_PITCHES; pIdx++) {
 					setSvGridCell((svIdx / 2), pIdx);
 				}
@@ -325,7 +329,7 @@ function computeProbsPhases() {
 	var beatIdx = 0;
 
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
-		if (basisStateIncluded(pnIdx, numBasisStates, curCycleLength)) {
+		if (basisStateIncluded(pnIdx, numBasisStates, curCycleLengthA, curCycleLengthB)) {
 			if (pitchNums[pnIdx] > -1 && !(restPitchNum15 && pitchNums[pnIdx] == 15)) {
 				if (!foundFirstPitch) {
 					prevPiOver8Phase = pitchNums[pnIdx];
@@ -775,7 +779,7 @@ function computeProbsPhases() {
 	// Encode cycle length
 	notesDict.notes.push(
 		{
-			pitch: curCycleLength,
+			pitch: curCycleLengthA,
 			start_time: (startIdx + NUM_GRID_CELLS + 4) / beatsPerMeasure,
 			duration: 0.25,
 		}
@@ -877,10 +881,10 @@ function populateCircGridFromClip() {
 					outlet(6, 'int', curScaleType);
 				}
 				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 4) {
-					curCycleLength = noteMidi;
+					curCycleLengthA = noteMidi;
 
 					// Send current scale type value
-					outlet(7, 'int', curCycleLength);
+					outlet(7, 'int', curCycleLengthA);
 				}
 				else if (adjNoteStart * 4 == NUM_GRID_CELLS + 5) {
 					legato = (noteMidi & 1) == 1; // legato is represented in 0b0000001 place
@@ -945,22 +949,37 @@ function setGlobalPhaseShift(phaseShiftDialVal) {
 }
 
 
-function basisStateIncluded(basisStateIdx, numBasisStates, cycleLength) {
-	var retIncluded = false;
+function basisStateIncluded(basisStateIdx, numBasisStates, cycleLengthA, cycleLengthB) {
+	var cycleIncludedA = false;
+	var cycleIncludedB = false;
 
-	var closest = 1;
-	while (cycleLength > closest) {
-		closest *= 2;
+	var closestA = 1;
+	while (cycleLengthA > closestA) {
+		closestA *= 2;
 	}
 
-	for (var cycleStart = 0; cycleStart < numBasisStates; cycleStart += closest) {
-		if (basisStateIdx >= cycleStart && basisStateIdx < cycleStart + cycleLength) {
-			retIncluded = true;
+	var closestB = 1;
+	while (cycleLengthB > closestB) {
+		closestB *= 2;
+	}
+
+	var cycleStart = 0;
+
+	for (cycleStart = 0; cycleStart < numBasisStates; cycleStart += closestA) {
+		if (basisStateIdx >= cycleStart && basisStateIdx < cycleStart + cycleLengthA) {
+			cycleIncludedA = true;
 			break;
 		}
 	}
 
-	return retIncluded;
+	for (cycleStart = 0; cycleStart < numBasisStates; cycleStart += closestB) {
+		if (basisStateIdx >= cycleStart && basisStateIdx < cycleStart + cycleLengthB) {
+			cycleIncludedB = true;
+			break;
+		}
+	}
+
+	return cycleIncludedA && cycleIncludedB;
 }
 
 

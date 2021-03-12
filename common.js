@@ -565,8 +565,6 @@ function pitchIdxToGamaka(pitchIdx, scaleType, formerPitchNum) {
     pitchIdx = 0;
   }
 
-  post('\nIn pitchIdxToGamaka, gamakas[pitchIdx]: ' + gamakas[pitchIdx]);
-
   var gamakaType = GamakaTypes.NONE;
 
   // Only return a gamaka if there is an associated pitch in the scale
