@@ -695,20 +695,30 @@ function computeProbsPhases() {
 					}
 
 					if (!gamakaPlayed) {
-						notesDict.notes.push(
-							{
-								pitch: pitchIdxToMidi(pitchNums[pnIdx],
-									pitchTransformIndex,
-									numTransposeSemitones,
-									reverseScale,
-									halfScale,
-									curScaleType,
-									pitchNums[pnIdx] < formerPitchNum),
-								start_time: beatIdx / beatsPerMeasure,
-								duration: duration,
-								velocity: 100
-							}
-						);
+						var midiPitch = pitchIdxToMidi(pitchNums[pnIdx],
+							pitchTransformIndex,
+							numTransposeSemitones,
+							reverseScale,
+							halfScale,
+							curScaleType,
+							pitchNums[pnIdx] < formerPitchNum);
+
+						if (midiPitch < 127) {
+							notesDict.notes.push(
+								{
+									pitch: pitchIdxToMidi(pitchNums[pnIdx],
+										pitchTransformIndex,
+										numTransposeSemitones,
+										reverseScale,
+										halfScale,
+										curScaleType,
+										pitchNums[pnIdx] < formerPitchNum),
+									start_time: beatIdx / beatsPerMeasure,
+									duration: duration,
+									velocity: 100
+								}
+							);
+						}
 					}
 				}
 				formerPitchNum = pitchNums[pnIdx];
