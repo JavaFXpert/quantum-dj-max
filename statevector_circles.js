@@ -325,12 +325,22 @@ function computeProbsPhases() {
 	var formerPitchNum = 0;
 	var successorPitchNum = 0;
 
+	var currentMidiNum = 0;
+
 	// Tracks the beats in the loop
 	var beatIdx = 0;
 
 	for (var pnIdx = 0; pnIdx < pitchNums.length; pnIdx++) {
 		if (basisStateIncluded(pnIdx, numBasisStates, curCycleLengthA, curCycleLengthB)) {
-			if (pitchNums[pnIdx] > -1 && !(restPitchNum15 && pitchNums[pnIdx] == 15)) {
+			currentMidiNum = pitchIdxToMidi(pitchNums[pnIdx],
+				pitchTransformIndex,
+				numTransposeSemitones,
+				reverseScale,
+				halfScale,
+				curScaleType,
+				pitchNums[pnIdx] <= formerPitchNum);
+
+			if (pitchNums[pnIdx] > -1 && !(restPitchNum15 && pitchNums[pnIdx] == 15) && currentMidiNum < 127) {
 				if (!foundFirstPitch) {
 					prevPiOver8Phase = pitchNums[pnIdx];
 					foundFirstPitch = true;
@@ -340,7 +350,14 @@ function computeProbsPhases() {
 				var duration = 0.25;
 				var successorNoteFound = false;
 				for (var remPnIdx = pnIdx + 1; remPnIdx < pitchNums.length; remPnIdx++) {
-					if (pitchNums[remPnIdx] > -1 && !(restPitchNum15 && pitchNums[remPnIdx] == 15)) {
+					var remMidiNum = pitchIdxToMidi(pitchNums[remPnIdx],
+						pitchTransformIndex,
+						numTransposeSemitones,
+						reverseScale,
+						halfScale,
+						curScaleType,
+						pitchNums[remPnIdx] <= formerPitchNum);
+					if (pitchNums[remPnIdx] > -1 && !(restPitchNum15 && pitchNums[remPnIdx] == 15) && remMidiNum < 127) {
 						successorNoteFound = true;
 						successorPitchNum = pitchNums[remPnIdx];
 						if (legato) {
@@ -728,6 +745,17 @@ function computeProbsPhases() {
 	}
 	var numBeats = beatIdx;
 	clip.set('loop_end', numBeats / beatsPerMeasure);
+
+	post('\nBefore notesDict.notes: ' + notesDict.notes.length);
+
+	// Remove midi 127 notes
+	for (var noteIdx = notesDict.notes.length - 1; noteIdx >= 0; noteIdx--) {
+		if (notesDict.notes[noteIdx].pitch == 127) {
+			notesDict.notes.splice(noteIdx, 1);
+		}
+	}
+
+	post('\nAfter notesDict.notes: ' + notesDict.notes.length);
 
 	// Encode circuit grid into the clip, after the loop end
 	var qasmPadObj = this.patcher.getnamed("qasmpad");
