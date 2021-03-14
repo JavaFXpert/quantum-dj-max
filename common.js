@@ -143,7 +143,8 @@ var GamakaTypes = {
   ASCENDING_SLIDE_OSCILLATE: 4,
   ASCENDING_OSCILLATE: 5,
   DESCENDING_OSCILLATE: 6,
-  HAMMER_ON_CHROMATIC: 7  // Hammer-on from one semitone below
+  HAMMER_ON_CHROMATIC: 7,  // Hammer-on from one semitone below
+  HAMMER_ON_1_PITCH: 8  // Hammer-on from one pitch below
 }
 
 
@@ -576,7 +577,8 @@ function pitchIdxToGamaka(pitchIdx, scaleType, formerPitchNum) {
   if (scaleOffsets[pitchIdx] != -1) {
     // For Ragas, if pitch and former pitch are the same (repeated note), hammer on second note
     if (musicalScales[scaleType].isRaga() && pitchIdx == formerPitchNum) {
-      gamakaType = GamakaTypes.HAMMER_ON_CHROMATIC;
+      //gamakaType = GamakaTypes.HAMMER_ON_CHROMATIC;
+      gamakaType = GamakaTypes.HAMMER_ON_1_PITCH;
     }
     else {
       gamakaType = gamakas[pitchIdx];

@@ -475,7 +475,7 @@ function computeProbsPhases() {
                     curScaleType,
                     pitchNums[pnIdx] <= formerPitchNum),
                   start_time: beatIdx / beatsPerMeasure,
-                  duration: duration * 0.25,
+                  duration: duration * 0.50,
                   velocity: 100
                 }
               );
@@ -489,8 +489,9 @@ function computeProbsPhases() {
                     halfScale,
                     curScaleType,
                     pitchNums[pnIdx] <= formerPitchNum),
-                  start_time: beatIdx / beatsPerMeasure + duration * 0.1875, // 3/16
-                  duration: duration * 0.25,
+                  start_time: beatIdx / beatsPerMeasure + duration * 0.33, // 1/3
+                  //duration: duration * 0.25,
+									duration: duration * 0.50,
                   velocity: 100
                 }
               );
@@ -504,11 +505,15 @@ function computeProbsPhases() {
                     halfScale,
                     curScaleType,
                     pitchNums[pnIdx] <= formerPitchNum),
-                  start_time: beatIdx / beatsPerMeasure + duration * 0.375, // 6/16
-                  duration: duration * 0.25,
+                  //start_time: beatIdx / beatsPerMeasure + duration * 0.375, // 6/16
+									start_time: beatIdx / beatsPerMeasure + duration * 0.66, // 2/3
+                  //duration: duration * 0.25,
+									duration: duration * 0.34,
                   velocity: 100
                 }
               );
+
+              /*
               // Slide up to pitch in the note following the gamaka
               notesDict.notes.push(
                 {
@@ -539,6 +544,8 @@ function computeProbsPhases() {
                   velocity: 100
                 }
               );
+              */
+
               gamakaPlayed = true;
             }
           }
@@ -690,6 +697,43 @@ function computeProbsPhases() {
                     halfScale,
                     curScaleType,
                     pitchNums[pnIdx] <= formerPitchNum) - 1,
+                  start_time: beatIdx / beatsPerMeasure,
+                  //duration: duration * 0.15,
+                  duration: 0.15,
+                  velocity: 100
+                }
+              );
+              notesDict.notes.push(
+                {
+                  pitch: pitchIdxToMidi(pitchNums[pnIdx],
+                    pitchTransformIndex,
+                    numTransposeSemitones,
+                    reverseScale,
+                    halfScale,
+                    curScaleType,
+                    pitchNums[pnIdx] <= formerPitchNum),
+                  //start_time: beatIdx / beatsPerMeasure + duration * 0.10,
+                  start_time: beatIdx / beatsPerMeasure + 0.10,
+                  //duration: duration * 0.9,
+                  duration: duration - 0.10,
+                  velocity: 100
+                }
+              );
+              gamakaPlayed = true;
+            }
+          }
+          else if (gamakaType == GamakaTypes.HAMMER_ON_1_PITCH) {
+            // Ensure that there is a lower pitch from which to hammer on
+            if (pitchNums[pnIdx] >= 1) {
+              notesDict.notes.push(
+                {
+                  pitch: pitchIdxToMidi(pitchNums[pnIdx] - 1,
+                    pitchTransformIndex,
+                    numTransposeSemitones,
+                    reverseScale,
+                    halfScale,
+                    curScaleType,
+                    pitchNums[pnIdx] <= formerPitchNum),
                   start_time: beatIdx / beatsPerMeasure,
                   //duration: duration * 0.15,
                   duration: 0.15,
