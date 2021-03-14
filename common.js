@@ -174,7 +174,7 @@ function MusicalScale(nameArg, ascOffsetsArg, descOffsetsArg, ascGamakasArg, des
     ascGamakasArg.length > 0) {
     this.ascGamakas = ascGamakasArg;
   }
-  else if (nameArg !== "undefined" && nameArg.indexOf("Raga") !== -1){
+  else if (nameArg !== "undefined" && nameArg.indexOf("Raga") !== -1) {
     this.ascGamakas = [
       GamakaTypes.NONE,                      // Sa
       GamakaTypes.NONE,                      // Ri
@@ -220,8 +220,8 @@ function MusicalScale(nameArg, ascOffsetsArg, descOffsetsArg, ascGamakasArg, des
     descGamakasArg.length > 0) {
     this.descGamakas = descGamakasArg;
   }
-  else if (nameArg !== "undefined" && nameArg.indexOf("Raga") !== -1){
-  //else if (this.isRaga()){
+  else if (nameArg !== "undefined" && nameArg.indexOf("Raga") !== -1) {
+    //else if (this.isRaga()){
     this.descGamakas = [
       GamakaTypes.NONE,                      // Sa
       GamakaTypes.SLIDE_DOWN,                // Ri
@@ -262,7 +262,8 @@ function MusicalScale(nameArg, ascOffsetsArg, descOffsetsArg, ascGamakasArg, des
     ];
   }
 }
-(MusicalScale.prototype).isRaga = function() {
+
+(MusicalScale.prototype).isRaga = function () {
   return this.name !== "undefined" && this.name.indexOf("Raga") !== -1;
 };
 
@@ -505,7 +506,8 @@ function midi2NoteName(noteNum) {
     var octave = Math.floor(noteNum / 12) - 2;
     var note = "C C#D D#E F F#G G#A A#B ".substring((noteNum % 12) * 2, (noteNum % 12) * 2 + 2);
     note = note.trim() + octave;
-  } else {
+  }
+  else {
     post('Supplied noteNum ' + noteNum + ' is unexpectedly out of range');
   }
   return note;
@@ -560,7 +562,7 @@ function pitchIdxToGamaka(pitchIdx, scaleType, formerPitchNum) {
 
   if (scaleType < musicalScales.length) {
     gamakas = pitchIdx <= formerPitchNum ? musicalScales[scaleType].descGamakas : musicalScales[scaleType].ascGamakas;
-    scaleOffsets = pitchIdx <= formerPitchNum  ? musicalScales[scaleType].descOffsets : musicalScales[scaleType].ascOffsets;
+    scaleOffsets = pitchIdx <= formerPitchNum ? musicalScales[scaleType].descOffsets : musicalScales[scaleType].ascOffsets;
   }
 
   if (pitchIdx < 0 || pitchIdx >= NUM_PITCHES) {

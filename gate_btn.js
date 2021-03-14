@@ -24,133 +24,132 @@ this.midiNum = 0;
 
 sketch.default2d();
 var val = 0;
-var vbrgb = [1.,1.,1.,1.];
+var vbrgb = [1., 1., 1., 1.];
 
 // process arguments
 if (jsarguments.length > 1) {
-	this.midiNum = jsarguments[1];
+  this.midiNum = jsarguments[1];
 }
 
 draw();
 
 
-function draw()
-{
-	var width = box.rect[2] - box.rect[0];
+function draw() {
+  var width = box.rect[2] - box.rect[0];
 
 
-	with (sketch) {
-		shapeslice(180,1);
-		// erase background
-		glclearcolor(vbrgb[0],vbrgb[1],vbrgb[2],vbrgb[3]);
-		glclear();
+  with (sketch) {
+    shapeslice(180, 1);
+    // erase background
+    glclearcolor(vbrgb[0], vbrgb[1], vbrgb[2], vbrgb[3]);
+    glclear();
 
-		glcolor(0,0,0,1);
+    glcolor(0, 0, 0, 1);
 
-		//var curNodeType = qasmPadObj.js.curCircNodeType;
-		if (midiNum == 43) {
-			// Draw delete character
-			moveto(-0.6, -0.4);
-			text("\u232b");
-		}
-		else {
-			moveto(-0.8, -0.8);
+    //var curNodeType = qasmPadObj.js.curCircNodeType;
+    if (midiNum == 43) {
+      // Draw delete character
+      moveto(-0.6, -0.4);
+      text("\u232b");
+    }
+    else {
+      moveto(-0.8, -0.8);
 
-			// Draw square
-			lineto(0.8, -0.8);
-			lineto(0.8, 0.8);
-			lineto(-0.8, 0.8);
-			lineto(-0.8, -0.8);
-		}
+      // Draw square
+      lineto(0.8, -0.8);
+      lineto(0.8, 0.8);
+      lineto(-0.8, 0.8);
+      lineto(-0.8, -0.8);
+    }
 
-		if (midiNum == 98) {
-			// CircuitNodeTypes.H
-			moveto(-0.32, -0.4);
-			text("H");
-		}
-		else if (midiNum == 99) {
-			// CircuitNodeTypes.PHASE_2
-			moveto(-0.30, -0.4);
-			text("T");
-		}
+    if (midiNum == 98) {
+      // CircuitNodeTypes.H
+      moveto(-0.32, -0.4);
+      text("H");
+    }
+    else if (midiNum == 99) {
+      // CircuitNodeTypes.PHASE_2
+      moveto(-0.30, -0.4);
+      text("T");
+    }
 
-		else if (midiNum == 90) {
-			// CircuitNodeTypes.RX_8
-			moveto(-0.25, -0.4);
-			text("X");
-		}
-		else if (midiNum == 91) {
-			// CircuitNodeTypes.PHASE_4
-			moveto(-0.30, -0.4);
-			text("S");
-		}
+    else if (midiNum == 90) {
+      // CircuitNodeTypes.RX_8
+      moveto(-0.25, -0.4);
+      text("X");
+    }
+    else if (midiNum == 91) {
+      // CircuitNodeTypes.PHASE_4
+      moveto(-0.30, -0.4);
+      text("S");
+    }
 
-		else if (midiNum == 82) {
-			// CircuitNodeTypes.RY_8
-			moveto(-0.25, -0.4);
-			text("Y");
-		}
-		else if (midiNum == 83) {
-			// CircuitNodeTypes.PHASE_8
-			moveto(-0.25, -0.4);
-			text("Z");
-		}
+    else if (midiNum == 82) {
+      // CircuitNodeTypes.RY_8
+      moveto(-0.25, -0.4);
+      text("Y");
+    }
+    else if (midiNum == 83) {
+      // CircuitNodeTypes.PHASE_8
+      moveto(-0.25, -0.4);
+      text("Z");
+    }
 
-		else if (midiNum == 74) {
-			// CircuitNodeTypes.CTRL
-			moveto(-0.323, -0.4);
-			text("\u2022");
-		}
-		else if (midiNum == 75) {
-			// CircuitNodeTypes.PHASE_12
-			moveto(-0.6, -0.35);
-			text("S\u2020");
-		}
+    else if (midiNum == 74) {
+      // CircuitNodeTypes.CTRL
+      moveto(-0.323, -0.4);
+      text("\u2022");
+    }
+    else if (midiNum == 75) {
+      // CircuitNodeTypes.PHASE_12
+      moveto(-0.6, -0.35);
+      text("S\u2020");
+    }
 
-		else if (midiNum == 66) {
-			// CircuitNodeTypes.ANTI_CTRL
-			moveto(-0.323, -0.35);
-			text("\u26ac");
-		}
-		else if (midiNum == 67) {
-			// CircuitNodeTypes.PHASE_14
-			moveto(-0.6, -0.35);
-			text("T\u2020");
-		}
+    else if (midiNum == 66) {
+      // CircuitNodeTypes.ANTI_CTRL
+      moveto(-0.323, -0.35);
+      text("\u26ac");
+    }
+    else if (midiNum == 67) {
+      // CircuitNodeTypes.PHASE_14
+      moveto(-0.6, -0.35);
+      text("T\u2020");
+    }
 
-		else if (midiNum == 58) {
-			// CircuitNodeTypes.SWAP
-			moveto(-0.35, -0.4);
-			text("\u2736");
-		}
+    else if (midiNum == 58) {
+      // CircuitNodeTypes.SWAP
+      moveto(-0.35, -0.4);
+      text("\u2736");
+    }
 
-		else if (midiNum == 50) {
-			// CircuitNodeTypes.QFT
-			moveto(-0.4, -0.32);
-			text("q");
-		}
+    else if (midiNum == 50) {
+      // CircuitNodeTypes.QFT
+      moveto(-0.4, -0.32);
+      text("q");
+    }
 
-		else if (midiNum == 42) {
-			// CircuitNodeTypes.IDEN
-			moveto(-0.2, -0.4);
-			text("I");
-		}
-	}
+    else if (midiNum == 42) {
+      // CircuitNodeTypes.IDEN
+      moveto(-0.2, -0.4);
+      text("I");
+    }
+  }
 }
 
 
 /**
  * When button is clicked send a message and update its appearance.
  */
-function onclick(x, y, but, cmd, shift, capslock, option, ctrl)
-{
-	// TODO: Change 'bob' remote message everywhere
-	messnamed('alice', this.midiNum, 0);
-	//messnamed('bob', this.midiNum, 127);
+function onclick(x, y, but, cmd, shift, capslock, option, ctrl) {
+  // TODO: Change 'bob' remote message everywhere
+  messnamed('alice', this.midiNum, 0);
+  //messnamed('bob', this.midiNum, 127);
 
-	draw();
-	refresh();
+  draw();
+  refresh();
 }
+
 onclick.local = 1;  //private
 
 
@@ -160,13 +159,13 @@ onclick.local = 1;  //private
  * @param w Proposed width of button
  * @param h Proposed height of button
  */
-function forcesize(w, h)
-{
-	if (w != h) {
-		h = w;
-		box.size(w,h);
-	}
+function forcesize(w, h) {
+  if (w != h) {
+    h = w;
+    box.size(w, h);
+  }
 }
+
 forcesize.local = 1; //private
 
 
@@ -176,12 +175,12 @@ forcesize.local = 1; //private
  * @param w Proposed width of button
  * @param h Proposed height of button
  */
-function onresize(w, h)
-{
-	forcesize(w, h);
-	draw();
-	refresh();
+function onresize(w, h) {
+  forcesize(w, h);
+  draw();
+  refresh();
 }
+
 onresize.local = 1; //private
 
 
